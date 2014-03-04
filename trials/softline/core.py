@@ -25,9 +25,13 @@ def read_page(url):
 
 def dump_page(page, filename):
     dump = open(filename, "w")
-    dump.write(page.encode("utf-8"))
+    dump.write(page)
     dump.close()
 
 
 if __name__ == "__main__":
-    pass
+    page = read_dump(DUMP_NAME)
+    if not page:
+        page = read_page(URL)
+        dump_page(page, DUMP_NAME)
+    print page
