@@ -31,7 +31,7 @@ def dump_page(page, filename):
 
 def perform_change(attr, el):
     if attr in el.attrs:
-        print "\n", el, "\n", "-"*60, "\n"
+        del el.attrs[attr]
 
 
 def traverse(page_source):
