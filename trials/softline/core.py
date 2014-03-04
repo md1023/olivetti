@@ -2,7 +2,7 @@
 import urllib2
 from bs4 import BeautifulSoup
 
-DUMP_NAME = "dump.html"
+DUMP_NAME = "./dump.html"
 URL = "https://www.softlogic.ru/p/flexbby"
 
 
@@ -19,8 +19,8 @@ def read_page(url):
     return page
 
 
-def dump_page(page):
-    dump = open("./dump.html", "w")
+def dump_page(page, filename):
+    dump = open(filename, "w")
     dump.write(page.encode("utf-8"))
     dump.close()
 
