@@ -29,18 +29,20 @@ def dump_page(page, filename):
     dump.close()
 
 
+def perform_change(attr, el):
+    if attr in el.attrs:
+        print "\n", el, "\n", "-"*60, "\n"
+
+
 def traverse(page_source):
     document = BeautifulSoup(page_source, "html5lib")
     for el in list(document.find_all()):
         if not "style" in str(el):
             continue
-        if "style" in el.attrs:
-            print "\n", el, "\n", "-"*60, "\n"
+        perform_change("style", el)
         xml = BeautifulSoup(el.text, "xml")
-        # from ipdb import set_trace; set_trace()
         for sub_el in xml.find_all():
-            if not "style" in sub_el.attrs:
-                print "\n", el, "\n", "-"*60, "\n"
+            perform_change("style", sub_el)
 
 
 if __name__ == "__main__":
@@ -48,4 +50,4 @@ if __name__ == "__main__":
     if not page_source:
         page_source = read_page(URL)
         dump_page(page_source, DUMP_NAME)
-    remove_style(page_source)
+    traverse(page_source)
