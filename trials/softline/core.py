@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 import urllib2
 import os.path
+import sys
 from bs4 import BeautifulSoup
 
 DUMP_NAME = "./dump.html"
 URL = "https://www.softlogic.ru/p/flexbby"
-OUTPUT_FILE = "./replacement.html"
+OUTPUT_NAME = "./replacement.html"
 
 
 def read_dump(filename):
@@ -54,9 +55,15 @@ def traverse(page_source):
     return document
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        DUMP_NAME = sys.argv[1]
     page_source = read_dump(DUMP_NAME)
     if not page_source:
         page_source = read_page(URL)
         dump_page(page_source, DUMP_NAME)
     modified_page = traverse(page_source)
-    dump_page(repr(modified_page), OUTPUT_FILE)
+    if len(sys.argv) > 2:
+        OUTPUT_NAME = sys.argv[2]
+    dump_page(repr(modified_page), OUTPUT_NAME)
+    sys.stdout.write("file: \"%s\" - written\n".encode("utf-8") % OUTPUT_NAME)
+    sys.exit(0)
