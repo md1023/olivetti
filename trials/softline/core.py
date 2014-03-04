@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import urllib2
+import os.path
 from bs4 import BeautifulSoup
 
 DUMP_NAME = "./dump.html"
@@ -8,6 +9,8 @@ URL = "https://www.softlogic.ru/p/flexbby"
 
 
 def read_dump(filename):
+    if not os.path.isfile(filename):
+        return
     page_dump = open(filename, "r")
     page = page_dump.read()
     page_dump.close()
