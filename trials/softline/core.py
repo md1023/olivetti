@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 DUMP_NAME = "./dump.html"
 URL = "https://www.softlogic.ru/p/flexbby"
+OUTPUT_FILE = "./replacement.html"
 
 
 def read_dump(filename):
@@ -57,4 +58,5 @@ if __name__ == "__main__":
     if not page_source:
         page_source = read_page(URL)
         dump_page(page_source, DUMP_NAME)
-    traverse(page_source)
+    modified_page = traverse(page_source)
+    dump_page(repr(modified_page), OUTPUT_FILE)
