@@ -78,7 +78,7 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 # psql horizontal scroll
 # export PAGER=cat
 # export LESS="-iMSx4 -XFR"
-source /usr/local/bin/virtualenvwrapper.sh
+source $HOME/.local/bin/virtualenvwrapper.sh
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" -layout "us,ru"
 export FLASH=$HOME/Public/Flash_SVN/
 export LEIZEN=$HOME/Work/leizen
