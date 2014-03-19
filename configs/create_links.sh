@@ -5,7 +5,7 @@
 # check if path to configuration files exists
 if [ ! -d $1 ]
 then
-    echo -e "Specify path to configuration files like this:\n./create_links.sh ~/Config"
+    echo -e "Specify path to configuration files like this:\n~/olivetti/configs/create_links.sh ~/olivetti/configs"
     exit 2
 fi
 echo -e "Links to files from:\n  $1\nWill be created in:\n  `pwd`\nCreating links:"
