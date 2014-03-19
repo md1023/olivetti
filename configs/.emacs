@@ -1,9 +1,10 @@
-(add-to-list 'load-path "/home/m-nikolaev/EmacsGoodies")
-(add-to-list 'load-path "/home/m-nikolaev/EmacsGoodies/magit")
+(defconst HOME (getenv "HOME") "User's home directory")
+
+(add-to-list 'load-path (concat HOME "/emacs"))
+(add-to-list 'load-path (concat HOME "/emacs/flycheck"))
+(add-to-list 'load-path (concat HOME "/emacs/magit"))
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-jabber")
-(add-to-list 'load-path "/home/m-nikolaev/EmacsGoodies/icicles")
-(add-to-list 'load-path "/home/m-nikolaev/EmacsGoodies/pep8")
-(add-to-list 'load-path "/home/m-nikolaev/EmacsGoodies/jedi")
+(add-to-list 'load-path (concat HOME "/emacs/pep8"))
 
 (when (>= emacs-major-version 24)
   (setq package-archives 
@@ -11,19 +12,6 @@
 	  ("marmalade" . "http://marmalade-repo.org/packages/")
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
-
-;; needed for autocompletion
-(add-to-list 'load-path "/home/m-nikolaev/EmacsGoodies/autocomplete")
-
-(require 'popup)
-(require 'ctable)
-(require 'deferred)
-(require 'epc)
-
-;; autocompletion plugin
-(setq ac-dictionary-directories '("/home/m-nikolaev/EmacsGoodies/autocomplete/dict"))
-(require 'auto-complete-config)
-(ac-config-default)
 
 ;; open files via ssh: C-x C-f /sudo:root@jenkins:/
 (set-default 'tramp-default-proxies-alist (quote ((".*" "\\`root\\'" "/ssh:%h:"))))
@@ -231,6 +219,9 @@
   (pop-to-buffer "*SQL*"))
 
 ;; flycheck
+(require 's)
+(require 'dash)
+(require 'flycheck)
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;;jabber settings
@@ -259,7 +250,7 @@
 
 ;; color behave feature files
 (setq feature-default-language "ru")
-(setq feature-default-i18n-file "/home/m-nikolaev/EmacsGoodies/i18n.yml")
+(setq feature-default-i18n-file (concat HOME "emacs/i18n.yml"))
 (require 'feature-mode)
 (add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
 
