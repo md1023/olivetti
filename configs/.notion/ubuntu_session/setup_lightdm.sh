@@ -6,13 +6,13 @@ if [ "$(id -u)" != "0" ]; then
    # exit 1
 fi
 
-# locate script location
+# locate script location and destination folders
 DIR="$( cd "$( dirname "$0" )" && pwd )"
-echo "GO", $DIR
+DEST="/usr/share"
 
 exit 1
 # perform copy
-cp ./xsessions.notion.desktop /usr/share/xsessions/notion.desktop
-cp ./applications.notion.desktop /usr/share/applications/notion.desktop
-cp ./gnome-session.notion.session /usr/share/gnome-session/sessions/notion.session
-cp ./custom_notion_badge.png /usr/share/unity-greeter/custom_notion_badge.png
+cp ./xsessions.notion.desktop $DEST/xsessions/notion.desktop
+cp ./applications.notion.desktop $DEST/applications/notion.desktop
+cp ./gnome-session.notion.session $DEST/gnome-session/sessions/notion.session
+cp ./custom_notion_badge.png $DEST/unity-greeter/custom_notion_badge.png
