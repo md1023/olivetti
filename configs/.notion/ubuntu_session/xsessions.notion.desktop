@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Notion
+Comment=Notion Tiling WM
+Exec=gnome-session --session=notion
+TryExec=notion
+Type=Application
+X-LightDM-DesktopName=Notion
+X-Ubuntu-Gettext-Domain=gnome-session-3.0

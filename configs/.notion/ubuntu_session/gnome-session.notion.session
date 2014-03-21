@@ -1,0 +1,4 @@
+[GNOME Session]
+Name=Notion
+RequiredComponents=notion;gnome-settings-daemon;
+DesktopName=Notion

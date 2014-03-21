@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=2014-01-09
+Type=Application
+Name=notion
+Comment=Notion Tiling WM
+TryExec=notion
+Exec=notion
