@@ -7,7 +7,7 @@
 # locate script location and destination folders
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-echo -e "Links to files from:\n  $1\nWill be created in:\n  `pwd`\nCreating links:"
+echo -e "Script dir: $DIR\nCreating links:"
 
 # put link of each file from specified directory in current directory
 # this script is ignored along . and .. directories 
