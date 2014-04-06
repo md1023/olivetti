@@ -18,6 +18,10 @@ for f in `ls -A --ignore='create_links.sh' $DIR`; do
     if [ $# -eq 1 ] && [ $1 == "--dry" ] ; then
 	continue
     fi
+    if [ -d $linkname ]; then
+	echo "backup folder: $linkname~"
+	mv $linkname "$linkname~"
+    fi
     ln -sfb $target $linkname
     # cp -psb $target $linkname
 done
