@@ -224,6 +224,9 @@
 (require 'flycheck)
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
+;; ack-grep
+(require 'ack)
+
 ;;jabber settings
 (require 'jabber-autoloads)
 (setq jabber-account-list '(
