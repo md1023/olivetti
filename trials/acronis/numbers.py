@@ -27,18 +27,22 @@ cents = "сто двести тристо четыресто пятьсот ше
 
 chiliads = "тысяч миллион биллион триллион квадриллион квинтиллион".split()
 
-def break_number(number):
+def break_number(number, point):
     """
-    >>> break_number(2318)
-    2000 + 300 + 18
-    >>> break_number(2321)
-    2000 + 300 + 20 + 1
+    >>> break_number(2318, 3)
+    ['002', '318']
     """
     s = str(number)[::-1]
-    point = 3
-    groups = [s[i:i+point][::-1].zfill(3) for i in xrange(0, len(s), point)][::-1]
+    return [s[i:i+point][::-1].zfill(point) for i in xrange(0, len(s), point)][::-1]
 
-    return groups
+def translate_number(number):
+    """
+    >>> translate_number(2318)
+    2318
+    >>> translate_number(2321)
+    2321
+    """
+    return number
 
 # 100
 # 30
