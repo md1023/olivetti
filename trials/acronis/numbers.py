@@ -37,21 +37,38 @@ def break_number(number, point):
 
 def break_chiliad(number):
     """
+    >>> break_chiliad(308)
+    [300, 0, 8]
+    >>> break_chiliad(310)
+    [300, 10, 0]
     >>> break_chiliad(318)
     [300, 10, 8]
     >>> break_chiliad(321)
     [300, 20, 1]
     """
-    # l = [int(i) for i in str(number)]
     l = reversed(list(str(number)))
     s = [int(i)*10**power for power, i in enumerate(l)][::-1]
     return s
 
-def translate_number(number):
+def combine_tens(number):
     """
-    >>> translate_number(2318)
-    2318
-    >>> translate_number(2321)
-    2321
+    >>> combine_tens(308)
+    [300, 8]
+    >>> combine_tens(310)
+    [300, 10]
+    >>> combine_tens(318)
+    [300, 18]
+    >>> combine_tens(321)
+    [300, 20, 1]
     """
-    return number
+    s = break_chiliad(number)
+    t = []
+    i = 0
+    while i < len(s):
+        value = s[i]
+        if value < 20 and i + 1 < len(s):
+            value = s[i] + s[i+1]
+            i += 1
+        t.append(value)
+        i += 1
+    return t
