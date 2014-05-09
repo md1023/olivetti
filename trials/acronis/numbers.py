@@ -24,12 +24,12 @@ dozens = "десять двадцать, тридцать, сорок, пять�
 
 def break_number(number):
     """
-    >>> break_number(2131)
+    >>> break_number(10002131)
     2000 + 100 + 30 + 1
     """
     s = str(number)[::-1]
     point = 3
-    groups = [s[i:i+point] for i in xrange(0, len(s), point)][::-1]
+    groups = [s[i:i+point][::-1].zfill(3) for i in xrange(0, len(s), point)][::-1]
 
     return groups
 
