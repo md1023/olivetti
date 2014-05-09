@@ -35,6 +35,18 @@ def break_number(number, point):
     s = str(number)[::-1]
     return [s[i:i+point][::-1].zfill(point) for i in xrange(0, len(s), point)][::-1]
 
+def break_chiliad(number):
+    """
+    >>> break_chiliad(318)
+    [300, 10, 8]
+    >>> break_chiliad(321)
+    [300, 20, 1]
+    """
+    # l = [int(i) for i in str(number)]
+    l = reversed(list(str(number)))
+    s = [int(i)*10**power for power, i in enumerate(l)][::-1]
+    return s
+
 def translate_number(number):
     """
     >>> translate_number(2318)
@@ -43,9 +55,3 @@ def translate_number(number):
     2321
     """
     return number
-
-# 100
-# 30
-# 1
-
-# print decimals[-5], octal_number
