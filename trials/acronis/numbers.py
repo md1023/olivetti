@@ -20,19 +20,22 @@ small_names = u"один два три четыре пять шесть семь
 small_numbers = [i for i in xrange(1, 20)]
 assert len(small_numbers) == len(small_numbers)
 
-dozen_names = "двадцать, тридцать, сорок, пятьдесят, шестьдесят, \
-семьдесят, восемьдесят, девяносто".split()
+dozen_names = u"двадцать тридцать сорок пятьдесят шестьдесят \
+семьдесят восемьдесят девяносто".split()
 dozen_numbers = [10*i for i in xrange(2, 10)]
 assert len(dozen_numbers) == len(dozen_numbers)
 
-cent_names = "сто двести тристо четыресто пятьсот шестьсот семьсот восемьсот \
-девятьсот".split()
-cent_numbers = [100*i for i in xrange(1, 10)]
-assert len(cent_numbers) == len(cent_numbers)
+centicemal_names = small_names + dozen_names
+centicemal_numbers = small_numbers + dozen_numbers
 
-chiliads_names = "тысяч миллион биллион триллион квадриллион квинтиллион".split()
+hundred_names = u"сто двести тристо четыресто пятьсот шестьсот семьсот восемьсот \
+девятьсот".split()
+en_hundred_names = [i+" hundred" for i in small_names[:9]]
+hundred_numbers = [100*i for i in xrange(1, 10)]
+assert len(hundred_numbers) == len(hundred_numbers)
+
+chiliads_names = u"тысяч миллион биллион триллион квадриллион квинтиллион".split()
 chiliads_numbers = [1000**i for i in xrange(1, 7)]
-print chiliads_numbers
 assert len(chiliads_numbers) == len(chiliads_names)
 
 def break_number(number, point):
@@ -46,16 +49,19 @@ def break_number(number, point):
 def break_chiliad(number):
     """
     >>> break_chiliad(308)
-    [300, 0, 8]
+    [300, 8]
     >>> break_chiliad(310)
-    [300, 10, 0]
+    [300, 10]
     >>> break_chiliad(318)
     [300, 10, 8]
+    >>> break_chiliad(320)
+    [300, 20]
     >>> break_chiliad(321)
     [300, 20, 1]
     """
     l = reversed(list(str(number)))
     s = [int(i)*10**power for power, i in enumerate(l)][::-1]
+    s = [i for i in s if i!=0]
     return s
 
 def combine_tens(number):
@@ -81,5 +87,31 @@ def combine_tens(number):
         i += 1
     return t
 
+def translate_number(number):
+    u"""
+    >>> translate_number(308) == u"тристо восемь"
+    True
+    >>> translate_number(310) == u"тристо десять"
+    True
+    >>> translate_number(320) == u"тристо двадцать"
+    True
+    >>> translate_number(321) == u"тристо двадцать один"
+    True
+    """
+    s = combine_tens(number)
+    name = []
+
+    hundred = s[0]
+    l = sorted(list(hundred_numbers) + [hundred])
+    name.append(hundred_names[l.index(hundred)])
+
+    centecimal = s[1:]
+    for i in centecimal:
+        l = sorted(list(centicemal_numbers) + [i])
+        name.append(centicemal_names[l.index(i)])
+
+    return " ".join(name)
+
 if __name__ == "__main__":
-    pass
+    for i in range(900, 1100):
+        print i, translate_number(i)
