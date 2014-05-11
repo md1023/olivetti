@@ -30,7 +30,10 @@ cent_names = "сто двести тристо четыресто пятьсот
 cent_numbers = [100*i for i in xrange(1, 10)]
 assert len(cent_numbers) == len(cent_numbers)
 
-chiliads = "тысяч миллион биллион триллион квадриллион квинтиллион".split()
+chiliads_names = "тысяч миллион биллион триллион квадриллион квинтиллион".split()
+chiliads_numbers = [1000**i for i in xrange(1, 7)]
+print chiliads_numbers
+assert len(chiliads_numbers) == len(chiliads_names)
 
 def break_number(number, point):
     """
