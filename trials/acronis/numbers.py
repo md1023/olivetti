@@ -14,16 +14,21 @@
 decimal_number = int(131)
 octal_number = oct(decimal_number)
 
-digits = u"нуль один два три четыре пять шесть семь восемь девять".split()
-
-tens = u"десять одинадцать двенадцать тринадцать четырнадцать \
+small_names = u"один два три четыре пять шесть семь восемь девять \
+десять одинадцать двенадцать тринадцать четырнадцать \
 пятнадцать шестнадцать семнадцать восемнадцать девятнадцать".split()
+small_numbers = [i for i in xrange(1, 20)]
+assert len(small_numbers) == len(small_numbers)
 
-dozens = "двадцать, тридцать, сорок, пятьдесят, шестьдесят, \
+dozen_names = "двадцать, тридцать, сорок, пятьдесят, шестьдесят, \
 семьдесят, восемьдесят, девяносто".split()
+dozen_numbers = [10*i for i in xrange(2, 10)]
+assert len(dozen_numbers) == len(dozen_numbers)
 
-cents = "сто двести тристо четыресто пятьсот шестьсот семьсот восемьсот \
+cent_names = "сто двести тристо четыресто пятьсот шестьсот семьсот восемьсот \
 девятьсот".split()
+cent_numbers = [100*i for i in xrange(1, 10)]
+assert len(cent_numbers) == len(cent_numbers)
 
 chiliads = "тысяч миллион биллион триллион квадриллион квинтиллион".split()
 
@@ -72,3 +77,6 @@ def combine_tens(number):
         t.append(value)
         i += 1
     return t
+
+if __name__ == "__main__":
+    pass
