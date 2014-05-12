@@ -106,13 +106,14 @@ def translate_number(number):
     """
     s = combine_tens(number)
     name = []
+    categories = ["hundred", "centicemal", "centicemal"]
 
-    hundred = s[0]
-    name.append(get_name("hundred", hundred))
-
-    centecimal = s[1:]
-    for i in centecimal:
-        name.append(get_name("centicemal", i))
+    while s:
+        value = s.pop(0)
+        category = categories.pop(0)
+        if not value:
+            continue
+        name.append(get_name(category, value))
 
     return " ".join(name)
 
