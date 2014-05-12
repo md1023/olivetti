@@ -37,7 +37,7 @@ hundred_numbers = [100*i for i in xrange(1, 10)]
 assert len(hundred_numbers) == len(hundred_numbers)
 
 chiliads_names = u"тысяч миллион биллион триллион квадриллион квинтиллион".split()
-chiliads_numbers = [1000**i for i in xrange(1, 7)]
+chiliads_numbers = [1000**i-1 for i in xrange(2, 8)]
 assert len(chiliads_numbers) == len(chiliads_names)
 
 def break_number(number, point):
@@ -129,5 +129,16 @@ def translate_number(number):
     return " ".join(name)
 
 if __name__ == "__main__":
-    for i in range(900, 1100):
-        print i, translate_number(i)
+    for i in [1000, 1002, 201003, 123567819]:
+        complete_name = []
+        print "\n>", i
+        triplets = break_number(i, 3)
+        for group, number in enumerate(reversed(triplets)):
+            name = translate_number(int(number))
+            if group == 0:
+                complete_name.append(name)
+                continue
+            value = int(number)*1000**group
+            complete_name.append(get_name("chiliads", value))
+            complete_name.append(name)
+        print " ".join(reversed(complete_name))
