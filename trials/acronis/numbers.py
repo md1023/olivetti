@@ -87,6 +87,12 @@ def combine_tens(number):
         i += 1
     return t
 
+def get_name(category, number):
+    names = globals().get(category+"_names")
+    numbers = list(globals().get(category+"_numbers"))
+    l = sorted(numbers + [number])
+    return names[l.index(number)]
+
 def translate_number(number):
     u"""
     >>> translate_number(308) == u"тристо восемь"
@@ -102,13 +108,11 @@ def translate_number(number):
     name = []
 
     hundred = s[0]
-    l = sorted(list(hundred_numbers) + [hundred])
-    name.append(hundred_names[l.index(hundred)])
+    name.append(get_name("hundred", hundred))
 
     centecimal = s[1:]
     for i in centecimal:
-        l = sorted(list(centicemal_numbers) + [i])
-        name.append(centicemal_names[l.index(i)])
+        name.append(get_name("centicemal", i))
 
     return " ".join(name)
 
