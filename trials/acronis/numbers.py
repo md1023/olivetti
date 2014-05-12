@@ -42,6 +42,44 @@ chiliads_names_genitive = [n + u"а" for n in chiliads_names]
 chiliads_numbers = [1000**i-1 for i in xrange(2, 8)]
 assert len(chiliads_numbers) == len(chiliads_names) == len(chiliads_names_genitive)
 
+class Number(object):
+    def __init__(self, number):
+        self.number = int(number)
+        self.name = translate_number(number)
+
+    def __repr__(self):
+        s = self.name
+        return s.encode("utf-8")
+
+class Centicemal(Number):
+    names = small_names + dozen_names
+    genitives = small_names_genitive + dozen_names
+    numbers = small_numbers + dozen_numbers
+
+class Chiliad(Number):
+    names = chiliads_names
+    genitives = { u"тысяч": (u"а", u"и", u"и", u"и", u""),
+                  u"миллион": (u"", u"а", u"а", u"а", u"ов") }
+    numbers = chiliads_numbers
+
+    def __init__(self, number, group):
+        super(Chiliad, self).__init__(number)
+        self.order = self.check_genitive(group)
+
+    def __repr__(self):
+        s = self.name + " " + self.order
+        return s.encode("utf-8")
+
+    def check_genitive(self, group):
+        value = self.number*1000**group
+        order = get_name("chiliads", value)
+        genitive = self.genitives.get(order, u"миллион")
+        suffix = genitive[-1]
+        last_digit = int(str(self.number)[-1])
+        if last_digit < 5:
+            suffix = genitive[last_digit]
+        return order + suffix
+
 def break_number(number, point):
     """
     >>> break_number(2318, 3)
@@ -134,14 +172,11 @@ def translate_chiliad(number):
     complete_name = []
     triplets = break_number(i, 3)
     for group, number in enumerate(reversed(triplets)):
-        name = translate_number(int(number))
         if group == 0:
-            complete_name.append(name)
+            complete_name.append(Centicemal(number))
             continue
-        value = int(number)*1000**group
-        complete_name.append(get_name("chiliads", value))
-        complete_name.append(name)
-    return " ".join(reversed(complete_name))
+        complete_name.append(Chiliad(number, group))
+    return complete_name
 
 if __name__ == "__main__":
     for i in [1000, 1002, 201003, 123567819]:
