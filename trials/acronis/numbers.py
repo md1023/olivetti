@@ -49,19 +49,19 @@ def break_number(number, point):
 def break_chiliad(number):
     """
     >>> break_chiliad(308)
-    [300, 8]
+    [300, 0, 8]
     >>> break_chiliad(310)
-    [300, 10]
+    [300, 10, 0]
     >>> break_chiliad(318)
     [300, 10, 8]
     >>> break_chiliad(320)
-    [300, 20]
+    [300, 20, 0]
     >>> break_chiliad(321)
     [300, 20, 1]
     """
-    l = reversed(list(str(number)))
+    l = reversed(list(str(number).zfill(3)))
     s = [int(i)*10**power for power, i in enumerate(l)][::-1]
-    s = [i for i in s if i!=0]
+    assert len(s) == 3
     return s
 
 def combine_tens(number):
