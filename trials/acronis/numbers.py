@@ -14,6 +14,8 @@
 decimal_number = int(131)
 octal_number = oct(decimal_number)
 
+null_name = u"нуль"
+
 small_names = u"один два три четыре пять шесть семь восемь девять \
 десять одинадцать двенадцать тринадцать четырнадцать \
 пятнадцать шестнадцать семнадцать восемнадцать девятнадцать".split()
@@ -67,25 +69,20 @@ def break_chiliad(number):
 def combine_tens(number):
     """
     >>> combine_tens(308)
-    [300, 8]
+    [300, 8, 0]
     >>> combine_tens(310)
-    [300, 10]
+    [300, 10, 0]
     >>> combine_tens(318)
-    [300, 18]
+    [300, 18, 0]
     >>> combine_tens(321)
     [300, 20, 1]
     """
     s = break_chiliad(number)
-    t = []
-    i = 0
-    while i < len(s):
-        value = s[i]
-        if value < 20 and i + 1 < len(s):
-            value = s[i] + s[i+1]
-            i += 1
-        t.append(value)
-        i += 1
-    return t
+    centicemal = sum(s[1:])
+    if centicemal < 20:
+        s = [s[0], centicemal, 0]
+    assert len(s) == 3
+    return s
 
 def get_name(category, number):
     names = globals().get(category+"_names")
@@ -95,15 +92,29 @@ def get_name(category, number):
 
 def translate_number(number):
     u"""
-    >>> translate_number(308) == u"тристо восемь"
+    >>> translate_number(0) == u"нуль"
     True
-    >>> translate_number(310) == u"тристо десять"
+    >>> translate_number(19) == u"девятнадцать"
+    True
+    >>> translate_number(20) == u"двадцать"
+    True
+    >>> translate_number(21) == u"двадцать один"
+    True
+    >>> translate_number(99) == u"девяносто девять"
+    True
+    >>> translate_number(100) == u"сто"
+    True
+    >>> translate_number(101) == u"сто один"
+    True
+    >>> translate_number(308) == u"тристо восемь"
     True
     >>> translate_number(320) == u"тристо двадцать"
     True
     >>> translate_number(321) == u"тристо двадцать один"
     True
     """
+    if number == 0:
+        return null_name
     s = combine_tens(number)
     name = []
     categories = ["hundred", "centicemal", "centicemal"]
