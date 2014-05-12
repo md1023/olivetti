@@ -19,8 +19,9 @@ null_name = u"нуль"
 small_names = u"один два три четыре пять шесть семь восемь девять \
 десять одинадцать двенадцать тринадцать четырнадцать \
 пятнадцать шестнадцать семнадцать восемнадцать девятнадцать".split()
+small_names_genitive = u"одна две".split() + small_names[2:]
 small_numbers = [i for i in xrange(1, 20)]
-assert len(small_numbers) == len(small_numbers)
+assert len(small_numbers) == len(small_numbers) == len(small_names_genitive)
 
 dozen_names = u"двадцать тридцать сорок пятьдесят шестьдесят \
 семьдесят восемьдесят девяносто".split()
@@ -37,8 +38,9 @@ hundred_numbers = [100*i for i in xrange(1, 10)]
 assert len(hundred_numbers) == len(hundred_numbers)
 
 chiliads_names = u"тысяч миллион биллион триллион квадриллион квинтиллион".split()
+chiliads_names_genitive = [n + u"а" for n in chiliads_names]
 chiliads_numbers = [1000**i-1 for i in xrange(2, 8)]
-assert len(chiliads_numbers) == len(chiliads_names)
+assert len(chiliads_numbers) == len(chiliads_names) == len(chiliads_names_genitive)
 
 def break_number(number, point):
     """
@@ -128,17 +130,19 @@ def translate_number(number):
 
     return " ".join(name)
 
+def translate_chiliad(number):
+    complete_name = []
+    triplets = break_number(i, 3)
+    for group, number in enumerate(reversed(triplets)):
+        name = translate_number(int(number))
+        if group == 0:
+            complete_name.append(name)
+            continue
+        value = int(number)*1000**group
+        complete_name.append(get_name("chiliads", value))
+        complete_name.append(name)
+    return " ".join(reversed(complete_name))
+
 if __name__ == "__main__":
     for i in [1000, 1002, 201003, 123567819]:
-        complete_name = []
-        print "\n>", i
-        triplets = break_number(i, 3)
-        for group, number in enumerate(reversed(triplets)):
-            name = translate_number(int(number))
-            if group == 0:
-                complete_name.append(name)
-                continue
-            value = int(number)*1000**group
-            complete_name.append(get_name("chiliads", value))
-            complete_name.append(name)
-        print " ".join(reversed(complete_name))
+        print translate_chiliad(i)
