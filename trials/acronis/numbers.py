@@ -38,9 +38,8 @@ hundred_numbers = [100*i for i in xrange(1, 10)]
 assert len(hundred_numbers) == len(hundred_numbers)
 
 chiliads_names = u"тысяч миллион биллион триллион квадриллион квинтиллион".split()
-chiliads_names_genitive = [n + u"а" for n in chiliads_names]
 chiliads_numbers = [1000**i-1 for i in xrange(2, 8)]
-assert len(chiliads_numbers) == len(chiliads_names) == len(chiliads_names_genitive)
+assert len(chiliads_numbers) == len(chiliads_names)
 
 class Number(object):
     def __init__(self, number):
@@ -77,7 +76,7 @@ class Chiliad(Number):
         suffix = genitive[-1]
         last_digit = int(str(self.number)[-1])
         if last_digit < 5:
-            suffix = genitive[last_digit]
+            suffix = genitive[last_digit - 1]
         return order + suffix
 
 def break_number(number, point):
@@ -180,4 +179,4 @@ def translate_chiliad(number):
 
 if __name__ == "__main__":
     for i in [1000, 1002, 201003, 123567819]:
-        print translate_chiliad(i)
+        print i, translate_chiliad(i)
