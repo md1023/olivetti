@@ -171,11 +171,11 @@ def translate_chiliad(number):
         if group == 0:
             complete_name.append(Number(number))
             continue
+        if not int(number):
+            continue
         complete_name.append(Chiliad(number, group))
     return " ".join([repr(j) for j in reversed(complete_name)])
 
 if __name__ == "__main__":
-    # for i in [0, 1000, 1002, 3005, 201003, 123567819]:
-    #     print i, translate_chiliad(i)
-    for i in xrange(0, 1000):
-        print i, translate_chiliad(i)
+    number = raw_input("Enter integer: ")
+    print number, translate_chiliad(number)
