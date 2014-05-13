@@ -163,7 +163,7 @@ def combine_tens(number):
     return s
 
 def translate_chiliad(number):
-    if number == 0:
+    if int(number) == 0:
         return null_name
     complete_name = []
     triplets = break_number(number, 3)
