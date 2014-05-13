@@ -97,20 +97,23 @@ class Chiliad(Number):
                        u"тысячи": (u"два", u"две") }
 
     def __init__(self, number, group):
-        super(Chiliad, self).__init__(number)
-        order = self.check_genitive(group)
+        position = Number(number)
+
+        self.number = int(number)*1000**group
+        self.name = position.name
+
+        order = self.check_genitive(number, group)
         if order in self.more_genetives:
             replacement = self.more_genetives[order]
             self.name = [replacement[1] if p == replacement[0] else p
                          for p in self.name]
         self.name += [order]
 
-    def check_genitive(self, group):
-        value = self.number*1000**group
+    def check_genitive(self, number, group):
         order = self.get_name()
-        genitive = self.genitives.get(order, u"миллион")
+        genitive = self.genitives.get(order, self.genitives.get(u"миллион"))
         suffix = genitive[-1]
-        last_digit = int(str(self.number)[-1])
+        last_digit = int(str(number)[-1])
         if last_digit < 5:
             suffix = genitive[last_digit - 1]
         return order + suffix
