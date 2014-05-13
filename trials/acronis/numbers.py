@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
 
 # d  o
 # 7  7
@@ -90,7 +91,7 @@ class Hundred(Number):
 
 class Chiliad(Number):
     names = u"тысяч миллион биллион триллион квадриллион квинтиллион".split()
-    numbers = [1000**i-1 for i in xrange(2, 8)]
+    numbers = [10**i-1 for i in xrange(6, 19, 3)]
     genitives = { u"тысяч": (u"а", u"и", u"и", u"и", u""),
                   u"миллион": (u"", u"а", u"а", u"а", u"ов") }
     more_genetives = { u"тысяча": (u"один", u"одна"),
@@ -178,4 +179,17 @@ def translate_chiliad(number):
 
 if __name__ == "__main__":
     number = raw_input("Enter integer: ")
-    print number, translate_chiliad(number)
+    if not number:
+        sys.stderr.write("No number specified.")
+        exit(1)
+    try:
+        number = int(number)
+    except ValueError:
+        sys.stderr.write("Wrong number specified.")
+        exit(1)
+    if number > 10**18 or number < 0:
+        sys.stderr.write("Sorry, the number is unavailable for right now.")
+        exit(1)
+    sys.stdout.write("%s\n%s" % (translate_chiliad(number),
+                                 translate_chiliad(oct(number))))
+    exit(0)
