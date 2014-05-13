@@ -38,23 +38,23 @@ class Number(object):
 
     def translate_number(self):
         u"""
-        >>> Centicemal(19).translate_number() == [u"девятнадцать"]
+        >>> Number(19).translate_number() == [u"девятнадцать"]
         True
-        >>> Centicemal(20).translate_number() == [u"двадцать"]
+        >>> Number(20).translate_number() == [u"двадцать"]
         True
-        >>> Centicemal(21).translate_number() == [u"двадцать", u"один"]
+        >>> Number(21).translate_number() == [u"двадцать", u"один"]
         True
-        >>> Centicemal(99).translate_number() == [u"девяносто", u"девять"]
+        >>> Number(99).translate_number() == [u"девяносто", u"девять"]
         True
-        >>> Centicemal(100).translate_number() == [u"сто"]
+        >>> Number(100).translate_number() == [u"сто"]
         True
-        >>> Centicemal(101).translate_number() == [u"сто", u"один"]
+        >>> Number(101).translate_number() == [u"сто", u"один"]
         True
-        >>> Centicemal(308).translate_number() == [u"тристо", u"восемь"]
+        >>> Number(308).translate_number() == [u"тристо", u"восемь"]
         True
-        >>> Centicemal(320).translate_number() == [u"тристо", u"двадцать"]
+        >>> Number(320).translate_number() == [u"тристо", u"двадцать"]
         True
-        >>> Centicemal(321).translate_number() == [u"тристо", u"двадцать", u"один"]
+        >>> Number(321).translate_number() == [u"тристо", u"двадцать", u"один"]
         True
         """
         if self.__class__ in (Centicemal, Chiliad, Hundred):
