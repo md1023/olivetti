@@ -2,20 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 
-# d  o
-# 7  7
-# 8  10
-# 9  11
-#
-# 15 17
-# 16 20
-# 17 21
-
-# number = int(raw_input("Enter natural number: "))
-decimal_number = int(131)
-octal_number = oct(decimal_number)
-
-null_name = u"нуль"
+NULL_NAME = u"нуль"
 
 class Number(object):
     small_names = u"один два три четыре пять шесть семь восемь девять \
@@ -165,7 +152,7 @@ def combine_tens(number):
 
 def translate_chiliad(number):
     if int(number) == 0:
-        return null_name
+        return NULL_NAME
     complete_name = []
     triplets = break_number(number, 3)
     for group, number in enumerate(reversed(triplets)):
