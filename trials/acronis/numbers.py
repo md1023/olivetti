@@ -16,62 +16,98 @@ octal_number = oct(decimal_number)
 
 null_name = u"нуль"
 
-small_names = u"один два три четыре пять шесть семь восемь девять \
-десять одинадцать двенадцать тринадцать четырнадцать \
-пятнадцать шестнадцать семнадцать восемнадцать девятнадцать".split()
-small_names_genitive = u"одна две".split() + small_names[2:]
-small_numbers = [i for i in xrange(1, 20)]
-assert len(small_numbers) == len(small_numbers) == len(small_names_genitive)
-
-dozen_names = u"двадцать тридцать сорок пятьдесят шестьдесят \
-семьдесят восемьдесят девяносто".split()
-dozen_numbers = [10*i for i in xrange(2, 10)]
-assert len(dozen_numbers) == len(dozen_numbers)
-
-centicemal_names = small_names + dozen_names
-centicemal_numbers = small_numbers + dozen_numbers
-
-hundred_names = u"сто двести тристо четыресто пятьсот шестьсот семьсот восемьсот \
-девятьсот".split()
-en_hundred_names = [i+" hundred" for i in small_names[:9]]
-hundred_numbers = [100*i for i in xrange(1, 10)]
-assert len(hundred_numbers) == len(hundred_numbers)
-
-chiliads_names = u"тысяч миллион биллион триллион квадриллион квинтиллион".split()
-chiliads_numbers = [1000**i-1 for i in xrange(2, 8)]
-assert len(chiliads_numbers) == len(chiliads_names)
-
 class Number(object):
+    small_names = u"один два три четыре пять шесть семь восемь девять \
+    десять одинадцать двенадцать тринадцать четырнадцать \
+    пятнадцать шестнадцать семнадцать восемнадцать девятнадцать".split()
+    small_names_genitive = u"одна две".split() + small_names[2:]
+    small_numbers = [i for i in xrange(1, 20)]
+
+    dozen_names = u"двадцать тридцать сорок пятьдесят шестьдесят \
+    семьдесят восемьдесят девяносто".split()
+    dozen_numbers = [10*i for i in xrange(2, 10)]
+
     def __init__(self, number):
         self.number = int(number)
-        self.name = translate_number(number)
+        self.name = self.translate_number()
+
+    def get_name(self):
+        l = sorted(self.numbers + [self.number])
+        return self.names[l.index(self.number)]
+
+    def translate_number(self):
+        u"""
+        >>> Centicemal(19).translate_number() == [u"девятнадцать"]
+        True
+        >>> Centicemal(20).translate_number() == [u"двадцать"]
+        True
+        >>> Centicemal(21).translate_number() == [u"двадцать", u"один"]
+        True
+        >>> Centicemal(99).translate_number() == [u"девяносто", u"девять"]
+        True
+        >>> Centicemal(100).translate_number() == [u"сто"]
+        True
+        >>> Centicemal(101).translate_number() == [u"сто", u"один"]
+        True
+        >>> Centicemal(308).translate_number() == [u"тристо", u"восемь"]
+        True
+        >>> Centicemal(320).translate_number() == [u"тристо", u"двадцать"]
+        True
+        >>> Centicemal(321).translate_number() == [u"тристо", u"двадцать", u"один"]
+        True
+        """
+        if self.__class__ in (Centicemal, Chiliad, Hundred):
+            return [self.get_name()]
+
+        s = combine_tens(self.number)
+        name = []
+        categories = [Hundred, Centicemal, Centicemal]
+
+        while s:
+            value = s.pop(0)
+            category = categories.pop(0)
+            if not value:
+                continue
+            number = category(value)
+            name.append(number.get_name())
+
+        return name
 
     def __repr__(self):
-        s = self.name
+        s = " ".join(self.name)
         return s.encode("utf-8")
 
 class Centicemal(Number):
-    names = small_names + dozen_names
-    genitives = small_names_genitive + dozen_names
-    numbers = small_numbers + dozen_numbers
+    names = Number.small_names + Number.dozen_names
+    genitives = Number.small_names_genitive + Number.dozen_names
+    numbers = Number.small_numbers + Number.dozen_numbers
+
+class Hundred(Number):
+    names = u"сто двести тристо четыресто пятьсот шестьсот семьсот восемьсот \
+    девятьсот".split()
+    en_names = [i+" hundred" for i in Number.small_names[:9]]
+    numbers = [100*i for i in xrange(1, 10)]
 
 class Chiliad(Number):
-    names = chiliads_names
+    names = u"тысяч миллион биллион триллион квадриллион квинтиллион".split()
+    numbers = [1000**i-1 for i in xrange(2, 8)]
     genitives = { u"тысяч": (u"а", u"и", u"и", u"и", u""),
                   u"миллион": (u"", u"а", u"а", u"а", u"ов") }
-    numbers = chiliads_numbers
+    more_genetives = { u"тысяча": (u"один", u"одна"),
+                       u"тысячи": (u"два", u"две") }
 
     def __init__(self, number, group):
         super(Chiliad, self).__init__(number)
-        self.order = self.check_genitive(group)
-
-    def __repr__(self):
-        s = self.name + " " + self.order
-        return s.encode("utf-8")
+        order = self.check_genitive(group)
+        if order in self.more_genetives:
+            replacement = self.more_genetives[order]
+            self.name = [replacement[1] if p == replacement[0] else p
+                         for p in self.name]
+        self.name += [order]
 
     def check_genitive(self, group):
         value = self.number*1000**group
-        order = get_name("chiliads", value)
+        order = self.get_name()
         genitive = self.genitives.get(order, u"миллион")
         suffix = genitive[-1]
         last_digit = int(str(self.number)[-1])
@@ -123,60 +159,20 @@ def combine_tens(number):
     assert len(s) == 3
     return s
 
-def get_name(category, number):
-    names = globals().get(category+"_names")
-    numbers = list(globals().get(category+"_numbers"))
-    l = sorted(numbers + [number])
-    return names[l.index(number)]
-
-def translate_number(number):
-    u"""
-    >>> translate_number(0) == u"нуль"
-    True
-    >>> translate_number(19) == u"девятнадцать"
-    True
-    >>> translate_number(20) == u"двадцать"
-    True
-    >>> translate_number(21) == u"двадцать один"
-    True
-    >>> translate_number(99) == u"девяносто девять"
-    True
-    >>> translate_number(100) == u"сто"
-    True
-    >>> translate_number(101) == u"сто один"
-    True
-    >>> translate_number(308) == u"тристо восемь"
-    True
-    >>> translate_number(320) == u"тристо двадцать"
-    True
-    >>> translate_number(321) == u"тристо двадцать один"
-    True
-    """
+def translate_chiliad(number):
     if number == 0:
         return null_name
-    s = combine_tens(number)
-    name = []
-    categories = ["hundred", "centicemal", "centicemal"]
-
-    while s:
-        value = s.pop(0)
-        category = categories.pop(0)
-        if not value:
-            continue
-        name.append(get_name(category, value))
-
-    return " ".join(name)
-
-def translate_chiliad(number):
     complete_name = []
-    triplets = break_number(i, 3)
+    triplets = break_number(number, 3)
     for group, number in enumerate(reversed(triplets)):
         if group == 0:
-            complete_name.append(Centicemal(number))
+            complete_name.append(Number(number))
             continue
         complete_name.append(Chiliad(number, group))
-    return complete_name
+    return " ".join([repr(j) for j in reversed(complete_name)])
 
 if __name__ == "__main__":
-    for i in [1000, 1002, 201003, 123567819]:
+    # for i in [0, 1000, 1002, 3005, 201003, 123567819]:
+    #     print i, translate_chiliad(i)
+    for i in xrange(0, 1000):
         print i, translate_chiliad(i)
