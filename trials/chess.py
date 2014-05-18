@@ -16,7 +16,11 @@ class Table(object):
         horizontals = [Line(str(i)) for i in lines]
         verticals = [Line(l.upper()) for l in alphabet]
         straight_diagonal = [Line("%s%s" % (lines[i], alphabet[i].upper()))
-                             for i in xrange(n)] + \
+                             for i in xrange(n)][:-1] + \
+                            [Line("%s%s" % (alphabet[i].upper(), lines[i]))
+                             for i in xrange(n)]
+        reversed_diagonal = [Line("%s%s" % (lines[i], alphabet[i].upper()))
+                             for i in xrange(n)][:-1] + \
                             [Line("%s%s" % (alphabet[i].upper(), lines[i]))
                              for i in xrange(n)]
         print horizontals, verticals
