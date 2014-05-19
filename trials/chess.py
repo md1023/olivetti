@@ -63,14 +63,26 @@ class Table(object):
 
     def draw(self, figures):
         n, m = self.size
+        output = "%s "
+        sys.stdout.write("  ")
+        for i in xrange(0, m):
+            col = chr(i + ord("A"))
+            sys.stdout.write(output % col)
+        sys.stdout.write("\n1 ")
         for c in self.cells:
             col = ord(c.column) - ord("A")
-            sys.stdout.write(".")
-            if col == m - 1:
-                sys.stdout.write("\n")
+            fig_pos = [figures[i].position for i in xrange(len(figures))]
+            figure = "."
+            if c in fig_pos:
+                figure = figures[fig_pos.index(c)].character
+            sys.stdout.write(output % figure)
+            if col == m - 1 and self.cells.index(c) != len(self.cells) - 1:
+                sys.stdout.write("\n%s " % (int(c.line) + 1,))
 
 
 class Queen(object):
+    character = "Q"
+
     def __init__(self, position):
         self.position = position
 
@@ -97,4 +109,4 @@ def queens_problem(n, m):
     print "Queens:", queens
     table.draw(queens)
 
-queens_problem(3, 5)
+queens_problem(8, 8)
