@@ -89,12 +89,13 @@ class Table(object):
 
 class Figure(object):
     character = "."
+    name = "Generic figure"
 
     def __init__(self, position):
         self.position = position
 
     def __repr__(self):
-        return "Generic figure at %s" % (self.position,)
+        return "%s at %s" % (self.name, self.position,)
 
 
 class Dummy(Figure):
@@ -103,6 +104,7 @@ class Dummy(Figure):
 
 class Queen(Figure):
     character = "Q"
+    name = "Queen"
 
     def conflicts(self, piece):
         return self.position.on_line(piece.position)
@@ -129,7 +131,7 @@ def throw_out_cells(cells, figure):
     return [c for c in cells if not c.on_line(figure.position)]
 
 
-def build(cells):
+def build(cells, n):
     queens = []
     for c in cells:
         queen = Queen(c)
@@ -137,7 +139,7 @@ def build(cells):
         if any(conflicts):
             continue
         queens.append(queen)
-    if len(queens) > 7:
+    if len(queens) > n - 1:
         print "Queens:", queens, "total:", len(queens)
     return queens
 
@@ -147,8 +149,9 @@ def queens_problem(n, m):
     print len(table.cells)
     for i in xrange(len(table.cells)):
         cells = table.cells[i:] + table.cells[:i]
-        queens = build(cells)
-        if len(queens) > 7:
+        queens = build(cells, n)
+        if len(queens) > n - 1:
             table.draw(queens)
 
-# queens_problem(8, 8)
+queens_problem(8, 8)
+
