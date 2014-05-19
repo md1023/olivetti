@@ -78,6 +78,7 @@ class Table(object):
             sys.stdout.write(output % figure)
             if col == m - 1 and self.cells.index(c) != len(self.cells) - 1:
                 sys.stdout.write("\n%s " % (int(c.line) + 1,))
+        sys.stdout.write("\n")
 
 
 class Queen(object):
@@ -96,17 +97,26 @@ class Queen(object):
         return "Queen at %s" % (self.position,)
 
 
-def queens_problem(n, m):
-    table = Table(n, m)
+def build(cells):
     queens = []
-    solution = []
-    for c in table.cells:
+    for c in cells:
         queen = Queen(c)
         conflicts = [q for q in queens if queen.conflicts(q)]
         if any(conflicts):
             continue
         queens.append(queen)
-    print "Queens:", queens
-    table.draw(queens)
+    if len(queens) > 7:
+        print "Queens:", queens, "total:", len(queens)
+    return queens
+
+
+def queens_problem(n, m):
+    table = Table(n, m)
+    print len(table.cells)
+    for i in xrange(len(table.cells)):
+        cells = table.cells[i:] + table.cells[:i]
+        queens = build(cells)
+        if len(queens) > 7:
+            table.draw(queens)
 
 queens_problem(8, 8)
