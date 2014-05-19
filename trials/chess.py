@@ -72,6 +72,20 @@ class Queen(object):
         return any([getattr(self.position, p)(piece.position)
                     for p in predicates])
 
+    def __repr__(self):
+        return "Queen at %s" % (self.position,)
+
+
 def queens_problem(n, m):
-    t = Table(n, m)
+    table = Table(n, m)
     queens = []
+    solution = []
+    for c in table.cells:
+        queen = Queen(c)
+        conflicts = [q for q in queens if queen.conflicts(q)]
+        if any(conflicts):
+            continue
+        queens.append(queen)
+    print queens
+
+print queens_problem(3, 5)
