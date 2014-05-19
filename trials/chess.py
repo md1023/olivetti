@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-
-
-class Line(object):
-    def __init__(self, name):
-        self.name = name
-
-    def __repr__(self):
-        return self.name
+import sys
 
 
 class Cell(object):
@@ -17,8 +10,8 @@ class Cell(object):
         self.reversed_diagonal = reversed_diagonal
 
     def __repr__(self):
-        return (self.line, self.column, self.straight_diagonal,
-                self.reversed_diagonal)
+        return "".join([self.line, self.column, self.straight_diagonal,
+                        self.reversed_diagonal])
 
 
 class Table(object):
@@ -26,9 +19,18 @@ class Table(object):
         self.size = n, m
         lines = range(1, n + 1)
         columns = map(chr, range(97, 123))[:m]
-        horizontals = [Line(str(i)) for i in lines]
-        verticals = [Line(l.upper()) for l in columns]
-        straight_diagonal = [Line(str(i)) for i in xrange(n + m - 1)]
-        reversed_diagonal = [Line(str(i)) for i in xrange(n + m - 1)]
+        horizontals = [str(i) for i in lines]
+        verticals = [l.upper() for l in columns]
+        straight_diagonal = [str(i) for i in xrange(1, n + m)]
+        reversed_diagonal = [str(i) for i in xrange(1, n + m)]
+        self.cells = []
+        for i in xrange(n):
+            for j in xrange(m):
+                cell = Cell(horizontals[i], verticals[j],
+                            straight_diagonal[j + i],
+                            reversed_diagonal[n - 1 - i + j])
+                sys.stdout.write(repr(cell) + ", ")
+                self.cells.append(cell)
+            sys.stdout.write("\n")
 
 print Table(3, 5)
