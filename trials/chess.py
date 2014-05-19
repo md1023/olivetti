@@ -67,7 +67,7 @@ class Table(object):
                 self.cells.append(cell)
             # sys.stdout.write("\n")
 
-    def draw(self, figures):
+    def draw(self, figures=[]):
         n, m = self.size
         output = "%s "
         sys.stdout.write("  ")
@@ -87,21 +87,47 @@ class Table(object):
         sys.stdout.write("\n")
 
 
-class Queen(object):
-    character = "Q"
+class Figure(object):
+    character = "."
 
     def __init__(self, position):
         self.position = position
 
+    def __repr__(self):
+        return "Generic figure at %s" % (self.position,)
+
+
+class Dummy(Figure):
+    character = "x"
+
+
+class Queen(Figure):
+    character = "Q"
+
     def conflicts(self, piece):
         return self.position.on_line(piece.position)
 
-    def __repr__(self):
-        return "Queen at %s" % (self.position,)
 
-# def throw_out_cells(cells, figure):
-#     for c in cells:
-#         if c.has_same_line(figure.position)
+def throw_out_cells(cells, figure):
+    """
+    >>> t = Table(4, 4)
+    >>> q = Queen(t.cells[0])
+    >>> t.draw([q] + [Dummy(c) for c in throw_out_cells(t.cells, q)])
+      A B C D 
+    1 Q . . . 
+    2 . . x x 
+    3 . x . x 
+    4 . x x . 
+    >>> q = Queen(t.cells[4])
+    >>> t.draw([q] + [Dummy(c) for c in throw_out_cells(t.cells, q)])
+      A B C D 
+    1 . . x x 
+    2 Q . . . 
+    3 . . x x 
+    4 . x . x 
+    """
+    return [c for c in cells if not c.on_line(figure.position)]
+
 
 def build(cells):
     queens = []
@@ -125,4 +151,4 @@ def queens_problem(n, m):
         if len(queens) > 7:
             table.draw(queens)
 
-queens_problem(8, 8)
+# queens_problem(8, 8)
