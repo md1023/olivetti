@@ -46,7 +46,7 @@ class Table(object):
     def __init__(self, n, m):
         self.size = n, m
         lines = range(1, n + 1)
-        columns = map(chr, range(97, 123))[:m]
+        columns = map(chr, range(ord("A"), ord("Z")))[:m]
         horizontals = [str(i) for i in lines]
         verticals = [l.upper() for l in columns]
         straight_diagonal = [str(i) for i in xrange(1, n + m)]
@@ -60,6 +60,14 @@ class Table(object):
                 # sys.stdout.write(repr(cell) + ", ")
                 self.cells.append(cell)
             # sys.stdout.write("\n")
+
+    def draw(self, figures):
+        n, m = self.size
+        for c in self.cells:
+            col = ord(c.column) - ord("A")
+            sys.stdout.write(".")
+            if col == m - 1:
+                sys.stdout.write("\n")
 
 
 class Queen(object):
@@ -86,6 +94,7 @@ def queens_problem(n, m):
         if any(conflicts):
             continue
         queens.append(queen)
-    print queens
+    print "Queens:", queens
+    table.draw(queens)
 
-print queens_problem(3, 5)
+queens_problem(3, 5)
