@@ -33,6 +33,12 @@ class Cell(object):
             return True
         return False
 
+    def on_line(self, cell,
+                predicates=["has_same_line", "has_same_column",
+                            "has_same_straight_diagonal",
+                            "has_same_reversed_diagonal"]):
+        return any([getattr(self, p)(cell) for p in predicates])
+
 
 class Table(object):
     """
@@ -88,14 +94,14 @@ class Queen(object):
         self.position = position
 
     def conflicts(self, piece):
-        predicates = ["has_same_line", "has_same_column",
-                      "has_same_straight_diagonal", "has_same_reversed_diagonal"]
-        return any([getattr(self.position, p)(piece.position)
-                    for p in predicates])
+        return self.position.on_line(piece.position)
 
     def __repr__(self):
         return "Queen at %s" % (self.position,)
 
+# def throw_out_cells(cells, figure):
+#     for c in cells:
+#         if c.has_same_line(figure.position)
 
 def build(cells):
     queens = []
