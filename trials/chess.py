@@ -4,40 +4,13 @@ import sys
 
 class Cell(object):
     def __init__(self, line, column, straight_diagonal, reversed_diagonal):
-        self.line = line
-        self.column = column
-        self.straight_diagonal = straight_diagonal
-        self.reversed_diagonal = reversed_diagonal
+        self.position = (line, column, straight_diagonal, reversed_diagonal)
 
     def __repr__(self):
-        return "".join([self.line, self.column, self.straight_diagonal,
-                        self.reversed_diagonal])
+        return "".join(self.position)
 
-    def has_same_line(self, cell):
-        if self.line == cell.line:
-            return True
-        return False
-
-    def has_same_column(self, cell):
-        if self.column == cell.column:
-            return True
-        return False
-
-    def has_same_straight_diagonal(self, cell):
-        if self.straight_diagonal == cell.straight_diagonal:
-            return True
-        return False
-
-    def has_same_reversed_diagonal(self, cell):
-        if self.reversed_diagonal == cell.reversed_diagonal:
-            return True
-        return False
-
-    def on_line(self, cell,
-                predicates=["has_same_line", "has_same_column",
-                            "has_same_straight_diagonal",
-                            "has_same_reversed_diagonal"]):
-        return any([getattr(self, p)(cell) for p in predicates])
+    def on_line(self, cell):
+        return any([i == j for i, j in zip(self.position, cell.position)])
 
 
 class Table(object):
@@ -76,14 +49,14 @@ class Table(object):
             sys.stdout.write(output % col)
         sys.stdout.write("\n1 ")
         for c in self.cells:
-            col = ord(c.column) - ord("A")
+            col = ord(c.position[1]) - ord("A")
             fig_pos = [figures[i].position for i in xrange(len(figures))]
             figure = "."
             if c in fig_pos:
                 figure = figures[fig_pos.index(c)].character
             sys.stdout.write(output % figure)
             if col == m - 1 and self.cells.index(c) != len(self.cells) - 1:
-                sys.stdout.write("\n%s " % (int(c.line) + 1,))
+                sys.stdout.write("\n%s " % (int(c.position[0]) + 1,))
         sys.stdout.write("\n")
 
 
@@ -107,11 +80,6 @@ class Rook(Figure):
     character = u"\u2656"
     name = "Rook"
 
-    def conflicts(self, piece_or_cell):
-        return self.position.on_line(
-            getattr(piece_or_cell, "position", piece_or_cell),
-            predicates=["has_same_line", "has_same_column"])
-
 
 class Queen(Figure):
     # character = "Q"
@@ -119,7 +87,9 @@ class Queen(Figure):
     name = "Queen"
 
     def conflicts(self, piece_or_cell):
-        return self.position.on_line(getattr(piece_or_cell, "position", piece_or_cell))
+        if isinstance(piece_or_cell, Figure):
+            piece_or_cell = piece_or_cell.position
+        return self.position.on_line(piece_or_cell)
 
 
 def throw_out_cells(cells, figure, position):
@@ -140,7 +110,7 @@ def throw_out_cells(cells, figure, position):
     3 . . x x 
     4 . x . x 
     """
-    return [c for c in cells if not figure(position).conflicts(c)]
+    return [c for c in cells if not position.on_line(c)]
 
 
 solutions = set()
@@ -150,12 +120,14 @@ def backtrack(free_cells, pieces=(), figure=Queen):
     if not free_cells:
         solutions.add(frozenset(pieces))
     for c in free_cells:
+        new_pieces = pieces + (c,)
+        if frozenset(new_pieces) in solutions:
+            continue
         new_free_cells = throw_out_cells(free_cells, figure, c)
-        new_positions = pieces + (c,)
-        backtrack(new_free_cells, new_positions, figure)
+        backtrack(new_free_cells, new_pieces, figure)
 
 
-n = 6
+n = 7
 i = 0
 table = Table(n, n)
 backtrack(table.cells)
