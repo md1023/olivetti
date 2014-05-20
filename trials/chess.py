@@ -122,7 +122,7 @@ class Queen(Figure):
         return self.position.on_line(getattr(piece_or_cell, "position", piece_or_cell))
 
 
-def throw_out_cells(cells, figure):
+def throw_out_cells(cells, figure, position):
     """
     >>> t = Table(4, 4)
     >>> q = Queen(t.cells[0])
@@ -140,7 +140,7 @@ def throw_out_cells(cells, figure):
     3 . . x x 
     4 . x . x 
     """
-    return [c for c in cells if not figure.conflicts(c)]
+    return [c for c in cells if not figure(position).conflicts(c)]
 
 
 solutions = set()
@@ -148,11 +148,10 @@ solutions = set()
 
 def backtrack(free_cells, pieces=(), figure=Queen):
     if not free_cells:
-        solutions.add(frozenset([p.position for p in pieces]))
+        solutions.add(frozenset(pieces))
     for c in free_cells:
-        f = figure(c)
-        new_free_cells = throw_out_cells(free_cells, f)
-        new_positions = pieces + (f,)
+        new_free_cells = throw_out_cells(free_cells, figure, c)
+        new_positions = pieces + (c,)
         backtrack(new_free_cells, new_positions, figure)
 
 
