@@ -10,7 +10,10 @@ class Cell(object):
         return "".join(self.position)
 
     def on_line(self, cell):
-        return any([i == j for i, j in zip(self.position, cell.position)])
+        for i in xrange(4):
+            if self.position[i] == cell.position[i]:
+                return True
+        return False
 
 
 class Table(object):
