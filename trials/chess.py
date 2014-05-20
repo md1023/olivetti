@@ -155,26 +155,20 @@ def queens_problem(n, m):
 
 # queens_problem(8, 8)
 
-t = Table(3, 3)
-q0 = Queen(t.cells[1])
-free_cells = throw_out_cells(t.cells, q0)
-# t.draw([q0] + [Dummy(c) for c in free_cells])
-
 solutions = []
 
-i = 0
 
-def backtrack(free_cells, queens):
-    if not free_cells or i == 10:
+def backtrack(free_cells, queens=()):
+    if not free_cells:
         solutions.append(queens)
-        print "STOP"
-        return
     for c in free_cells:
         q = Queen(c)
-        queens.append(q)
         new_free_cells = throw_out_cells(free_cells, q)
-        print "Queens:", queens, "total:", len(queens), new_free_cells
-        t.draw(queens + [Dummy(c) for c in new_free_cells])
-        backtrack(new_free_cells, queens)
+        backtrack(new_free_cells, queens + (q,))
 
-backtrack(t.cells, [])
+
+table = Table(3, 3)
+backtrack(table.cells)
+for s in solutions:
+    print "Queens:", s, "total:", len(s)
+    table.draw(s)
