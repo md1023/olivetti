@@ -106,8 +106,8 @@ class Queen(Figure):
     character = "Q"
     name = "Queen"
 
-    def conflicts(self, piece):
-        return self.position.on_line(piece.position)
+    def conflicts(self, piece_or_cell):
+        return self.position.on_line(getattr(piece_or_cell, "position", piece_or_cell))
 
 
 def throw_out_cells(cells, figure):
@@ -128,38 +128,15 @@ def throw_out_cells(cells, figure):
     3 . . x x 
     4 . x . x 
     """
-    return [c for c in cells if not c.on_line(figure.position)]
+    return [c for c in cells if not figure.conflicts(c)]
 
-
-def build(cells, n):
-    queens = []
-    for c in cells:
-        queen = Queen(c)
-        conflicts = [q for q in queens if queen.conflicts(q)]
-        if any(conflicts):
-            continue
-        queens.append(queen)
-    if len(queens) > n - 1:
-        print "Queens:", queens, "total:", len(queens)
-    return queens
-
-
-def queens_problem(n, m):
-    table = Table(n, m)
-    print len(table.cells)
-    for i in xrange(len(table.cells)):
-        cells = table.cells[i:] + table.cells[:i]
-        queens = build(cells, n)
-        if len(queens) > n - 1:
-            table.draw(queens)
-
-# queens_problem(8, 8)
 
 solutions = []
 
 
 def backtrack(free_cells, queens=()):
     if not free_cells:
+        table.draw(queens)
         solutions.append(queens)
     for c in free_cells:
         q = Queen(c)
@@ -167,8 +144,14 @@ def backtrack(free_cells, queens=()):
         backtrack(new_free_cells, queens + (q,))
 
 
-table = Table(3, 3)
+n = 4
+i = 0
+table = Table(n, n)
 backtrack(table.cells)
 for s in solutions:
-    print "Queens:", s, "total:", len(s)
-    table.draw(s)
+    if len(s) > n - 1:
+        print "Queens:", s
+        # table.draw(s)
+        i += 1
+
+print "Total:", i
