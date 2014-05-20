@@ -102,8 +102,20 @@ class Dummy(Figure):
     character = "x"
 
 
+class Rook(Figure):
+    # character = "R"
+    character = u"\u2656"
+    name = "Rook"
+
+    def conflicts(self, piece_or_cell):
+        return self.position.on_line(
+            getattr(piece_or_cell, "position", piece_or_cell),
+            predicates=["has_same_line", "has_same_column"])
+
+
 class Queen(Figure):
-    character = "Q"
+    # character = "Q"
+    character = u"\u2655"
     name = "Queen"
 
     def conflicts(self, piece_or_cell):
@@ -134,14 +146,14 @@ def throw_out_cells(cells, figure):
 solutions = []
 
 
-def backtrack(free_cells, queens=()):
+def backtrack(free_cells, pieces=(), figure=Queen):
     if not free_cells:
-        table.draw(queens)
-        solutions.append(queens)
+        sol = [p.position for p in pieces]
+        solutions.append(sol)
     for c in free_cells:
-        q = Queen(c)
-        new_free_cells = throw_out_cells(free_cells, q)
-        backtrack(new_free_cells, queens + (q,))
+        f = figure(c)
+        new_free_cells = throw_out_cells(free_cells, f)
+        backtrack(new_free_cells, pieces + (f,), figure)
 
 
 n = 4
@@ -150,8 +162,9 @@ table = Table(n, n)
 backtrack(table.cells)
 for s in solutions:
     if len(s) > n - 1:
-        print "Queens:", s
-        # table.draw(s)
+        print i, s
+        figures = [Queen(c) for c in s]
+        table.draw(figures)
         i += 1
 
 print "Total:", i
