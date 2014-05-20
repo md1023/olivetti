@@ -143,20 +143,20 @@ def throw_out_cells(cells, figure):
     return [c for c in cells if not figure.conflicts(c)]
 
 
-solutions = []
+solutions = set()
 
 
 def backtrack(free_cells, pieces=(), figure=Queen):
     if not free_cells:
-        sol = [p.position for p in pieces]
-        solutions.append(sol)
+        solutions.add(frozenset([p.position for p in pieces]))
     for c in free_cells:
         f = figure(c)
         new_free_cells = throw_out_cells(free_cells, f)
-        backtrack(new_free_cells, pieces + (f,), figure)
+        new_positions = pieces + (f,)
+        backtrack(new_free_cells, new_positions, figure)
 
 
-n = 4
+n = 6
 i = 0
 table = Table(n, n)
 backtrack(table.cells)
