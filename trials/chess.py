@@ -117,20 +117,22 @@ def throw_out_cells(cells, figure, position):
 
 
 solutions = set()
-
+partial_solutions = set()
 
 def backtrack(free_cells, pieces=(), figure=Queen):
     if not free_cells:
         solutions.add(frozenset(pieces))
     for c in free_cells:
         new_pieces = pieces + (c,)
-        if frozenset(new_pieces) in solutions:
+        partial_solution = frozenset(new_pieces)
+        if partial_solution in partial_solutions:
             continue
+        partial_solutions.add(partial_solution)
         new_free_cells = throw_out_cells(free_cells, figure, c)
         backtrack(new_free_cells, new_pieces, figure)
 
 
-n = 7
+n = 8
 i = 0
 table = Table(n, n)
 backtrack(table.cells)
