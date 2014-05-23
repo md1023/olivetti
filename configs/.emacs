@@ -13,6 +13,10 @@
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
+;; jump around text
+(require 'ace-jump-mode)
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+
 ;; open files via ssh: C-x C-f /sudo:root@jenkins:/
 (set-default 'tramp-default-proxies-alist (quote ((".*" "\\`root\\'" "/ssh:%h:"))))
 
@@ -250,6 +254,10 @@
       ;; jabber-roster-line-format "%a %c %-25n %u %-8s  %S"
       ;; jabber-roster-sort-functions (quote (jabber-roster-sort-by-status jabber-roster-sort-by-displayname jabber-roster-sort-by-group))
       jabber-use-global-history 0)
+
+;; show line and columns numbers
+(setq line-number-mode 1)
+(setq column-number-mode 1)
 
 ;; color behave feature files
 (setq feature-default-language "ru")
