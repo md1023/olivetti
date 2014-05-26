@@ -13,6 +13,11 @@
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
+;; jump to word beginning/end
+(require 'misc)
+(define-key global-map [remap right-word] 'forward-to-word)
+(define-key global-map [remap left-word] 'backward-to-word)
+
 ;; jump around text
 (require 'ace-jump-mode)
 (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
