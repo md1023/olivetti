@@ -16,7 +16,7 @@
 ;; jump to word beginning/end
 (require 'misc)
 (define-key global-map [remap right-word] 'forward-to-word)
-(define-key global-map [remap left-word] 'backward-to-word)
+(define-key global-map [remap left-word] 'backward-sexp)
 
 ;; jump around text
 (require 'ace-jump-mode)
