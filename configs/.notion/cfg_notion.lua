@@ -46,5 +46,26 @@ ioncore.set{
     screen_notify=true,
 }
 
-dopath("cfg_defaults")
+-- dopath("cfg_defaults")
+--
+-- Notion default settings
+--
+
+dopath("cfg_notioncore")
+dopath("simno_config")
+dopath("cfg_mouse")
+dopath("cfg_menuitems")
+dopath("cfg_kludges")
+dopath("cfg_layouts")
+
+if os and os.execute("test -r ~/.notion/cfg_local.lua") == 0 then
+    dopath("cfg_local") -- Anything that you don't want to share across machines
+end
+
+dopath("mod_query")
+dopath("mod_menu")
+dopath("mod_tiling")
+dopath("mod_sp")
+-- end default setting
+
 dopath("look_simno")
