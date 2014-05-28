@@ -10,12 +10,15 @@ defbindings("WScreen", {
 
     bdoc("Switch to frame below"),
     kpress(META.."Down", "ioncore.goto_next(_chld, 'down')", "_chld:non-nil"),
+
 })
 
 defbindings("WFrame", {
+
     bdoc("Switch to frame on the right"),
     kpress(META.."Right", "WFrame.switch_next(_)"),
 
     bdoc("Switch to frame on the left"),
     kpress(META.."Left", "WFrame.switch_prev(_)")
+
 })

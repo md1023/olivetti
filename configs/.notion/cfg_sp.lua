@@ -4,6 +4,6 @@
 
 defbindings("WScreen", {
     bdoc("Toggle scratchpad."),
-    kpress(META.."Q", "mod_sp.set_shown_on(_, 'toggle')"),
+    kpress(META.."space", "mod_sp.set_shown_on(_, 'toggle')"),
 })
 
