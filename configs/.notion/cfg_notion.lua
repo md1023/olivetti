@@ -52,7 +52,7 @@ ioncore.set{
 --
 
 dopath("cfg_notioncore")
-dopath("simno_config")
+dopath("cfg_simno")
 dopath("cfg_mouse")
 dopath("cfg_menuitems")
 dopath("cfg_kludges")
