@@ -64,7 +64,7 @@ alias findsql='find . -name "*.sql" -print0 | xargs -0e grep -n --color'
 alias findpybtwn='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.py" -print0 | xargs -0e btwngrep'
 alias findjsbtwn='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.js" -print0 | xargs -0e btwngrep'
 alias ack='ack-grep --ignore-dir=env'
-#myscripts
+# myscripts
 export MAGRATHEA=$HOME/Work/magrathea
 export WORKON_HOME=$HOME/Work/virtualenvs
 # colorful manpages
