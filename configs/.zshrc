@@ -41,7 +41,10 @@ source $ZSH/oh-my-zsh.sh
 # Customize to your needs...
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
 export PATH=/usr/lib/lightdm/lightdm:$PATH
+
+# towel-tests
 export PATH=$HOME/Work/bin:$PATH
+
 # m-nikolaev customizations:
 alias ls='ls --classify --color=auto --human-readable --time-style=locale --group-directories-first'
 alias nautilus='nautilus --no-desktop'
@@ -52,6 +55,7 @@ alias grep='grep --color'
 alias seamonkey='/usr/lib/seamonkey/seamonkey&'
 alias ffd='firefox -P "developmentMode" &'
 alias cal='ncal -Mb'
+
 # find python, javascript, xml files
 alias findpy='find . \( -name "*test*" -o -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.py" -print0 | xargs -0e grep -n --color'
 alias findpytest='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.py" -print0 | xargs -0e grep -n --color'
@@ -63,10 +67,16 @@ alias findxml='find . \( -name "*test*" -o -path "*towel*" -o -path "*.git*" -pr
 alias findsql='find . -name "*.sql" -print0 | xargs -0e grep -n --color'
 alias findpybtwn='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.py" -print0 | xargs -0e btwngrep'
 alias findjsbtwn='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.js" -print0 | xargs -0e btwngrep'
-alias ack='ack-grep --ignore-dir=env'
+alias ack='ack-grep --ignore-dir=env,.env'
+
 # myscripts
 export MAGRATHEA=$HOME/Work/magrathea
 export WORKON_HOME=$HOME/Work/virtualenvs
+export FLASH=$HOME/Public/Flash_SVN/
+export LEIZEN=$HOME/Work/leizen
+export LEIZEN_LIBS=$HOME/Work/leizen/.env/lib/python2.7/site-packages
+export PYTHONPATH=$MAGRATHEA
+
 # colorful manpages
 export LESS_TERMCAP_mb=$'\E[01;31m'
 export LESS_TERMCAP_md=$'\E[01;37m'
@@ -75,12 +85,15 @@ export LESS_TERMCAP_se=$'\E[0m'
 export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
+
 # psql horizontal scroll
 # export PAGER=cat
 # export LESS="-iMSx4 -XFR"
+
+# virtualenvwrapper is installed locally with:
+# pip install --install-option="--user" virtualenvwrapper
 source $HOME/.local/bin/virtualenvwrapper.sh
-setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" -layout "us,ru"
-export FLASH=$HOME/Public/Flash_SVN/
-export LEIZEN=$HOME/Work/leizen
-export LEIZEN_LIBS=$HOME/Work/leizen/.env/lib/python2.7/site-packages
-export PYTHONPATH=$MAGRATHEA:$LEIZEN
+
+# keyboard settings
+setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" \
+    -layout "us,ru"
