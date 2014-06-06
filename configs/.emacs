@@ -232,6 +232,16 @@
 ;; ack-grep
 (require 'ack)
 
+;; irc settings
+(require 'erc)
+(defun office-chat ()
+  "Connect to irc.igrade.ru"
+  (interactive)
+  (erc-tls :server "irc.igrade.ru" :port 6667
+	     :nick "m-nikolaev" :full-name "Maxim Nikolaev"
+	     :password (read-passwd "Enter password: "))
+  (setq erc-autojoin-channels-alist '(("igrade.ru" "#it" "#notify" "#flood"))))
+
 ;;jabber settings
 (require 'jabber-autoloads)
 (setq jabber-account-list '(
