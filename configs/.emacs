@@ -13,6 +13,10 @@
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
+;; display watch
+(setq display-time-format "%Y.%m.%d %H:%M")
+(display-time)
+
 ;; jump to word beginning/end
 (require 'misc)
 (define-key global-map [remap right-word] 'forward-to-word)
