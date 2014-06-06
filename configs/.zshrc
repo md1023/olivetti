@@ -97,3 +97,8 @@ source $HOME/.local/bin/virtualenvwrapper.sh
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" \
     -layout "us,ru"
+
+# rocket-help.ru ftp mount
+export ROCKETHELP=$HOME/Documents/RHsite
+alias rockethelp="sudo curlftpfs -o allow_other ftp://ftp.rocket-help.ru $ROCKETHELP \
+    && echo $ROCKETHELP mounted successfully"
