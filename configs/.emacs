@@ -136,14 +136,6 @@
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
 
-;; use alternative backspace
-(global-set-key (kbd "C-?") 'help-command)
-(global-set-key (kbd "M-?") 'mark-paragraph)
-(global-set-key (kbd "C-h") 'delete-backward-char)
-(global-set-key (kbd "C-S-h") 'backward-kill-word)
-(global-set-key (kbd "C-d") 'delete-char)
-(global-set-key (kbd "C-S-d") 'kill-word)
-
 ;; hs
 (require 'hideshowvis)
 (autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
