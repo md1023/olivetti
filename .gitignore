@@ -1,3 +1,4 @@
 *.pyc
+configs/.config/*
 configs/.notion/default-session--0/
 configs/.oh-my-zsh
