@@ -1,0 +1,224 @@
+
+@charset "utf-8";
+
+@font-face {
+    font-family: "Lobster 1.4";
+    src: local("Lobster 1.4"),
+        url("../fonts/Lobster 1.4.otf") format("opentype");
+}
+@font-face {
+    font-family: "comfortaa";
+    src: local("Comfortaa"),
+        url("../fonts/Comfortaa-Regular.ttf") format("truetype");
+}
+
+body {
+	width: 75%;
+	margin: 0 auto;
+	font-family: comfortaa, verdana, sans-serif;
+        font-size: 13px;
+        letter-spacing: 0.2px;
+        text-shadow: 1px -1px 0 #CCC;
+}
+
+body.hotkeys,
+body {
+        background: url(../images/TileLeatherLite.png) 0 0 repeat;
+}
+
+body .monotype {
+	font-family: consolas, courier new;
+}
+
+h2 {
+	padding: 15px 0;
+        font-family: "Lobster 1.4";
+        font-size: 30px;
+}
+
+h3, h4 {
+	margin: 8px auto;
+	width: 90%;        
+}
+
+h2, h3, h4, blockquote {
+	background-color: rgba(204, 204, 204, 0.7);
+        letter-spacing: -0.5px;
+        border-radius: 3px;
+}
+
+p, ul, ol {
+        background: rgba(204, 204, 204, 0.6);
+	margin: 8px auto;
+	width: 93%;
+        text-indent: 3px;
+}
+
+table {
+	border-collapse: collapse;
+	background-color: #CCC;
+	text-align: center;
+	margin: 5px auto;
+}
+
+table.hotkeys {
+	background-color: rgba(204, 204, 204, 0.6);
+        border: 1px outset #ccc;
+	border-radius: 3px;
+        width: 650px;
+}
+
+table.hotkeys th, table.hotkeys td {
+	border: 0;
+        padding: 6px 6px 6px 17px;
+        text-align: left;
+}
+
+table.hotkeys td.combination {
+        text-align: right;
+}
+
+th, td {
+	margin: 0;
+	padding: 3px;
+	border: 1px solid black;
+	border-style: inset;
+}
+
+tr:nth-child(2n) {
+	background-color: rgba(204, 204, 204, 0.6);
+}
+
+footer,
+footer table {
+	margin: 20px 0;
+        background: rgba(204, 204, 204, 0.5);
+}
+
+footer table, footer th, footer td {
+	border: 0;
+}
+
+footer > table .nav-bar {
+	width: 100%;
+}
+
+footer > table .nav-bar > h2 {
+	padding: 0;
+	margin: 0;
+}
+
+#tag_list ul {
+    list-style: none;
+    border-radius: 3px;
+    border: 1px outset #ccc;
+}
+
+#tag_list ul li {
+    display: inline;
+}
+
+#tag_list a {
+    background-color: #eee;
+    text-decoration: none;
+    color: #000;
+    border-radius: 5px;
+    text-shadow: -1px 1px #ddd;
+    margin: 0px 1px;
+    padding: 0px 1px;
+    line-height: 24px;
+}
+
+#tag_cloud {
+    width: 500px;
+    background: rgba(204, 204, 204, 0.6);
+    text-align: center;
+    border-radius: 5px;
+    border: 1px outset #ccc;
+    margin: 0 auto;
+}
+
+#save_combination > p.note {
+	background: url("../images/shortcuts.png") 1px 1px no-repeat rgba(204, 204, 204, 0.7);
+	/*padding: 8px 8px 1px 8px;
+        border-radius: 3px;
+        width: 500px;*/
+    border-radius: 3px;
+    width: 275px;
+    text-shadow: -1px 1px #ddd;
+    border: 1px outset #ccc;
+    display: block;
+    height: 157px;
+}
+
+#save_combination label,
+#save_combination label span {
+    display: block;
+    width: 110px;
+}
+
+#save_combination label span {
+    font-size: 8px;
+}
+
+#save_combination label {
+    padding: 5px 0 0 0;
+    text-align: right;
+}
+
+#save_combination input {
+    float: right;
+    width: 150px;
+    clear: both;
+    margin: 5px 3px;
+    border-radius: 5px;
+}
+
+.game-plan {
+    background: url("../images/bgrnd.jpg") no-repeat 0 0;
+    margin: 0 auto;
+    width: 800px;
+}
+
+.game-plan pre {
+    background: rgba(255, 255, 255, 0.8);
+    color: #000;
+    width: 781px;
+    text-shadow: 0 1px 1px white;
+    border-radius: 3px;
+    margin: 0;
+}
+
+.note {
+    background: #C0D0B0 url("../images/note.png") 6px 3px no-repeat;
+    margin: 8px auto;
+    padding: 5px 0 0 0;
+    border: 1px solid black;
+    border-radius: 11px;
+    width: 85%;
+    box-shadow: 0 2px 5px #675;
+}
+
+.webpage {
+    background: url("../images/webpage.png") 6px 5px no-repeat rgba(204, 204, 204, 0.7);
+    padding-left: 60px;
+    text-shadow: 0 1px 1px white;
+}
+
+.coffee {
+    background: url("../images/coffee.png") 6px 5px no-repeat rgba(204, 204, 204, 0.7);
+    padding-left: 60px;
+    margin: 0;
+    border-radius: 0 0 3px 3px;
+}
+
+
+.icon {
+	min-height: 48px;
+	padding-left: 60px;
+	vertical-align: middle;
+}
+
+.experimental {
+	opacity: 0.2;
+}

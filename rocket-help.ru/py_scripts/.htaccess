@@ -1,0 +1,5 @@
+Options +ExecCGI
+AddHandler cgi-script .cgi .pl
+
+AddHandler mod_python .py
+PythonHandler hello

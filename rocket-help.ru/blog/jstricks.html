@@ -1,0 +1,75 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Hotkeys database</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+        <link rel="stylesheet" type="text/css" href="../css/blackboard.css"/>
+  	<script type="text/javascript" src="../js_scripts/rainbow/rainbow-custom.min.js"></script>
+  	<script type="text/javascript" src="../js_scripts/rainbow/generic.js"></script>
+  	<script type="text/javascript" src="../js_scripts/rainbow/javascript.js"></script>
+	<script type="text/javascript" src="../js_scripts/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../js_scripts/arm.js"></script>
+    </head>
+    <body>
+        <h3>Как создать экземпляр класса</h3>
+        <pre><code data-language="javascript">
+        a = { x: 123, ... };
+        b = object(a);
+        window.dDdd = {};
+        ensureObject("dDdd");
+
+        dDdd.make = function(x,y) {
+            var obj = object(this);
+            obj.x = x
+            obj.y = y
+            return obj;
+        };
+        newobj = dDdd.make();
+        newobj.x = 456;</code>
+        </pre>
+
+        <h3>Чтобы не застряло на m[5] как на последнем элементе цикла:</h3>
+        <pre><code data-language="javascript">
+        m = [{a: 1}, {b: 2} ,{c:3}, {d:4}, {e:5}, ["a", "b"]];
+        for (var i=0; i<5; i++) {
+            var letter = m[i];
+            window['trigger' + i] = (function (letter) {
+                return function() {
+                    console.log(letter);
+                }
+            })(letter)
+        };
+        </code></pre>
+
+        <h3>Застревает на последнем элементе массива:</h3>
+        <pre>
+          <code data-language="javascript">
+                m = [{"a":1},{"b":2},{"c":3},{"d":4},{"e":5},["a","b"]];
+                for (var i=0; i<5; i++) {
+                    var letter = m[i];
+                    window['trigger' + i] = function () {
+                        console.log(letter);
+                    }
+                };</code>
+        </pre>
+
+        <h3>Развязывание ссылок на переменные:</h3>
+        <pre>
+          <code data-language="javascript">
+                m = [{"a":1},{"b":2},{"c":3},{"d":4},{"e":5},["a","b"]];
+
+                var obj = {};
+
+                var func = (function foo (obj) {
+                    obj.value = 5;
+                    return function () {
+                        return obj;
+                    }
+                })(obj)
+
+                obj = { "xyz": 13 }
+                func();</code>
+        </pre>
+        <p class="icon note">Круглые скобки в последнем примере не обязательны.<p>
+    </body>
+</html>
