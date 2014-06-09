@@ -19,8 +19,7 @@ de.defstyle("*", {
     padding_pixels = 0,
     spacing = 0,
     
-    -- font = "-xos4-consolas-medium-r-*-*-12-*-*-*-*-*-iso8859-*",
-    font = "-*-lucidabright-medium-r-*-*-12-*-*-*-*-*-*-*",
+    font = "-xos4-consolas-medium-r-*-*-12-*-*-*-*-*-iso8859-*",
     text_align = "center",
 })
 
@@ -103,8 +102,7 @@ de.defstyle("tab", {
 
 de.defstyle("tab-frame", {
     based_on = "tab",
-    -- font = "-xos4-consolas-medium-r-*-*-12-*-*-*-*-*-iso8859-*",
-    font = "-*-lucidabright-medium-r-*-*-12-*-*-*-*-*-*-*",
+    font = "-xos4-consolas-medium-r-*-*-12-*-*-*-*-*-iso8859-*",
     padding_pixels = 1,
 
     de.substyle("active-*-*-*-activity", {
