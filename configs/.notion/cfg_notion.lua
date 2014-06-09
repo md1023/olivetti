@@ -31,7 +31,7 @@ ioncore.set{
     opaque_resize=true,
 
     -- Don't move the mouse cursor when changing frames with the keyboard
-    warp=false,
+    warp=true,
 
     -- Default index for windows in frames: one of 'last', 'next' (for
     -- after current), or 'next-act' (for after current and anything with
