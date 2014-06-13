@@ -1,5 +1,6 @@
 <?php
-if ($handle = opendir('../blog/')) {
+$handle = opendir('../blog/');
+if ($handle) {
   require("../php_scripts/phpQuery.php");
   $excluded_files = array(".", "..", "bio.html", "index.html", "hate.html");
   $pages = array();
