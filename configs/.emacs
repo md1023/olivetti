@@ -286,3 +286,5 @@
  '(hi-yellow ((((min-colors 88) (background dark)) (:background "yellow3" :foreground "black")))))
 (put 'narrow-to-region 'disabled nil)
 
+;; default layout for C-\ switch
+(setq default-input-method "russian-computer")
