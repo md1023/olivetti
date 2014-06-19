@@ -20,7 +20,7 @@
 ;; jump to word beginning/end
 (require 'misc)
 (define-key global-map [remap right-word] 'forward-to-word)
-(define-key global-map [remap left-word] 'backward-sexp)
+(define-key global-map [remap left-word] 'backward-word)
 
 ;; jump around text
 (require 'ace-jump-mode)
@@ -108,6 +108,7 @@
 
 ;; colorize emacs, check zenburn overrides
 (require 'zenburn-theme)
+
 ;;(set-fringe-mode 4) ;; half-width fringe line
 (show-paren-mode 1)
 (set-face-attribute 'show-paren-match-face 0 :weight 'bold)
