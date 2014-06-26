@@ -17,5 +17,11 @@ $file_name = $_GET["name"];
 if ($file_name) {
   $body = include $file_name . ".html";
 }
-echo $head . $body . "</html>";
+
+$html = $head . $body . "</html>";
+if (strpos($body, "DOCTYPE") !== false) {
+  $html = $body;
+}
+
+echo $html;
 ?>
