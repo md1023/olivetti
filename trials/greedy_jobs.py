@@ -29,15 +29,16 @@ class Executor(object):
         objective = 0
         for job in jobs:
             info = job(start_time)
-            start_time += info["completion_time"]
+            start_time += job.length
             objective += info["objective"]
             infos.append(info)
-            #print job, info["objective"]
-        # print str(infos).replace(",", "\n"), objective, "\n"
-        zzz = ""
-        if objective == 11336:
-            zzz = "***************************"
-        print zzz + str(objective)
+            print job.weight, "\t", \
+                job.length, "\t", \
+                job.score2, "\t", \
+                info["start_time"], "\t", \
+                info["completion_time"], "\t", \
+                info["objective"]
+        print objective
 
 jobs = []
 
@@ -51,14 +52,6 @@ with open(file_name) as f:
         job = Job(weight, length)
         jobs.append(job)
 
-# Executor(*jobs)
-# print "-" * 20
-
 schedule = sorted(jobs, key=attrgetter("score2"), reverse=True)
 
-import itertools
-for job in itertools.permutations(jobs):
-    print job
-    Executor(*job)
-
-# Executor(*schedule)
+Executor(*schedule)
