@@ -3,6 +3,31 @@ import sys
 import unittest
 from operator import attrgetter, mul
 
+class Node(object):
+    def __init__(self, name):
+        self.name = name
+
+class Edge(object):
+    def __init__(self, in_node, out_node, cost):
+        self.in = node1
+        self.out = node2
+        self.cost = cost
+
+class Graph(object):
+    def __init__(self, file_name="/tmp/jobs.txt"):
+        nodes = set()
+        edges = set()
+        if len(sys.argv) > 1:
+            file_name = sys.argv[1]
+        with open(file_name) as f:
+            for l in f.readlines():
+                node1, node2, cost = [int(s) for s in l.split()]
+                node1 = Node(node1)
+                node2 = Node(node2)
+                nodes.add(node1)
+                nodes.add(node2)
+                edges.add(Edge(node1, node2, cost))
+
 class Job(object):
     def __init__(self, weight, length, deadline=None):
         self.weight = weight
