@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import unittest
 from operator import attrgetter
 
 class Job(object):
@@ -40,18 +41,16 @@ class Executor(object):
                 info["objective"]
         print objective
 
-jobs = []
-
-file_name = "/tmp/jobs.txt"
-if len(sys.argv) > 1:
-    file_name = sys.argv[1]
-
-with open(file_name) as f:
-    for l in f.readlines():
-        weight, length = [int(s) for s in l.split()]
-        job = Job(weight, length)
-        jobs.append(job)
-
-schedule = sorted(jobs, key=attrgetter("score2"), reverse=True)
-
-Executor(*schedule)
+class TestCases(unittest.TestCase):
+    def test_q1andq2:
+        jobs = []
+        file_name = "/tmp/jobs.txt"
+        if len(sys.argv) > 1:
+            file_name = sys.argv[1]
+        with open(file_name) as f:
+            for l in f.readlines():
+                weight, length = [int(s) for s in l.split()]
+                job = Job(weight, length)
+                jobs.append(job)
+        schedule = sorted(jobs, key=attrgetter("score1", "weight"), reverse=True)
+        Executor(*schedule)
