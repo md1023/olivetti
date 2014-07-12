@@ -4,18 +4,24 @@ import unittest
 from operator import attrgetter
 
 class Job(object):
-    def __init__(self, weight, length):
+    def __init__(self, weight, length, deadline=None):
         self.weight = weight
         self.length = length
+        if deadline is not None:
+            self.deadline = deadline
         self.score1 = float(self.weight) / self.length
         self.score2 = self.weight - self.length
 
     def __call__(self, start_time):
         completion_time = self.length + start_time
+        lateness = completion_time - self.deadline
+        if lateness < 0:
+            lateness = 0
         d = dict(job = repr(self),
                  start_time = start_time,
                  completion_time = completion_time,
-                 objective= self.weight * completion_time)
+                 lateness = lateness,
+                 objective = self.weight * completion_time)
         return d
 
     def __repr__(self):
