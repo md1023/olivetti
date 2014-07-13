@@ -5,18 +5,41 @@ from operator import attrgetter, mul
 
 class Node(object):
     def __init__(self, name):
+        self.edges = []
         self.name = name
 
+    def __repr__(self):
+        d = "%s has edges %s" % (self.name, self.edges)
+        return d
+
 class Edge(object):
-    def __init__(self, in_node, out_node, cost):
-        self.in = node1
-        self.out = node2
+    def __init__(self, inbound, outbound, cost):
+        inbound.edges.append(self)
+        outbound.edges.append(self)
+        self.inbound = inbound
+        self.outbound = outbound
         self.cost = cost
 
+    def __repr__(self):
+        d = "%s" % (self.cost,)
+        return d
+
 class Graph(object):
-    def __init__(self, file_name="/tmp/jobs.txt"):
-        nodes = set()
-        edges = set()
+    """
+    For #3
+    Answer: 2624
+    6 7
+    1 2 2474
+    2 4 -246
+    4 3 640
+    4 5 2088
+    3 6 4586
+    6 5 3966
+    5 1 -3824
+    """
+    def __init__(self, file_name="test_graph.txt"):
+        nodes = []
+        edges = []
         if len(sys.argv) > 1:
             file_name = sys.argv[1]
         with open(file_name) as f:
@@ -24,9 +47,32 @@ class Graph(object):
                 node1, node2, cost = [int(s) for s in l.split()]
                 node1 = Node(node1)
                 node2 = Node(node2)
-                nodes.add(node1)
-                nodes.add(node2)
-                edges.add(Edge(node1, node2, cost))
+                nodes.append(node1)
+                nodes.append(node2)
+                edges.append(Edge(node1, node2, cost))
+        self.nodes = nodes
+        self.edges = edges
+        # print "G:", "\n".join([str(n) for n in self.nodes])
+        self.get_mst()
+
+    def get_mst(self):
+        mst_edges = []
+        mst_nodes = []
+        edges = sorted(self.edges, key=attrgetter("cost"))
+        print "X:", "\n".join([str(n) for n in edges])
+        first_edge = edges.pop(0)
+        mst_edges.append(first_edge)
+        mst_nodes.append(first_edge.inbound)
+        mst_nodes.append(first_edge.outbound)
+
+        while edges:
+            break
+            # i = 0
+            # new_edge = edges[0]
+            # if new_edge.inbound in mst_nodes
+        print str(mst_nodes)
+            
+g = Graph()        
 
 class Job(object):
     def __init__(self, weight, length, deadline=None):
@@ -121,4 +167,4 @@ def test_p3():
         schedule = sorted(jobs, key=attrgetter("length"))
         e(*schedule)
 
-test_p3()
+# test_p3()
