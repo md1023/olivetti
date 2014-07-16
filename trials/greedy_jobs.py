@@ -38,21 +38,25 @@ class Graph(object):
     5 1 -3824
     """
     def __init__(self, file_name="test_graph.txt"):
-        nodes = []
-        edges = []
+        self.nodes = []
+        self.edges = []
         if len(sys.argv) > 1:
             file_name = sys.argv[1]
         with open(file_name) as f:
             for l in f.readlines():
                 node1, node2, cost = [int(s) for s in l.split()]
-                node1 = Node(node1)
-                node2 = Node(node2)
-                nodes.append(node1)
-                nodes.append(node2)
-                edges.append(Edge(node1, node2, cost))
-        self.nodes = nodes
-        self.edges = edges
-        # print "G:", "\n".join([str(n) for n in self.nodes])
+                if node1 not in [n.name for n in self.nodes]:
+                    node1 = Node(node1)
+                    self.nodes.append(node1)
+                else:
+                    node1 = self.nodes[[n.name for n in self.nodes].index(node1)]
+                if node2 not in [n.name for n in self.nodes]:
+                    node2 = Node(node2)
+                    self.nodes.append(node2)
+                else:
+                    node2 = self.nodes[[n.name for n in self.nodes].index(node2)]
+                self.edges.append(Edge(node1, node2, cost))
+        print "G:", "\n".join([str(n) for n in self.nodes])
         self.get_mst()
 
     def get_mst(self):
@@ -66,13 +70,26 @@ class Graph(object):
         mst_nodes.append(first_edge.outbound)
 
         while edges:
-            break
-            # i = 0
-            # new_edge = edges[0]
-            # if new_edge.inbound in mst_nodes
-        print str(mst_nodes)
-            
-g = Graph()        
+            cheap_edges = []
+            for n in mst_nodes:
+                for e in n.edges:
+                    if e.inbound not in mst_nodes:
+                        cheap_edges.append(e)
+                    if e.outbound not in mst_nodes:
+                        cheap_edges.append(e)
+            if not cheap_edges:
+                break
+            cheapest_edge = sorted(cheap_edges, key=attrgetter("cost")).pop(0)
+            edge = edges.pop(edges.index(cheapest_edge))
+            mst_edges.append(edge)
+            if edge.inbound not in mst_nodes:
+                mst_nodes.append(edge.inbound)
+            if edge.outbound not in mst_nodes:
+                mst_nodes.append(edge.outbound)
+
+        print mst_edges, sum([e.cost for e in mst_edges])
+
+g = Graph(file_name="/tmp/edges.txt")
 
 class Job(object):
     def __init__(self, weight, length, deadline=None):
