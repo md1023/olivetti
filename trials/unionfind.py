@@ -1,24 +1,38 @@
-class DisjointSet(object):
-    def __init__(self, x):
-        x.parent = x
-        x.rank = 0
+names = "Thaddeus Max Larraby Siegfried Hans Schwartz"
 
-    def find(self, x):
-        if x.parent == x:
-            return x
-        return self.find(x.parent)
+persons = names.split()
+superiors = range(0, len(persons))
 
-    def union(self, x, y):
-        x = self.find(x)
-        y = self.find(y)
 
-        if x.rank < y.rank:
-            x.parent = y
-            return
+def find(p_index):
+    boss = superiors[p_index]
+    if (boss != superiors[boss]):
+        boss = find(boss)
+    return boss
 
-        if x.rank > y.rank:
-            y.parent = x
-            return
 
-        y.parent = x
-        x.rank += 1
+def union(p1_index, p2_index):
+    superiors[find(p1_index)] = find(p2_index)
+
+
+class Company(object):
+    def __init__(self, person):
+        self.boss = person
+        self.rank = 0
+
+    def __repr__(self):
+        d = "<%s, %s>" % (self.boss, self.rank)
+        return d
+
+print persons
+
+person1 = Company("Thaddeus")
+print person1
+assert person1.boss == "Thaddeus"
+
+person2 = Company("Max")
+
+assert find(1) == 1
+
+union(0, 1)
+print superiors
