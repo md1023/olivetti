@@ -20,10 +20,16 @@ class DisjointSet(object):
         >>> s.union("Max", "Thaddeus")
         >>> print s["Max"]
         Thaddeus
+        >>> s.union("Thaddeus", "Siegfried")
+        >>> print s["Max"], s["Thaddeus"]
+        Siegfried Siegfried
         """
-        item_index = self.__elements.index(item)
-        leader_index = self.leaders[item_index]
-        return self.__elements[leader_index]
+        index = self.__elements.index(item)
+        leader_index = self.leaders[index]
+        leader_name = self.__elements[leader_index]
+        if index != leader_index:
+            return self[leader_name]
+        return leader_name
 
     def find(self, person):
         index = self.__elements.index(person)
