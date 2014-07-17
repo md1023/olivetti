@@ -1,22 +1,3 @@
-names = "Thaddeus Max Larraby Siegfried Hans Schwartz"
-
-persons = names.split()
-superiors = range(len(persons))
-
-
-def find(p_index):
-    boss = superiors[p_index]
-    if (boss != superiors[boss]):
-        boss = find(boss)
-    return boss
-
-
-def union(index1, index2):
-    x = find(index1)
-    y = find(index2)
-    superiors[x] = y
-
-
 class DisjointSet(object):
     """
     >>> names = "Thaddeus Max Larraby Siegfried Hans Schwartz".split()
@@ -35,7 +16,7 @@ class DisjointSet(object):
     def find(self, index):
         leader = self.leaders[index]
         if (leader != self.leaders[leader]):
-            leader = find(leader)
+            leader = self.find(leader)
         return leader
 
     def union(self, index1, index2):
