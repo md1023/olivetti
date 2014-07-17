@@ -24,9 +24,13 @@ class DisjointSet(object):
         >>> print s["Max"], s["Thaddeus"]
         Siegfried Siegfried
         """
+        # get Max's index
         index = self.__elements.index(item)
+        # get Max's boss index
         leader_index = self.leaders[index]
+        # get Max's boss's name
         leader_name = self.__elements[leader_index]
+
         if index != leader_index:
             return self[leader_name]
         return leader_name
@@ -34,10 +38,11 @@ class DisjointSet(object):
     def find(self, person):
         index = self.__elements.index(person)
 
-        leader = self.leaders[index]
-        if (leader != self.leaders[leader]):
-            leader = self.find(leader)
-        return leader
+        leader_index = self.leaders[index]
+
+        if leader_index != self.leaders[leader_index]:
+            leader_index = self.find(leader_index)
+        return leader_index
 
     def union(self, person1, person2):
         x = self.find(person1)
