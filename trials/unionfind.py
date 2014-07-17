@@ -35,16 +35,10 @@ class DisjointSet(object):
         return None
 
     def find(self, person):
-        # index, leader_index, leader_name = self.indexer(person)
-
-        # if index != leader_index:
-        #     return self.find(leader_name)
         leader = person.leader
         if person != leader:
             # find leader in hierarchy
             self.find(person.leader)
-
-        # return leader_index
         return person
 
     def union(self, person1, person2):
@@ -62,7 +56,6 @@ class DisjointSet(object):
         """
         x = self.find(person1)
         y = self.find(person2)
-        # self.leaders[x] = y
         x.leader = y
 
         return
