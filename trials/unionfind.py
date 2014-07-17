@@ -1,10 +1,10 @@
 class DisjointSet(object):
     """
-    >>> names = "Thaddeus Max Larraby Siegfried Hans Schwartz".split()
+    >>> names = "Thaddeus Max Larabee Siegfried Hans Schwartz".split()
     >>> s = DisjointSet(names)
     >>> print s.leaders
     [0, 1, 2, 3, 4, 5]
-    >>> s.union(1, 0)
+    >>> s.union("Max", "Thaddeus")
     >>> print s.leaders
     [0, 0, 2, 3, 4, 5]
     """
@@ -13,15 +13,29 @@ class DisjointSet(object):
         self.__elements = elements
         self.leaders = range(len(self.__elements))
 
-    def find(self, index):
+    def __getitem__(self, item):
+        """
+        >>> names = "Thaddeus Max Larabee Siegfried Hans Schwartz".split()
+        >>> s = DisjointSet(names)
+        >>> s.union("Max", "Thaddeus")
+        >>> print s["Max"]
+        Thaddeus
+        """
+        item_index = self.__elements.index(item)
+        leader_index = self.leaders[item_index]
+        return self.__elements[leader_index]
+
+    def find(self, person):
+        index = self.__elements.index(person)
+
         leader = self.leaders[index]
         if (leader != self.leaders[leader]):
             leader = self.find(leader)
         return leader
 
-    def union(self, index1, index2):
-        x = self.find(index1)
-        y = self.find(index2)
+    def union(self, person1, person2):
+        x = self.find(person1)
+        y = self.find(person2)
         self.leaders[x] = y
 
         return
