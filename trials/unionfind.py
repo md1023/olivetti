@@ -1,7 +1,7 @@
 names = "Thaddeus Max Larraby Siegfried Hans Schwartz"
 
 persons = names.split()
-superiors = range(0, len(persons))
+superiors = range(len(persons))
 
 
 def find(p_index):
@@ -11,28 +11,51 @@ def find(p_index):
     return boss
 
 
-def union(p1_index, p2_index):
-    superiors[find(p1_index)] = find(p2_index)
+def union(index1, index2):
+    x = find(index1)
+    y = find(index2)
+    superiors[x] = y
 
 
-class Company(object):
-    def __init__(self, person):
-        self.boss = person
-        self.rank = 0
+class DisjointSet(object):
+    """
+    >>> names = "Thaddeus Max Larraby Siegfried Hans Schwartz".split()
+    >>> s = DisjointSet(names)
+    >>> print s.leaders
+    [0, 1, 2, 3, 4, 5]
+    >>> s.union(1, 0)
+    >>> print s.leaders
+    [0, 0, 2, 3, 4, 5]
+    """
+
+    def __init__(self, elements):
+        self.__elements = elements
+        self.leaders = range(len(self.__elements))
+
+    def find(self, index):
+        leader = self.leaders[index]
+        if (leader != self.leaders[leader]):
+            leader = find(leader)
+        return leader
+
+    def union(self, index1, index2):
+        x = self.find(index1)
+        y = self.find(index2)
+        self.leaders[x] = y
+
+        return
+        if x == y:
+            return
+        if x.rank < y.rank:
+            self.leader[x] = y
+        elif x.rank > y.rank:
+            self.leader[y] = x
+        else:
+            self.leader[y] = x
+            x.rank += 1
 
     def __repr__(self):
-        d = "<%s, %s>" % (self.boss, self.rank)
+        persons = ["<%s (%s %s)>" % (self.__elements[i], s, self.__elements[s])
+                   for i, s in enumerate(self.leaders)]
+        d = "%s" % persons
         return d
-
-print persons
-
-person1 = Company("Thaddeus")
-print person1
-assert person1.boss == "Thaddeus"
-
-person2 = Company("Max")
-
-assert find(1) == 1
-
-union(0, 1)
-print superiors
