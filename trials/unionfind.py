@@ -32,6 +32,7 @@ class DisjointSet(object):
     def find(self, person):
         leader = person.leader
         if person != leader:
+            print "> searching", person, person.leader
             # find leader in hierarchy
             self.find(person.leader)
         return person
@@ -46,8 +47,10 @@ class DisjointSet(object):
         >>> s.union(s["Max"], s["Thaddeus"])
         >>> s["Max"].leader == s["Thaddeus"]
         True
+        >>> s.find(s["Max"]) == s["Thaddeus"]
+        True
         >>> s.union(s["Thaddeus"], s["Siegfried"])
-        >>> (s.find("Max"), s.find("Thaddeus")), (s["Siegfried"], s["Siegfried"])
+        >>> (s.find(s["Max"]), s.find(s["Thaddeus"])), (s["Siegfried"], s["Siegfried"])
         True
         """
         x = self.find(person1)
@@ -59,8 +62,8 @@ class DisjointSet(object):
         elif x.rank > y.rank:
             y.leader = x
         else:
-            y.leader = x
-            x.rank += 1
+            x.leader = y
+            y.rank += 1
 
     def __repr__(self):
         persons = ["<%s (%s)>" % (s, s.leader) for s in self.__elements]
