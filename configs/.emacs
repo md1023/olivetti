@@ -67,6 +67,10 @@
   auto-window-vscroll 0
 )
 
+;; scroll bindings
+(global-set-key (kbd "M-<down>") 'scroll-up-line)
+(global-set-key (kbd "M-<up>") 'scroll-down-line)
+
 ;; disable menus
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
