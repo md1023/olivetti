@@ -20,20 +20,15 @@ class DisjointSet(object):
 
     def __init__(self, elements):
         self.__elements = [Element(e) for e in elements]
-        self.leaders = range(len(self.__elements))
 
-    def indexer(self, person):
-        index = self.__elements.index(person)
-        leader_index = self.leaders[index]
-        leader_name = self.__elements[leader_index]
-        return (index, leader_index, leader_name)
-
+    # find element by it's identificator
     def __getitem__(self, element_id):
         for element in self.__elements:
             if element.id == element_id:
                 return element
         return None
 
+    # find subset leader
     def find(self, person):
         leader = person.leader
         if person != leader:
@@ -41,6 +36,7 @@ class DisjointSet(object):
             self.find(person.leader)
         return person
 
+    # union two subsets
     def union(self, person1, person2):
         """
         >>> names = "Thaddeus Max Larabee Siegfried Hans Schwartz".split()
@@ -56,21 +52,17 @@ class DisjointSet(object):
         """
         x = self.find(person1)
         y = self.find(person2)
-        x.leader = y
-
-        return
         if x == y:
             return
         if x.rank < y.rank:
-            self.leader[x] = y
+            x.leader = y
         elif x.rank > y.rank:
-            self.leader[y] = x
+            y.leader = x
         else:
-            self.leader[y] = x
+            y.leader = x
             x.rank += 1
 
     def __repr__(self):
-        persons = ["<%s (%s %s)>" % (self.__elements[i], s, self.__elements[s])
-                   for i, s in enumerate(self.leaders)]
+        persons = ["<%s (%s)>" % (s, s.leader) for s in self.__elements]
         d = "%s" % persons
         return d
