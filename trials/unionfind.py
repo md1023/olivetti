@@ -13,7 +13,13 @@ class DisjointSet(object):
         self.__elements = elements
         self.leaders = range(len(self.__elements))
 
-    def __getitem__(self, item):
+    def indexer(self, person):
+        index = self.__elements.index(person)
+        leader_index = self.leaders[index]
+        leader_name = self.__elements[leader_index]
+        return (index, leader_index, leader_name)
+
+    def __getitem__(self, person):
         """
         >>> names = "Thaddeus Max Larabee Siegfried Hans Schwartz".split()
         >>> s = DisjointSet(names)
@@ -24,24 +30,14 @@ class DisjointSet(object):
         >>> (s["Max"], s["Thaddeus"]) == ("Siegfried", "Siegfried")
         True
         """
-        # get Max's index
-        index = self.__elements.index(item)
-        # get Max's boss index
-        leader_index = self.leaders[index]
-        # get Max's boss's name
-        leader_name = self.__elements[leader_index]
+        index, leader_index, leader_name = self.indexer(person)
 
         if index != leader_index:
             return self[leader_name]
         return leader_name
 
     def find(self, person):
-        # get Max's index
-        index = self.__elements.index(person)
-        # get Max's boss index
-        leader_index = self.leaders[index]
-        # get Max's boss's name
-        leader_name = self.__elements[leader_index]
+        index, leader_index, leader_name = self.indexer(person)
 
         if index != leader_index:
             return self.find(leader_name)
