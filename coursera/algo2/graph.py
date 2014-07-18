@@ -61,7 +61,7 @@ class Graph(object):
         print "G:", "\n".join([str(n) for n in self.nodes])
         self.get_mst()
 
-    def get_mst(self):
+    def prims_mst(self):
         mst_edges = []
         mst_nodes = []
         edges = sorted(self.edges, key=attrgetter("cost"))
@@ -90,3 +90,12 @@ class Graph(object):
                 mst_nodes.append(edge.outbound)
 
         print mst_edges, sum([e.cost for e in mst_edges])
+
+    def kruskals_mst(self):
+        pass
+
+    def breadth_first_search(self):
+        pass
+
+    def depth_first_search(self):
+        pass
