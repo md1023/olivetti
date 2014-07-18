@@ -3,6 +3,7 @@ import sys
 import unittest
 from operator import attrgetter, mul
 
+
 class Node(object):
     def __init__(self, name):
         self.edges = []
@@ -11,6 +12,7 @@ class Node(object):
     def __repr__(self):
         d = "%s has edges %s" % (self.name, self.edges)
         return d
+
 
 class Edge(object):
     def __init__(self, inbound, outbound, cost):
@@ -23,6 +25,7 @@ class Edge(object):
     def __repr__(self):
         d = "%s" % (self.cost,)
         return d
+
 
 class Graph(object):
     """
