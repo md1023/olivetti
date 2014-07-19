@@ -3,75 +3,74 @@
 from cmd import Cmd
 
 
-class State:
-    ACTIONS = []
+class Q1:
+    # CONNECT BLOCK
+    @staticmethod
+    def S12(device):
+        print("connecting", device)
 
+
+class Q2:
+    # ESTABLISH BLOCK
+    @staticmethod
+    def S23(device):
+        pass
+
+    # DISCONNECT BLOCK
+    @staticmethod
+    def S21(device):
+        pass
+
+
+class Q3:
+    # HOLD BLOCK
+    @staticmethod
+    def S34(device):
+        pass
+
+    # DISCONNECT BLOCK
+    @staticmethod
+    def S31(device):
+        pass
+
+
+class Q4:
+    # HOLD BLOCK
+    @staticmethod
+    def S43(device):
+        pass
+
+    # DISCONNECT BLOCK
+    @staticmethod
+    def S41(device):
+        pass
+
+
+class State:
     def __init__(self, state=None):
         self._state = state
 
-    def __call__(self, state_cls, handler=None):
-        if handler in self._state.ACTIONS:
+    def __call__(self, state_cls, handler_name=None):
+        handler = getattr(self._state, handler_name)
+        if handler:
             handler(self)
         self._state = state_cls
-
-# CONNECT BLOCK
-def S12(device):
-    print("connecting", device)
-
-# ESTABLISH BLOCK
-def S23():
-    pass
-
-# HOLD BLOCK
-def S34():
-    pass
-
-def S43():
-    pass
-
-# DISCONNECT BLOCK
-def S41():
-    pass
-
-def S31():
-    pass
-
-def S21():
-    pass
-
-
-
-class Q1(State):
-    ACTIONS = [S12]
-
-
-class Q2(State):
-    ACTIONS = [S23, S21]
-
-
-class Q3(State):
-    ACTIONS = [S34, S31]
-
-
-class Q4(State):
-    ACTIONS = [S43, S41]
-
 
 class Device(State):
     def __init__(self):
         super().__init__(Q1)
 
     def connect(self):
-        self(Q2, S12)
+        self(Q2, "S12")
 
     def disconnect(self):
         self(Q1)
 
     def hold(self):
-        self(Q4, S34)
+        self(Q4, "S34")
 
     def unhold(self):
-        self(Q3, S43)
+        self(Q3, "S43")
 
 
 def msg(message):
