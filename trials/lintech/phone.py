@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+from cmd import Cmd
         
 
 # class Ready(State):
@@ -44,6 +45,18 @@ class State:
     def __call__(self, state_cls):
         self.__class__ = state_cls
 
+class Connection(State):
+    CONNECT = 0
+    DISCONNECT = 0
+    HOLD = 0
+    UNHOLD = 0
+
+class S12(Connection):
+    pass
+
+s12 = S12()
+print(s12.CONNECT)
+
 class Q1(State):
     ACTIONS = [S12]
 
@@ -57,32 +70,50 @@ class Q4(State):
     ACTIONS = [S43, S41]
     
 
+def msg(message):
+    print(message)
+
+class Prompt(Cmd):
+    def __init__(self, device):
+        super().__init__()
+        self.device = device
+        self.prompt = "(Phone) "
+        self.cmdloop("(Phone) Type help for commands")
+
+    def help_help(self):
+        msg("Use the phone")
+
+    def help_quit(self):
+        msg("Stop execution")
+
+    def do_quit(self, message):
+        return True
+
+    def do_connect(self, text):
+        self.device.connect()
+
+    def do_disconnect(self, text):
+        self.device.connect()
+
+    def do_hold(self, text):
+        self.device.hold()
+
+    def do_unhold(self, text):
+        self.device.unhold()
+
 class Device():
-    def connect():
+    def connect(self):
         pass
 
-    def disconnect():
+    def disconnect(self):
         pass
 
-    def hold():
+    def hold(self):
         pass
 
-    def unhold():
+    def unhold(self):
         pass
 
 d = Device()
 d.connect()
-
-class Connection(State):
-    CONNECT = 0
-    DISCONNECT = 0
-    HOLD = 0
-    UNHOLD = 0
-
-class S12(Connection):
-    pass
-
-class S
-
-s12 = S12()
-print(s12.CONNECT)
+Prompt(d)
