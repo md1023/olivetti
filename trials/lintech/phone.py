@@ -4,10 +4,42 @@ from cmd import Cmd
 
 
 class State:
-    def __call__(self, state_cls, action_cls=None):
-        self.__class__ = state_cls
-        if action_cls in self.ACTIONS:
-            pass
+    ACTIONS = []
+
+    def __init__(self, state=None):
+        self._state = state
+
+    def __call__(self, state_cls, handler=None):
+        if handler in self._state.ACTIONS:
+            handler(self)
+        self._state = state_cls
+
+# CONNECT BLOCK
+def S12(device):
+    print("connecting", device)
+
+# ESTABLISH BLOCK
+def S23():
+    pass
+
+# HOLD BLOCK
+def S34():
+    pass
+
+def S43():
+    pass
+
+# DISCONNECT BLOCK
+def S41():
+    pass
+
+def S31():
+    pass
+
+def S21():
+    pass
+
+
 
 class Q1(State):
     ACTIONS = [S12]
@@ -27,7 +59,7 @@ class Q4(State):
 
 class Device(State):
     def __init__(self):
-        self(Q1)
+        super().__init__(Q1)
 
     def connect(self):
         self(Q2, S12)
@@ -39,7 +71,7 @@ class Device(State):
         self(Q4, S34)
 
     def unhold(self):
-        self.(Q3, S43)
+        self(Q3, S43)
 
 
 def msg(message):
@@ -77,4 +109,4 @@ class Prompt(Cmd):
 
 d = Device()
 d.connect()
-Prompt(d)
+# Prompt(d)
