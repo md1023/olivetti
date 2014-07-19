@@ -3,46 +3,45 @@
 from cmd import Cmd
 
 
+class CloseConnection:
+    @staticmethod
+    def disconnect(device):
+        print("hang up")
+
+
 class Q1:
+    info = "Q1 Ready"
+
     # CONNECT BLOCK
     @staticmethod
     def S12(device):
         print("connecting", device)
 
 
-class Q2:
+class Q2(CloseConnection):
+    info = "Q2 Connecting"
+
     # ESTABLISH BLOCK
     @staticmethod
     def S23(device):
         pass
 
-    # DISCONNECT BLOCK
-    @staticmethod
-    def S21(device):
-        pass
 
+class Q3(CloseConnection):
+    info = "Q3 Connected"
 
-class Q3:
     # HOLD BLOCK
     @staticmethod
     def S34(device):
         pass
 
-    # DISCONNECT BLOCK
-    @staticmethod
-    def S31(device):
-        pass
 
+class Q4(CloseConnection):
+    info = "Q4 On hold"
 
-class Q4:
     # HOLD BLOCK
     @staticmethod
     def S43(device):
-        pass
-
-    # DISCONNECT BLOCK
-    @staticmethod
-    def S41(device):
         pass
 
 
@@ -51,10 +50,13 @@ class State:
         self._state = state
 
     def __call__(self, state_cls, handler_name=None):
+        self.status()
         handler = getattr(self._state, handler_name)
         if handler:
             handler(self)
-        self._state = state_cls
+            self._state = state_cls
+        self.status()
+
 
 class Device(State):
     def __init__(self):
@@ -64,7 +66,7 @@ class Device(State):
         self(Q2, "S12")
 
     def disconnect(self):
-        self(Q1)
+        self(Q1, "disconnect")
 
     def hold(self):
         self(Q4, "S34")
@@ -72,6 +74,8 @@ class Device(State):
     def unhold(self):
         self(Q3, "S43")
 
+    def status(self):
+        print(self._state.info)
 
 def msg(message):
     print(message)
@@ -93,14 +97,26 @@ class Prompt(Cmd):
     def do_quit(self, message):
         return True
 
+    def help_connect(self):
+        msg("Call operator")
+
     def do_connect(self, text):
         self.device.connect()
+
+    def help_disconnect(self):
+        msg("Hang up")
 
     def do_disconnect(self, text):
         self.device.connect()
 
+    def help_hold(self):
+        msg("Hold current call")
+
     def do_hold(self, text):
         self.device.hold()
+
+    def help_unhold(self):
+        msg("Return current call")
 
     def do_unhold(self, text):
         self.device.unhold()
