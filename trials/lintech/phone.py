@@ -1,12 +1,45 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import random
+import time
 from cmd import Cmd
+
+class Observer:
+    def __init__(self):
+        print("observer init", self)
+        self.events = dict()
+
+    def observe(self, target, event, handler):
+        if event not in self.events:
+            self.events[event] = []
+        self.events[event].append((target, handler))
+
+    def send_request(self, target, event):
+        listeners, handlers = zip(*target.events[event])
+        if self not in listeners:
+            return
+        for listener, handler in target.events[event]:
+            handler(target, self)
+            
+
+
+class Operator(Observer):
+    def __init__(self, device):
+        super().__init__()
+        self.observe(device, "REQUEST", self.receive_message)
+
+    def receive_message(self, author):
+        print("Operator received message", author)
+        self.send_message()
+
+    def send_message(self):
+        return bool(random.getrandbits(1))
 
 
 class CloseConnection:
     @staticmethod
     def disconnect(device):
-        print("hang up")
+        print("Hanging up")
 
 
 class Q1:
@@ -15,16 +48,18 @@ class Q1:
     # CONNECT BLOCK
     @staticmethod
     def S12(device):
-        print("connecting", device)
-
+        print("Connecting to operator...")
+        operator = Operator(device)
+        device.observe(operator, "OPERATOR_RESPONSE", Q2.S23)
+        device.send_request(operator, "REQUEST")
 
 class Q2(CloseConnection):
-    info = "Q2 Connecting"
+    info = "Q2 Waiting to connect"
 
     # ESTABLISH BLOCK
     @staticmethod
     def S23(device):
-        pass
+        print("Operator connected")
 
 
 class Q3(CloseConnection):
@@ -33,7 +68,7 @@ class Q3(CloseConnection):
     # HOLD BLOCK
     @staticmethod
     def S34(device):
-        pass
+        print("Setting call on hold")
 
 
 class Q4(CloseConnection):
@@ -42,7 +77,7 @@ class Q4(CloseConnection):
     # HOLD BLOCK
     @staticmethod
     def S43(device):
-        pass
+        print("Retrieving call")
 
 
 class State:
@@ -58,9 +93,10 @@ class State:
         self.status()
 
 
-class Device(State):
+class Device(State, Observer):
     def __init__(self):
-        super().__init__(Q1)
+        Observer.__init__(self)
+        State.__init__(self, Q1)
 
     def connect(self):
         self(Q2, "S12")
@@ -116,12 +152,12 @@ class Prompt(Cmd):
         self.device.hold()
 
     def help_unhold(self):
-        msg("Return current call")
+        msg("Retrieve current call")
 
     def do_unhold(self, text):
         self.device.unhold()
 
 
-d = Device()
-d.connect()
-# Prompt(d)
+phone = Device()
+phone.connect()
+# Prompt(phone)
