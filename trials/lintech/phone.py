@@ -52,12 +52,13 @@ class Operator(Observer):
     def process_message(self):
         cast = True
         while cast and not self._terminate_connection:
-            msg("Casting connection")
+            # msg("Casting connection")
             time.sleep(1.5)
             # 1/4 chance of True
-            cast = bool(random.getrandbits(1))
-        self.send_message()
-        print("OPERATOR TERMINATE", self)
+            # cast = bool(random.getrandbits(1))
+            cast = False
+        if not self._terminate_connection:
+            self.send_message()
         self._terminate_connection = False
 
     def send_message(self):
@@ -88,7 +89,7 @@ class Q1:
                 time.sleep(1)
                 if predicate():
                     msg("Waiting operator response...")
-            print("PHONE TERMINATE", device, operator)
+            device.unobserve(operator, "OPERATOR_RESPONSE")
             device._terminate_connection = False
 
         thread = Thread(target=wait_response, args=(device, operator,))
@@ -102,9 +103,10 @@ class Q2(CloseConnection):
     @staticmethod
     def disconnect(device):
         operator = device.operator
-        device.unobserve(operator, "OPERATOR_RESPONSE")
         device._terminate_connection = True
         operator._terminate_connection = True
+        while device._terminate_connection or operator._terminate_connection:
+            time.sleep(1)
 
     # ESTABLISH BLOCK
     @staticmethod
@@ -232,9 +234,9 @@ class Prompt(Cmd):
 
 phone = Device()
 phone.connect()
-time.sleep(3)
+time.sleep(2)
 phone.disconnect()
 phone.connect()
-phone.disconnect()
-phone.connect()
+time.sleep(2)
+phone.hold()
 # Prompt(phone)
