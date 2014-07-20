@@ -11,18 +11,18 @@ class Observer:
         print("observer init", self)
         self.events = dict()
 
-    def observe(self, target, event, handler, *args):
+    def observe(self, target, event, handler):
         if event not in self.events:
             self.events[event] = []
-        self.events[event].append((target, handler, args))
+        self.events[event].append((target, handler))
 
     def send_request(self, target, event):
         print("SEND:", self, self.events, ";", target, target.events, event)
-        listeners, handlers, args = zip(*target.events[event])
+        listeners, handlers = zip(*target.events[event])
         if self not in listeners:
             return
-        for listener, handler, args in target.events[event]:
-            handler(self, *args)
+        for listener, handler in target.events[event]:
+            handler(self)
 
 
 class Operator(Observer):
@@ -63,7 +63,7 @@ class Q1:
     def S12(device):
         print("Connecting to operator...")
         operator = Operator(device)
-        device.observe(operator, "OPERATOR_RESPONSE", device, Q2, "S23")
+        device.observe(operator, "OPERATOR_RESPONSE", Q2.S23)
         device.send_request(operator, "REQUEST")
         while device._state is Q1:
             print("Waiting operator response...", device._state)
@@ -77,6 +77,7 @@ class Q2(CloseConnection):
     @staticmethod
     def S23(device):
         print("Operator connected")
+        device._state = Q3
 
 
 class Q3(CloseConnection):
