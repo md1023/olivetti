@@ -3,24 +3,26 @@
 import random
 import time
 from cmd import Cmd
+from threading import Thread
+
 
 class Observer:
     def __init__(self):
         print("observer init", self)
         self.events = dict()
 
-    def observe(self, target, event, handler):
+    def observe(self, target, event, handler, *args):
         if event not in self.events:
             self.events[event] = []
-        self.events[event].append((target, handler))
+        self.events[event].append((target, handler, args))
 
     def send_request(self, target, event):
-        listeners, handlers = zip(*target.events[event])
+        print("SEND:", self, self.events, ";", target, target.events, event)
+        listeners, handlers, args = zip(*target.events[event])
         if self not in listeners:
             return
-        for listener, handler in target.events[event]:
-            handler(target, self)
-            
+        for listener, handler, args in target.events[event]:
+            handler(self, *args)
 
 
 class Operator(Observer):
@@ -28,12 +30,23 @@ class Operator(Observer):
         super().__init__()
         self.observe(device, "REQUEST", self.receive_message)
 
-    def receive_message(self, author):
-        print("Operator received message", author)
-        self.send_message()
+    def receive_message(self, source):
+        print("Operator received message")
+        self.current_source = source
+        self.thread = Thread(target=self.process_message)
+        self.thread.start()
 
-    def send_message(self):
-        return bool(random.getrandbits(1))
+    def process_message(self):
+        cast = True
+        while cast:
+            print("Casting connection")
+            time.sleep(1.5)
+            # 1/4 chance of True
+            cast = bool(random.getrandbits(2))
+        self.send_message(self.current_source)
+
+    def send_message(self, source):
+        self.send_request(self.current_source, "OPERATOR_RESPONSE")
 
 
 class CloseConnection:
@@ -50,8 +63,12 @@ class Q1:
     def S12(device):
         print("Connecting to operator...")
         operator = Operator(device)
-        device.observe(operator, "OPERATOR_RESPONSE", Q2.S23)
+        device.observe(operator, "OPERATOR_RESPONSE", device, Q2, "S23")
         device.send_request(operator, "REQUEST")
+        while device._state is Q1:
+            print("Waiting operator response...", device._state)
+            time.sleep(1)
+        print("Operator finished: %s", operator.thread.is_alive())
 
 class Q2(CloseConnection):
     info = "Q2 Waiting to connect"
