@@ -67,7 +67,7 @@ class Q1:
             while device._state in [Q1, Q2]:
                 time.sleep(1)
                 if device._state in [Q1, Q2]:
-                    msg("Waiting operator response...")
+                    msg("\nWaiting operator response...")
 
         thread = Thread(target=wait_response, args=(device, operator,))
         thread.start()
@@ -79,7 +79,8 @@ class Q2(CloseConnection):
     # ESTABLISH BLOCK
     @staticmethod
     def S23(operator, device):
-        device(Q3)
+        device._state = Q3
+        device.status()
 
 class Q3(CloseConnection):
     info = "Q3 Connected"
@@ -106,8 +107,10 @@ class State:
 
     def __call__(self, state_cls, handler_name=""):
         handler = getattr(self._state, handler_name, None)
-        if handler:
-            handler(self)
+        if not handler:
+            print("Operation not available", self._state.info)
+            return
+        handler(self)
         self._state = state_cls
         self.status()
 
@@ -162,7 +165,7 @@ class Prompt(Cmd):
         msg("Hang up")
 
     def do_disconnect(self, text):
-        self.device.connect()
+        self.device.disconnect()
 
     def help_hold(self):
         msg("Hold current call")
@@ -176,7 +179,13 @@ class Prompt(Cmd):
     def do_unhold(self, text):
         self.device.unhold()
 
+    def help_status(self):
+        msg("Get current status")
+
+    def do_status(self, text):
+        self.device.status()
+
 
 phone = Device()
-phone.connect()
-# Prompt(phone)
+# phone.connect()
+Prompt(phone)
