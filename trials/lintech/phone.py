@@ -8,21 +8,20 @@ from threading import Thread
 
 class Observer:
     def __init__(self):
-        print("observer init", self)
         self.events = dict()
 
-    def observe(self, target, event, handler):
+    def observe(self, target, event, handler, *args):
         if event not in self.events:
             self.events[event] = []
-        self.events[event].append((target, handler))
+        self.events[event].append((target, handler, args))
 
-    def send_request(self, target, event):
-        print("SEND:", self, self.events, ";", target, target.events, event)
-        listeners, handlers = zip(*target.events[event])
+    def new_event(self, target, event):
+        # self=operator, target=device, "OPERATOR_RESPONSE", handler=Q2.S23
+        listeners = [l for l,h,a in target.events[event]]
         if self not in listeners:
             return
-        for listener, handler in target.events[event]:
-            handler(self)
+        for listener, handler, args in target.events[event]:
+            handler(listener, *args)
 
 
 class Operator(Observer):
@@ -31,7 +30,6 @@ class Operator(Observer):
         self.observe(device, "REQUEST", self.receive_message)
 
     def receive_message(self, source):
-        print("Operator received message")
         self.current_source = source
         self.thread = Thread(target=self.process_message)
         self.thread.start()
@@ -39,20 +37,20 @@ class Operator(Observer):
     def process_message(self):
         cast = True
         while cast:
-            print("Casting connection")
+            # msg("Casting connection")
             time.sleep(1.5)
             # 1/4 chance of True
             cast = bool(random.getrandbits(2))
-        self.send_message(self.current_source)
+        self.send_message()
 
-    def send_message(self, source):
-        self.send_request(self.current_source, "OPERATOR_RESPONSE")
+    def send_message(self):
+        self.new_event(self.current_source, "OPERATOR_RESPONSE")
 
 
 class CloseConnection:
     @staticmethod
     def disconnect(device):
-        print("Hanging up")
+        msg("Hanging up")
 
 
 class Q1:
@@ -61,24 +59,27 @@ class Q1:
     # CONNECT BLOCK
     @staticmethod
     def S12(device):
-        print("Connecting to operator...")
         operator = Operator(device)
-        device.observe(operator, "OPERATOR_RESPONSE", Q2.S23)
-        device.send_request(operator, "REQUEST")
-        while device._state is Q1:
-            print("Waiting operator response...", device._state)
-            time.sleep(1)
-        print("Operator finished: %s", operator.thread.is_alive())
+        device.observe(operator, "OPERATOR_RESPONSE", Q2.S23, device)
+        device.new_event(operator, "REQUEST")
+
+        def wait_response(device, operator):
+            while device._state in [Q1, Q2]:
+                time.sleep(1)
+                if device._state in [Q1, Q2]:
+                    msg("Waiting operator response...")
+
+        thread = Thread(target=wait_response, args=(device, operator,))
+        thread.start()
+
 
 class Q2(CloseConnection):
     info = "Q2 Waiting to connect"
 
     # ESTABLISH BLOCK
     @staticmethod
-    def S23(device):
-        print("Operator connected")
-        device._state = Q3
-
+    def S23(operator, device):
+        device(Q3)
 
 class Q3(CloseConnection):
     info = "Q3 Connected"
@@ -86,7 +87,7 @@ class Q3(CloseConnection):
     # HOLD BLOCK
     @staticmethod
     def S34(device):
-        print("Setting call on hold")
+        msg("Setting call on hold")
 
 
 class Q4(CloseConnection):
@@ -95,19 +96,19 @@ class Q4(CloseConnection):
     # HOLD BLOCK
     @staticmethod
     def S43(device):
-        print("Retrieving call")
+        msg("Retrieving call")
 
 
 class State:
     def __init__(self, state=None):
         self._state = state
-
-    def __call__(self, state_cls, handler_name=None):
         self.status()
-        handler = getattr(self._state, handler_name)
+
+    def __call__(self, state_cls, handler_name=""):
+        handler = getattr(self._state, handler_name, None)
         if handler:
             handler(self)
-            self._state = state_cls
+        self._state = state_cls
         self.status()
 
 
@@ -129,7 +130,7 @@ class Device(State, Observer):
         self(Q3, "S43")
 
     def status(self):
-        print(self._state.info)
+        msg(self._state.info)
 
 def msg(message):
     print(message)
