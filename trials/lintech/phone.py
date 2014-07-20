@@ -9,14 +9,29 @@ from threading import Thread
 class Observer:
     def __init__(self):
         self.events = dict()
+        self._terminate_connection = False
 
     def observe(self, target, event, handler, *args):
         if event not in self.events:
             self.events[event] = []
         self.events[event].append((target, handler, args))
 
+    def unobserve(self, target, event):
+        if event not in self.events:
+            return
+        deletion_list = []
+        for i, t in enumerate(self.events[event]):
+            if target in t:
+                deletion_list.append(i)
+        if len(self.events[event]) == len(deletion_list):
+            del self.events[event]
+            return
+        for i in deletion_list:
+            self.events[event].pop(i)
+
     def new_event(self, target, event):
-        # self=operator, target=device, "OPERATOR_RESPONSE", handler=Q2.S23
+        if event not in target.events:
+            return
         listeners = [l for l,h,a in target.events[event]]
         if self not in listeners:
             return
@@ -36,16 +51,17 @@ class Operator(Observer):
 
     def process_message(self):
         cast = True
-        while cast:
-            # msg("Casting connection")
+        while cast and not self._terminate_connection:
+            msg("Casting connection")
             time.sleep(1.5)
             # 1/4 chance of True
-            cast = bool(random.getrandbits(2))
+            cast = bool(random.getrandbits(1))
         self.send_message()
+        print("OPERATOR TERMINATE", self)
+        self._terminate_connection = False
 
     def send_message(self):
         self.new_event(self.current_source, "OPERATOR_RESPONSE")
-
 
 class CloseConnection:
     @staticmethod
@@ -60,27 +76,43 @@ class Q1:
     @staticmethod
     def S12(device):
         operator = Operator(device)
+        device.operator = operator
         device.observe(operator, "OPERATOR_RESPONSE", Q2.S23, device)
         device.new_event(operator, "REQUEST")
 
         def wait_response(device, operator):
-            while device._state in [Q1, Q2]:
+            predicate = lambda: bool(
+                device._state in [Q1, Q2] and
+                not device._terminate_connection)
+            while predicate():
                 time.sleep(1)
-                if device._state in [Q1, Q2]:
-                    msg("\nWaiting operator response...")
+                if predicate():
+                    msg("Waiting operator response...")
+            print("PHONE TERMINATE", device, operator)
+            device._terminate_connection = False
 
         thread = Thread(target=wait_response, args=(device, operator,))
+        device.thread = thread
         thread.start()
 
 
 class Q2(CloseConnection):
     info = "Q2 Waiting to connect"
 
+    @staticmethod
+    def disconnect(device):
+        operator = device.operator
+        device.unobserve(operator, "OPERATOR_RESPONSE")
+        device._terminate_connection = True
+        operator._terminate_connection = True
+
     # ESTABLISH BLOCK
     @staticmethod
     def S23(operator, device):
+        device._blocked = True
         device._state = Q3
         device.status()
+        device._blocked = False
 
 class Q3(CloseConnection):
     info = "Q3 Connected"
@@ -104,15 +136,21 @@ class State:
     def __init__(self, state=None):
         self._state = state
         self.status()
+        self._blocked = False
 
     def __call__(self, state_cls, handler_name=""):
+        if self._blocked:
+            msg("Resource blocked")
+            return
+        self._blocked = True
         handler = getattr(self._state, handler_name, None)
         if not handler:
-            print("Operation not available", self._state.info)
+            print(self._state.info, ". Operation not available")
             return
         handler(self)
         self._state = state_cls
         self.status()
+        self._blocked = False
 
 
 class Device(State, Observer):
@@ -185,7 +223,18 @@ class Prompt(Cmd):
     def do_status(self, text):
         self.device.status()
 
+    def do_EOF(self, text):
+        return True
+
+    def emptyline(self):
+        return
+
 
 phone = Device()
-# phone.connect()
-Prompt(phone)
+phone.connect()
+time.sleep(3)
+phone.disconnect()
+phone.connect()
+phone.disconnect()
+phone.connect()
+# Prompt(phone)
