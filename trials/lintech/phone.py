@@ -32,7 +32,7 @@ class Observer:
     def new_event(self, target, event):
         if event not in target.events:
             return
-        listeners = [l for l,h,a in target.events[event]]
+        listeners = [l for l, h, a in target.events[event]]
         if self not in listeners:
             return
         for listener, handler, args in target.events[event]:
@@ -63,6 +63,7 @@ class Operator(Observer):
 
     def send_message(self):
         self.new_event(self.current_source, "OPERATOR_RESPONSE")
+
 
 class CloseConnection:
     @staticmethod
@@ -115,6 +116,7 @@ class Q2(CloseConnection):
         device._state = Q3
         device.status()
         device._blocked = False
+
 
 class Q3(CloseConnection):
     info = "Q3 Connected"
@@ -174,6 +176,7 @@ class Device(State, Observer):
 
     def status(self):
         msg(self._state.info)
+
 
 def msg(message):
     print(message)
