@@ -21,7 +21,6 @@ class Observer:
     def __init__(self):
         self.events = dict()
         self.tasks = []
-        # self._terminate_connection = False
 
     def stop_all_tasks(self):
         deletion_list = []
@@ -78,27 +77,25 @@ class Operator(Observer):
 
     def generate_message(self):
         cast = True
-        # while cast and not self._terminate_connection:
-        #     # msg("Casting connection")
-        #     time.sleep(1.5)
-        #     # 1/4 chance of True
-        #     # cast = bool(random.getrandbits(1))
-        #     cast = False
-        # if not self._terminate_connection:
+        while cast:
+            time.sleep(1.5)
+            # 1/4 chance of True
+            cast = bool(random.getrandbits(1))
+            # cast = False
         self.new_event(self.current_source, "OPERATOR_RESPONSE")
-        # self._terminate_connection = False
 
 
 class CloseConnection:
     @staticmethod
     def disconnect(device):
         msg("Hanging up")
+        device.unobserve(device.operator, "OPERATOR_RESPONSE")
+        return (Q1, None)
 
 
 class Q1:
     info = "Q1 Ready"
 
-    # CONNECT BLOCK
     @staticmethod
     def S12(device):
         operator = device.operator
@@ -112,11 +109,6 @@ class Q2(CloseConnection):
     info = "Q2 Waiting to connect"
 
     @staticmethod
-    def disconnect(device):
-        device.unobserve(device.operator, "OPERATOR_RESPONSE")
-
-    # ESTABLISH BLOCK
-    @staticmethod
     def S23(device):
         return (Q3, None)
 
@@ -124,19 +116,17 @@ class Q2(CloseConnection):
 class Q3(CloseConnection):
     info = "Q3 Connected"
 
-    # HOLD BLOCK
     @staticmethod
     def S34(device):
-        msg("Setting call on hold")
+        return (Q4, None)
 
 
 class Q4(CloseConnection):
     info = "Q4 On hold"
 
-    # HOLD BLOCK
     @staticmethod
     def S43(device):
-        msg("Retrieving call")
+        return (Q3, None)
 
 
 class State:
@@ -150,7 +140,7 @@ class State:
 
         handler = getattr(self._state, handler_name, None)
         if not handler:
-            print("Operation not available")
+            print("Operation not available", self._state, handler_name)
             self._blocked = False
             return
 
@@ -179,10 +169,10 @@ class Device(State, Observer):
         self("disconnect")
 
     def hold(self):
-        self(Q4, "S34")
+        self("S34")
 
     def unhold(self):
-        self(Q3, "S43")
+        self("S43")
 
     def status(self):
         msg(self._state.info)
@@ -244,25 +234,6 @@ class Prompt(Cmd):
     def emptyline(self):
         return
 
-
-class TestPhone(unittest.TestCase):
-    def setUp(self):
-        self.phone = Device()
-
-    def test_connection(self):
-        self.assertTrue(self.phone._state == Q1)
-        self.phone.connect()
-        self.assertTrue(self.phone._state == Q2)
-        time.sleep(1)
-        self.assertTrue(self.phone._state == Q3)
-
 if __name__ == "__main__":
-    # unittest.main()
     phone = Device()
-    phone.connect()
-    time.sleep(2)
-    phone.disconnect()
-    phone.connect()
-    time.sleep(2)
-    phone.hold()
-    # Prompt(phone)
+    Prompt(phone)
