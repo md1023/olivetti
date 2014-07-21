@@ -87,7 +87,6 @@ class Operator(Observer):
 class CloseConnection:
     @staticmethod
     def disconnect(device):
-        msg("Hanging up")
         device.unobserve(device.operator, "OPERATOR_RESPONSE")
         return (Q1, None)
 
@@ -113,7 +112,7 @@ class Q2(CloseConnection):
 
 
 class Q3(CloseConnection):
-    info = "Q3 Connected"
+    info = "\nQ3 Connected"
 
     @staticmethod
     def S34(device):
@@ -139,7 +138,7 @@ class State:
 
         handler = getattr(self._state, handler_name, None)
         if not handler:
-            print("Operation not available", self._state, handler_name)
+            print("Operation not available")
             self._blocked = False
             return
 
