@@ -2,14 +2,40 @@
 # -*- coding: utf-8 -*-
 import random
 import time
+import unittest
 from cmd import Cmd
 from threading import Thread
+
+
+class Task(Thread):
+    def __init__(self, handler, *args):
+        self.thread = Thread(target=handler, args=args)
+        self._running = True
+        self.thread.start()
+
+    def terminate(self):
+        print("Terminate task:", self)
 
 
 class Observer:
     def __init__(self):
         self.events = dict()
-        self._terminate_connection = False
+        self.tasks = []
+        # self._terminate_connection = False
+
+    def stop_all_tasks(self):
+        deletion_list = []
+        for i, t in enumerate(self.tasks):
+            if t._running:
+                t.terminate()
+            deletion_list.append(i)
+
+        if len(deletion_list) == len(self.tasks):
+            self.tasks = []
+
+    def new_task(self, handler, *args):
+        task = Task(handler, *args)
+        self.tasks.append(task)
 
     def observe(self, target, event, handler, *args):
         if event not in self.events:
@@ -36,33 +62,31 @@ class Observer:
         if self not in listeners:
             return
         for listener, handler, args in target.events[event]:
-            handler(listener, *args)
+            handler(*args)
 
 
 class Operator(Observer):
-    def __init__(self, device):
+    def __init__(self):
         super().__init__()
-        self.observe(device, "REQUEST", self.receive_message)
+
+    def establish_broadcasting(self, device):
+        self.observe(device, "REQUEST", self.receive_message, device)
 
     def receive_message(self, source):
         self.current_source = source
-        self.thread = Thread(target=self.process_message)
-        self.thread.start()
+        self.new_task(self.generate_message)
 
-    def process_message(self):
+    def generate_message(self):
         cast = True
-        while cast and not self._terminate_connection:
-            # msg("Casting connection")
-            time.sleep(1.5)
-            # 1/4 chance of True
-            # cast = bool(random.getrandbits(1))
-            cast = False
-        if not self._terminate_connection:
-            self.send_message()
-        self._terminate_connection = False
-
-    def send_message(self):
+        # while cast and not self._terminate_connection:
+        #     # msg("Casting connection")
+        #     time.sleep(1.5)
+        #     # 1/4 chance of True
+        #     # cast = bool(random.getrandbits(1))
+        #     cast = False
+        # if not self._terminate_connection:
         self.new_event(self.current_source, "OPERATOR_RESPONSE")
+        # self._terminate_connection = False
 
 
 class CloseConnection:
@@ -77,25 +101,11 @@ class Q1:
     # CONNECT BLOCK
     @staticmethod
     def S12(device):
-        operator = Operator(device)
-        device.operator = operator
-        device.observe(operator, "OPERATOR_RESPONSE", Q2.S23, device)
-        device.new_event(operator, "REQUEST")
-
-        def wait_response(device, operator):
-            predicate = lambda: bool(
-                device._state in [Q1, Q2] and
-                not device._terminate_connection)
-            while predicate():
-                time.sleep(1)
-                if predicate():
-                    msg("Waiting operator response...")
-            device.unobserve(operator, "OPERATOR_RESPONSE")
-            device._terminate_connection = False
-
-        thread = Thread(target=wait_response, args=(device, operator,))
-        device.thread = thread
-        thread.start()
+        operator = device.operator
+        device.observe(operator, "OPERATOR_RESPONSE",
+                       device, "S23")
+        return (Q2,
+                lambda: device.new_event(operator, "REQUEST"))
 
 
 class Q2(CloseConnection):
@@ -103,19 +113,12 @@ class Q2(CloseConnection):
 
     @staticmethod
     def disconnect(device):
-        operator = device.operator
-        device._terminate_connection = True
-        operator._terminate_connection = True
-        while device._terminate_connection or operator._terminate_connection:
-            time.sleep(1)
+        device.unobserve(device.operator, "OPERATOR_RESPONSE")
 
     # ESTABLISH BLOCK
     @staticmethod
-    def S23(operator, device):
-        device._blocked = True
-        device._state = Q3
-        device.status()
-        device._blocked = False
+    def S23(device):
+        return (Q3, None)
 
 
 class Q3(CloseConnection):
@@ -142,31 +145,38 @@ class State:
         self.status()
         self._blocked = False
 
-    def __call__(self, state_cls, handler_name=""):
-        if self._blocked:
-            msg("Resource blocked")
-            return
+    def __call__(self, handler_name=""):
         self._blocked = True
+
         handler = getattr(self._state, handler_name, None)
         if not handler:
-            print(self._state.info, ". Operation not available")
+            print("Operation not available")
+            self._blocked = False
             return
-        handler(self)
-        self._state = state_cls
-        self.status()
+
+        new_state, handle_after = handler(self)
+        if new_state:
+            self._state = new_state
+            self.status()
+
         self._blocked = False
+
+        if handle_after:
+            handle_after()
 
 
 class Device(State, Observer):
     def __init__(self):
         Observer.__init__(self)
         State.__init__(self, Q1)
+        self.operator = Operator()
+        self.operator.establish_broadcasting(self)
 
     def connect(self):
-        self(Q2, "S12")
+        self("S12")
 
     def disconnect(self):
-        self(Q1, "disconnect")
+        self("disconnect")
 
     def hold(self):
         self(Q4, "S34")
@@ -235,11 +245,24 @@ class Prompt(Cmd):
         return
 
 
-phone = Device()
-phone.connect()
-time.sleep(2)
-phone.disconnect()
-phone.connect()
-time.sleep(2)
-phone.hold()
-# Prompt(phone)
+class TestPhone(unittest.TestCase):
+    def setUp(self):
+        self.phone = Device()
+
+    def test_connection(self):
+        self.assertTrue(self.phone._state == Q1)
+        self.phone.connect()
+        self.assertTrue(self.phone._state == Q2)
+        time.sleep(1)
+        self.assertTrue(self.phone._state == Q3)
+
+if __name__ == "__main__":
+    # unittest.main()
+    phone = Device()
+    phone.connect()
+    time.sleep(2)
+    phone.disconnect()
+    phone.connect()
+    time.sleep(2)
+    phone.hold()
+    # Prompt(phone)
