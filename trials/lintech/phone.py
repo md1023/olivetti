@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import random
 import time
-import unittest
 from cmd import Cmd
 from threading import Thread
 
