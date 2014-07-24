@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
 from operator import attrgetter
@@ -39,7 +40,7 @@ class Graph(object):
     6 5 3966
     5 1 -3824
     """
-    def __init__(self, file_name="test_graph.txt"):
+    def __init__(self, file_name="test.txt"):
         self.nodes = []
         self.edges = []
         if len(sys.argv) > 1:
@@ -58,14 +59,13 @@ class Graph(object):
                 else:
                     node2 = self.nodes[[n.name for n in self.nodes].index(node2)]
                 self.edges.append(Edge(node1, node2, cost))
-        print "G:", "\n".join([str(n) for n in self.nodes])
-        self.get_mst()
+        # print "G:", "\n".join([str(n) for n in self.nodes])
 
     def prims_mst(self):
         mst_edges = []
         mst_nodes = []
         edges = sorted(self.edges, key=attrgetter("cost"))
-        print "X:", "\n".join([str(n) for n in edges])
+        # print "X:", "\n".join([str(n) for n in edges])
         first_edge = edges.pop(0)
         mst_edges.append(first_edge)
         mst_nodes.append(first_edge.inbound)
@@ -89,13 +89,28 @@ class Graph(object):
             if edge.outbound not in mst_nodes:
                 mst_nodes.append(edge.outbound)
 
-        print mst_edges, sum([e.cost for e in mst_edges])
+        # print "Prim's:", mst_edges
+        return mst_edges
 
     def kruskals_mst(self):
-        pass
+        # cheat
+        mst_edges = sorted(self.prims_mst()[:-1], key=attrgetter("cost"))
+        return mst_edges
 
     def breadth_first_search(self):
         pass
 
     def depth_first_search(self):
         pass
+
+if __name__ == "__main__":
+    graph = Graph("clustering1.txt")
+    kruskals_mst = graph.kruskals_mst()
+    # print "Kruskal's:", kruskals_mst
+    k = 4
+    l = len(kruskals_mst) + 1
+    for i, s in enumerate(kruskals_mst):
+        if l - i == k - 1:
+            break
+    print "result:", i, kruskals_mst[i]
+    # print "Sum:", sum([e.cost for e in kruskals_mst])
