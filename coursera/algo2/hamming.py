@@ -14,14 +14,13 @@ class Hamming(object):
             for i, l in enumerate(f.readlines()):
                 distance = int(l.replace(" ", ""), 2)
                 self.nodes.append(Node(i + 1, distance))
-        for node in self.nodes:
-            for other_node in self.nodes:
-                if node == other_node:
-                    continue
+        nodes = list(self.nodes)
+        while nodes:
+            other_node = nodes.pop(0)
+            for node in nodes:
                 cost = bin(node.distance ^ other_node.distance).count("1")
                 edge = Edge(node, other_node, cost)
                 self.edges.append(edge)
-
         print self.nodes
 
 Hamming()
