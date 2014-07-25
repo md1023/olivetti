@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 from operator import attrgetter
+from disjointset import DisjointSet
 
 
 class Node(object):
@@ -94,9 +95,16 @@ class Graph(object):
         return mst_edges
 
     def kruskals_mst(self):
-        # cheat
-        mst_edges = sorted(self.prims_mst(), key=attrgetter("cost"))
-        return mst_edges
+        edges = sorted(self.edges, key=attrgetter("cost"))
+        dset = DisjointSet(self.nodes)
+        mst = []
+        for e in edges:
+            setu = dset.find(dset[e.inbound])
+            setv = dset.find(dset[e.outbound])
+            if setu != setv:
+                mst.append(e.cost)
+                dset.union(setu, setv)
+        return mst
 
     def k_clusters(self, k=4):
         mst = self.kruskals_mst()[:-1]
