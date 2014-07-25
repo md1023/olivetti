@@ -102,12 +102,15 @@ class Graph(object):
             setu = dset.find(dset[e.inbound])
             setv = dset.find(dset[e.outbound])
             if setu != setv:
+                print e.cost
                 mst.append(e.cost)
                 dset.union(setu, setv)
+            if len(mst) == 4 + 6:
+                break
         return mst
 
     def k_clusters(self, k=4):
-        mst = self.kruskals_mst()[:-1]
+        mst = self.kruskals_mst()
         # print "Kruskal's:", kruskals_mst
         l = len(mst) + 1
         for i, s in enumerate(mst):
@@ -115,7 +118,8 @@ class Graph(object):
                 break
         # print "result:", i, mst[i]
         # print "Sum:", sum([e.cost for e in kruskals_
-        return mst[i]
+        print mst
+        return i, mst[i]
 
     def breadth_first_search(self):
         pass
@@ -124,4 +128,5 @@ class Graph(object):
         pass
 
 if __name__ == "__main__":
-    graph = Graph("clustering1.txt")
+    graph = Graph("test.txt")
+    print graph.k_clusters()
