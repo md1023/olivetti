@@ -13,14 +13,12 @@ class Hamming(object):
         with open(file_name) as f:
             for i, l in enumerate(f.readlines()):
                 distance = int(l.replace(" ", ""), 2)
-                self.nodes.append(Node(i + 1, distance))
-        nodes = list(self.nodes)
-        while nodes:
-            other_node = nodes.pop(0)
-            for node in nodes:
-                cost = bin(node.distance ^ other_node.distance).count("1")
-                edge = Edge(node, other_node, cost)
-                self.edges.append(edge)
+                new_node = Node(i + 1, distance)
+                for node in self.nodes:
+                    cost = bin(node.distance ^ new_node.distance).count("1")
+                    edge = Edge(node, new_node, cost)
+                    self.edges.append(edge)
+                self.nodes.append(new_node)
         print self.nodes
 
 Hamming()
