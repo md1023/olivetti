@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 import sys
 from graph import Node, Edge
-NODES_COUNT = 7
-EDGES_COUNT = 6
 
 
 class Hamming(object):
@@ -13,9 +11,17 @@ class Hamming(object):
         if len(sys.argv) > 1:
             file_name = sys.argv[1]
         with open(file_name) as f:
-            for l in f.readlines():
+            for i, l in enumerate(f.readlines()):
                 distance = int(l.replace(" ", ""), 2)
-                self.nodes.append(Node(bin(distance)))
+                self.nodes.append(Node(i + 1, distance))
+        for node in self.nodes:
+            for other_node in self.nodes:
+                if node == other_node:
+                    continue
+                cost = bin(node.distance ^ other_node.distance).count("1")
+                edge = Edge(node, other_node, cost)
+                self.edges.append(edge)
+
         print self.nodes
 
 Hamming()

@@ -5,9 +5,10 @@ from operator import attrgetter
 
 
 class Node(object):
-    def __init__(self, name):
+    def __init__(self, name, distance=None):
         self.edges = []
         self.name = name
+        self.distance = distance
 
     def __repr__(self):
         d = "%s has edges %s" % (self.name, self.edges)
