@@ -17,23 +17,29 @@ class Hamming(Graph):
                 new_node = Node(i + 1, distance)
                 for node in self.nodes:
                     cost = bin(node.distance ^ new_node.distance).count("1")
-                    edge = Edge(node, new_node, cost)
-                    self.clusters.append(edge)
                     if cost >= 3:
                         continue
+                    edge = Edge(node, new_node, cost)
+                    # self.clusters.append(edge)
                     self.edges.append(edge)
                 self.nodes.append(new_node)
-        # k = 3
-        # l = len(self.nodes) + 1
-        # for i in xrange(len(self.nodes)):
-        #     if l - i == k - 1:
-        #         break
+        print ">", len(self.nodes), len(self.edges)
 
 if __name__ == "__main__":
-    graph = Hamming()
-    print graph.clusters, graph.edges
+
+    graph = Hamming("clustering_big.txt")
+    # kruskals_mst = graph.kruskals_mst()
+    # print "kruskals:", len(graph.nodes) - len(kruskals_mst)
+    exit(0)
+
+    graph = Hamming("hamming.txt")
     kruskals_mst = graph.kruskals_mst()
-    print "kruskals:", len(kruskals_mst)
-    # prims_mst = graph.prims_mst()
-    # print "prims:", prims_mst
-    # print graph.k_clusters(k=5)
+    assert len(graph.nodes) - len(kruskals_mst) == 1
+    # print "kruskals:", kruskals_mst, len(graph.nodes) - len(kruskals_mst)
+
+    # print "-" * 80
+
+    graph = Hamming("hamming2.txt")
+    kruskals_mst = graph.kruskals_mst()
+    assert len(graph.nodes) - len(kruskals_mst) == 3
+    # print "kruskals:", kruskals_mst, len(graph.nodes) - len(kruskals_mst)

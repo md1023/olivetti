@@ -25,7 +25,7 @@ class Edge(object):
         self.cost = cost
 
     def __repr__(self):
-        d = "%s" % (self.cost,)
+        d = "(%s-%s, %s)" % (self.inbound.name, self.outbound.name, self.cost,)
         return d
 
 
@@ -127,4 +127,7 @@ class Graph(object):
 
 if __name__ == "__main__":
     graph = Graph("test.txt")
-    print graph.k_clusters()
+    a = sorted(graph.prims_mst(), key=attrgetter("cost"))
+    b = sorted(graph.kruskals_mst(), key=attrgetter("cost"))
+    print a
+    print b
