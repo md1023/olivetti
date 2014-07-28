@@ -30,15 +30,6 @@ class DisjointSet(object):
 
     # find subset leader
     def find(self, person):
-        leader = person.leader
-        if person != leader:
-            print "> searching", person, person.leader
-            # find leader in hierarchy
-            self.find(person.leader)
-        return person
-
-    # union two subsets
-    def union(self, person1, person2):
         """
         >>> names = "Thaddeus Max Larabee Siegfried Hans Schwartz".split()
         >>> s = DisjointSet(names)
@@ -49,8 +40,21 @@ class DisjointSet(object):
         True
         >>> s.find(s["Max"]) == s["Thaddeus"]
         True
+        """
+        leader = person.leader
+        if person != leader:
+            # find leader in hierarchy
+            return self.find(person.leader)
+        return person
+
+    # union two subsets
+    def union(self, person1, person2):
+        """
+        >>> names = "Thaddeus Max Larabee Siegfried Hans Schwartz".split()
+        >>> s = DisjointSet(names)
+        >>> s.union(s["Max"], s["Thaddeus"])
         >>> s.union(s["Thaddeus"], s["Siegfried"])
-        >>> (s.find(s["Max"]), s.find(s["Thaddeus"])), (s["Siegfried"], s["Siegfried"])
+        >>> (s.find(s["Max"]), s.find(s["Thaddeus"])) == (s["Siegfried"], s["Siegfried"])
         True
         """
         x = self.find(person1)
@@ -58,12 +62,10 @@ class DisjointSet(object):
         if x == y:
             return
         if x.rank < y.rank:
-            x.leader = y
-        elif x.rank > y.rank:
-            y.leader = x
-        else:
-            x.leader = y
+            x, y = y, x
+        if x.rank == y.rank:
             y.rank += 1
+        x.leader = y
 
     def __repr__(self):
         persons = ["<%s (%s)>" % (s, s.leader) for s in self.__elements]
