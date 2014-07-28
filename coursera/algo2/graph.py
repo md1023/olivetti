@@ -97,16 +97,14 @@ class Graph(object):
     def kruskals_mst(self):
         edges = sorted(self.edges, key=attrgetter("cost"))
         dset = DisjointSet(self.nodes)
+        trees = len(self.nodes)
         mst = []
         for e in edges:
-            setu = dset.find(dset[e.inbound])
-            setv = dset.find(dset[e.outbound])
-            if setu != setv:
-                print e.cost
-                mst.append(e.cost)
-                dset.union(setu, setv)
-            if len(mst) == 4 + 6:
+            if trees <= 1:
                 break
+            if (dset.union(dset[e.inbound], dset[e.outbound])):
+                trees -= 1
+                mst.append(e)
         return mst
 
     def k_clusters(self, k=4):

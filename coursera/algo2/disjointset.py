@@ -60,12 +60,13 @@ class DisjointSet(object):
         x = self.find(person1)
         y = self.find(person2)
         if x == y:
-            return
+            return False
         if x.rank < y.rank:
             x, y = y, x
         if x.rank == y.rank:
             y.rank += 1
         x.leader = y
+        return True
 
     def __repr__(self):
         persons = ["<%s (%s)>" % (s, s.leader) for s in self.__elements]
