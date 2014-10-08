@@ -2,22 +2,28 @@
 # -*- coding: utf-8 -*-
 
 keys = list('abcdef')
-values = [1,2,3,4]
+values = range(len(keys))
 
-def func1(a, b):
+def func_fromkeys(a, b):
+    # лучший, когда ключей больше
     d = dict.fromkeys(a)
     d.update(dict(zip(a,b)))
     return d
 
-def func2(a, b):
+def func_map(a, b):
+    # лучший когда объём мал
+    return dict(map(None, a, b))
+
+def func_xrange(a, b):
+    # лучший, когда ключей не больше
     d = dict(zip(a,b))
     for i in xrange(len(a) - len(b)):
         d[keys[len(b) + i]] = None
     return d
 
-def func3(a, b):
-    return dict(map(None, a, b))
+func_fromkeys(keys, values)
+func_map(keys, values)
+func_xrange(keys, values)
 
-print func1(keys, values)
-print func2(keys, values)
-print func3(keys, values)
+# проверка:
+# python -m cProfile -s cumulative test1.py | grep func_
