@@ -5,7 +5,6 @@ import re
 
 class State(object):
     def transition_handler(self, input, regexp, state):
-        # print self, state, input,regexp
         if re.match(regexp, input, flags=re.IGNORECASE):
             return state
 
@@ -15,12 +14,14 @@ class S0(State):
 
 class S1(State):
     def run(self, input):
-        return self.transition_handler(input, "[A-Z0-9]", "S1") or \
+        return \
+            self.transition_handler(input, "[A-Z0-9]", "S1") or \
             self.transition_handler(input, "[.-]", "S2")
 
 class S2(State):
     def run(self, input):
-        return self.transition_handler(input, "[A-Z0-9]", "S1") or \
+        return \
+            self.transition_handler(input, "[A-Z0-9]", "S1") or \
             self.transition_handler(input, "[.-]", "S2")
 
 class Machine(object):
@@ -69,3 +70,10 @@ if __name__ == "__main__":
         m = pattern.match(s.strip())
         assert m.group(0)
         assert l.run(s) == "S1"
+
+    s = raw_input("Login: ")
+    if pattern.match(s.strip()) and l.run(s) == "S1":
+        print u"Успех"
+        exit(0)
+    print u"Повторите попытку"
+    exit(1)
