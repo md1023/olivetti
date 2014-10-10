@@ -21,9 +21,9 @@ def func_xrange(a, b):
         d[keys[len(b) + i]] = None
     return d
 
-func_fromkeys(keys, values)
-func_map(keys, values)
-func_xrange(keys, values)
+print func_fromkeys(keys, values)
+print func_map(keys, values)
+print func_xrange(keys, values)
 
 # проверка:
 # python -m cProfile -s cumulative test1.py | grep func_
