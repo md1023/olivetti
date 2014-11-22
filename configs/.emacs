@@ -5,6 +5,7 @@
 (add-to-list 'load-path (concat HOME "/emacs/magit"))
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-jabber")
 (add-to-list 'load-path (concat HOME "/emacs/pep8"))
+(add-to-list 'load-path (concat HOME "/emacs/skype"))
 
 (when (>= emacs-major-version 24)
   (setq package-archives 
@@ -12,6 +13,9 @@
 	  ("marmalade" . "http://marmalade-repo.org/packages/")
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
+
+(require 'skype)
+(setq skype--my-user-handle "maxim.simno.nikolaev")
 
 ;; display watch
 (setq display-time-format "%Y.%m.%d %H:%M")
@@ -87,6 +91,10 @@
 
 (require 'magit)
 (defalias 'ms 'magit-status)
+
+;; mercurial's "magit"
+(require 'monky)
+(setq monky-process-type 'cmdserver)
 
 (require 'git-gutter-fringe)
 (global-git-gutter-mode t)
