@@ -71,7 +71,7 @@ alias ack='ack-grep --ignore-dir=env,.env'
 
 # myscripts
 export MAGRATHEA=$HOME/Work/magrathea
-export WORKON_HOME=$HOME/Work/virtualenvs
+export WORKON_HOME=$HOME/work/virtualenvs
 export FLASH=$HOME/Public/Flash_SVN/
 export LEIZEN=$HOME/Work/leizen
 export LEIZEN_LIBS=$HOME/Work/leizen/.env/lib/python2.7/site-packages
