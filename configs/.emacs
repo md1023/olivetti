@@ -94,6 +94,7 @@
 
 ;; mercurial's "magit"
 (require 'ahg)
+(defalias 'hg 'ahg-short-log)
 
 (require 'git-gutter-fringe)
 (global-git-gutter-mode t)
