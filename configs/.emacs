@@ -93,8 +93,7 @@
 (defalias 'ms 'magit-status)
 
 ;; mercurial's "magit"
-(require 'monky)
-(setq monky-process-type 'cmdserver)
+(require 'ahg)
 
 (require 'git-gutter-fringe)
 (global-git-gutter-mode t)
