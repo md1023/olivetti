@@ -99,6 +99,7 @@
 (require 'git-gutter-fringe)
 (global-git-gutter-mode t)
 (setq git-gutter:modified-sign "M")
+(setq git-gutter:handled-backends '(git hg))
 ;; (fringe-helper-define 'git-gutter-fr:modified nil
 ;;   ".X...X."
 ;;   ".XX.XX."

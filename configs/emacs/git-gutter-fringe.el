@@ -4,8 +4,8 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-git-gutter-fringe
-;; Version: 0.15
-;; Package-Requires: ((git-gutter "0.61") (fringe-helper "0.1.1") (cl-lib "0.5") (emacs "24"))
+;; Version: 0.21
+;; Package-Requires: ((git-gutter "0.73") (fringe-helper "0.1.1") (cl-lib "0.5") (emacs "24"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -38,21 +38,23 @@
 
 (require 'cl-lib)
 
+(defvar git-gutter-fringe nil)
+
 (require 'git-gutter)
 (require 'fringe-helper)
 
 (defface git-gutter-fr:modified
-    '((t (:foreground "magenta" :weight bold)))
+    '((t (:inherit git-gutter:modified)))
   "Face of modified"
   :group 'git-gutter)
 
 (defface git-gutter-fr:added
-    '((t (:foreground "green" :weight bold)))
+    '((t (:inherit git-gutter:added)))
   "Face of added"
   :group 'git-gutter)
 
 (defface git-gutter-fr:deleted
-    '((t (:foreground "red" :weight bold)))
+    '((t (:inherit git-gutter:deleted)))
   "Face of deleted"
   :group 'git-gutter)
 
@@ -106,33 +108,38 @@
     (added    'git-gutter-fr:added)
     (deleted  'git-gutter-fr:deleted)))
 
-(defun git-gutter-fr:view-region (type start-line end-line)
-  (let* ((sign (git-gutter-fr:select-sign type))
-         (face (git-gutter-fr:select-face type))
-         (beg (git-gutter:line-to-pos start-line))
-         (end (if (eq type 'deleted) beg (git-gutter:line-to-pos end-line)))
-         (reference (fringe-helper-insert-region
-                     beg end sign git-gutter-fr:side face)))
-    (overlay-put reference 'git-gutter t)
-    (dolist (ov (overlays-in beg (1+ end)))
-      (when (eq (overlay-get ov 'fringe-helper-parent) reference)
-        (overlay-put ov 'git-gutter t)))
-    (push reference git-gutter-fr:bitmap-references)))
-
 (defun git-gutter-fr:init ()
   (make-local-variable 'git-gutter-fr:bitmap-references))
-
-(defun git-gutter-fr:view-diff-info (diffinfo)
-  (let ((start-line (plist-get diffinfo :start-line))
-        (end-line (plist-get diffinfo :end-line))
-        (type (plist-get diffinfo :type)))
-    (git-gutter-fr:view-region type start-line end-line)))
 
 (defun git-gutter-fr:view-diff-infos (diffinfos)
   (when git-gutter-fr:bitmap-references
     (git-gutter:clear))
   (save-excursion
-    (mapc 'git-gutter-fr:view-diff-info diffinfos)))
+    (goto-char (point-min))
+    (cl-loop with curline = 1
+             for info in diffinfos
+             for start-line = (plist-get info :start-line)
+             for end-line = (plist-get info :end-line)
+             for type = (plist-get info :type)
+             do
+             (let (beg end)
+               (forward-line (- start-line curline))
+               (setq beg (point))
+               (if (eq type 'deleted)
+                   (progn
+                     (setq end beg))
+                 (forward-line (- end-line start-line))
+                 (setq end (point)))
+               (let* ((sign (git-gutter-fr:select-sign type))
+                      (face (git-gutter-fr:select-face type))
+                      (reference (fringe-helper-insert-region
+                                  beg end sign git-gutter-fr:side face)))
+                 (overlay-put reference 'git-gutter t)
+                 (dolist (ov (overlays-in beg (1+ end)))
+                   (when (eq (overlay-get ov 'fringe-helper-parent) reference)
+                     (overlay-put ov 'git-gutter t)))
+                 (push reference git-gutter-fr:bitmap-references))
+               (setq curline end-line)))))
 
 ;; @@@ Somtimes `fringe-helper-remove' does not work for clearing overlays
 ;;(defun git-gutter-fr:clear-overlay (reference)
@@ -147,7 +154,8 @@
 
 (setq git-gutter:init-function      'git-gutter-fr:init
       git-gutter:view-diff-function 'git-gutter-fr:view-diff-infos
-      git-gutter:clear-function     'git-gutter-fr:clear)
+      git-gutter:clear-function     'git-gutter-fr:clear
+      git-gutter:window-width -1)
 
 (provide 'git-gutter-fringe)
 
