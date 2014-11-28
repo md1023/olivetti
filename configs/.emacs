@@ -3,6 +3,7 @@
 (add-to-list 'load-path (concat HOME "/emacs"))
 (add-to-list 'load-path (concat HOME "/emacs/flycheck"))
 (add-to-list 'load-path (concat HOME "/emacs/magit"))
+(add-to-list 'load-path (concat HOME "/emacs/monky"))
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-jabber")
 (add-to-list 'load-path (concat HOME "/emacs/pep8"))
 (add-to-list 'load-path (concat HOME "/emacs/skype"))
@@ -93,6 +94,8 @@
 (defalias 'ms 'magit-status)
 
 ;; mercurial's "magit"
+(require 'monky)
+(setq monky-process-type 'cmdserver)
 (require 'ahg)
 (defalias 'hg 'ahg-short-log)
 
