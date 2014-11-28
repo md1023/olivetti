@@ -145,10 +145,7 @@ Many Monky faces inherit from this one by default."
   :group 'monky-faces)
 
 (defface monky-diff-add
-  '((((class color) (background light))
-     :foreground "blue1")
-    (((class color) (background dark))
-     :foreground "white"))
+  '((t :inherit diff-added))
   "Face for lines in a diff that have been added."
   :group 'monky-faces)
 
@@ -158,10 +155,7 @@ Many Monky faces inherit from this one by default."
   :group 'monky-faces)
 
 (defface monky-diff-del
-  '((((class color) (background light))
-     :foreground "red")
-    (((class color) (background dark))
-     :foreground "OrangeRed"))
+  '((t :inherit diff-removed))
   "Face for lines in a diff that have been deleted."
   :group 'monky-faces)
 
