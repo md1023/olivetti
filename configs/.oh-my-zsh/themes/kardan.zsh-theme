@@ -5,7 +5,7 @@ function get_host {
 }
 
 function hg_dirty() {
-    [[ $( hg status 2> /dev/null ) != "!" ]] &&	{
+    [[ $( hg status 2> /dev/null ) != "" ]] && {
        echo $ZSH_THEME_GIT_PROMPT_DIRTY; }
 }
 
