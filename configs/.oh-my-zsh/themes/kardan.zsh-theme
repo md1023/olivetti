@@ -14,7 +14,7 @@ function hg_prompt_info() {
   hg root >/dev/null 2>/dev/null && echo "($branch$(hg_dirty))" && return
 }
 
-PROMPT='> '
+PROMPT='%{$fg[yellow]%}> %{$reset_color%}'
 RPROMPT='%~$(git_prompt_info)$(hg_prompt_info)'
 
 ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[yellow]%}✗%{$reset_color%}"
