@@ -61,9 +61,6 @@ defbindings("WScreen", {
 --  kpress(META.."Shift+comma", "ioncore.goto_prev_screen()"),
     kpress(META.."W", "ioncore.goto_next_screen()"),
     
-    bdoc("Create a new workspace of chosen default type."),
-    kpress(META.."F8", "ioncore.create_ws(_)"),
-    
     bdoc("Display the main menu."),
     kpress(ALTMETA.."F12", "mod_query.query_menu(_, _sub, 'mainmenu', 'Main menu:')"),
     --kpress(ALTMETA.."F12", "mod_menu.menu(_, _sub, 'mainmenu', {big=true})"),

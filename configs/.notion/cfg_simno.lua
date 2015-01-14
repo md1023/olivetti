@@ -11,6 +11,8 @@ defbindings("WScreen", {
     bdoc("Switch to frame below"),
     kpress(META.."Down", "ioncore.goto_next(_chld, 'down')", "_chld:non-nil"),
 
+    bdoc("Create a new workspace of chosen default type."),
+    kpress(META.."F8", "ioncore.create_ws(_)"),
 })
 
 defbindings("WFrame", {
