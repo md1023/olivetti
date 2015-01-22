@@ -150,6 +150,11 @@
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
 
+(global-set-key (kbd "C-S-d") 'kill-word)
+(global-set-key (kbd "C-S-h") 'backward-kill-word)
+(global-set-key (kbd "C-h") 'delete-backward-char)
+(global-set-key (kbd "C-?") 'help)
+
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
 
