@@ -9,10 +9,6 @@ ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 ZSH_THEME="kardan"
 
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
 
@@ -34,16 +30,13 @@ ZSH_THEME="kardan"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git)
+plugins=(git cp web-search colored-man)
 
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
 export PATH=/usr/lib/lightdm/lightdm:$PATH
-
-# towel-tests
-export PATH=$HOME/Work/bin:$PATH
 
 # m-nikolaev customizations:
 alias ls='ls --classify --color=auto --human-readable --time-style=locale --group-directories-first'
@@ -52,8 +45,6 @@ alias em='emacsclient -c -a ""&'
 alias df='df --human-readable'
 alias du='du --human-readable'
 alias grep='grep --color'
-alias seamonkey='/usr/lib/seamonkey/seamonkey&'
-alias ffd='firefox -P "developmentMode" &'
 alias cal='ncal -Mb'
 
 # find python, javascript, xml files
@@ -75,16 +66,6 @@ export WORKON_HOME=$HOME/work/virtualenvs
 export FLASH=$HOME/Public/Flash_SVN/
 export LEIZEN=$HOME/Work/leizen
 export LEIZEN_LIBS=$HOME/Work/leizen/.env/lib/python2.7/site-packages
-export PYTHONPATH=$MAGRATHEA
-
-# colorful manpages
-export LESS_TERMCAP_mb=$'\E[01;31m'
-export LESS_TERMCAP_md=$'\E[01;37m'
-export LESS_TERMCAP_me=$'\E[0m'
-export LESS_TERMCAP_se=$'\E[0m'
-export LESS_TERMCAP_so=$'\E[01;44;33m'
-export LESS_TERMCAP_ue=$'\E[0m'
-export LESS_TERMCAP_us=$'\E[01;32m'
 
 # psql horizontal scroll
 # export PAGER=cat
@@ -98,7 +79,3 @@ source $HOME/.local/bin/virtualenvwrapper.sh
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" \
     -layout "us,ru"
 
-# rocket-help.ru ftp mount
-export ROCKETHELP=$HOME/Documents/RHsite
-alias rockethelp="sudo curlftpfs -o allow_other ftp://ftp.rocket-help.ru $ROCKETHELP \
-    && echo $ROCKETHELP mounted successfully"
