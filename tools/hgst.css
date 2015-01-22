@@ -1,0 +1,50 @@
+body {
+    line-height: 18px;
+    font-family: Helvetica;
+}
+
+div.repository pre {
+    background-color: #eee;
+}
+
+pre {
+    font-family: monospace;
+    display: inline-block;
+    float: left;
+    clear: both;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+pre:empty {
+    display: none;
+}
+
+div {
+    clear: both;
+}
+
+h1 {
+    margin: 0;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.f2 span.bold {
+    color: #0d0;
+}
+
+.newdiff {
+    display: inline-block;
+    font-weight: bold;
+}
+
+hr:first-child {
+    display: none;
+}
+
+hr {
+    background-color: #bbb;
+    height: 1px;
+    border: 0;
+}
