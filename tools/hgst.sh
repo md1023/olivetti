@@ -1,5 +1,5 @@
 # Download other tool here:
-# wget "http://www.pixelbeat.org/scripts/ansi2html.sh"
+# wget "http://www.pixelbeat.org/scripts/ansi2html.sh" && chmod +x ansi2html.sh
 
 if [ ! "$1" ]; then
     echo "Supply working dir parameter"
@@ -13,7 +13,7 @@ fi
 
 find $1 -type d -name '-*' \
     -exec echo '</pre><div class="repository"><h1>{}</h1><pre class="files">' \; \
-    -exec hg st {} \; \
+    -exec hg diff --color true --stat {} \; \
     -exec echo '</pre><div class="diff"><pre>' \; \
     -exec hg diff --color true {} \; \
     -exec echo '</pre></div></div>' \; | \

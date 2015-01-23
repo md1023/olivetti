@@ -1,27 +1,27 @@
 body {
+    background-image: url("hgst.png");
     line-height: 18px;
     font-family: Helvetica;
 }
 
 div.repository pre {
-    background-color: #eee;
+    background-color: #f9f9f9;
+}
+
+pre.files {
+    float: right;
 }
 
 pre {
-    font-family: monospace;
+    font-family: consolas;
+    font-size: 12px;
     display: inline-block;
-    float: left;
-    clear: both;
     padding: 10px;
     border-radius: 5px;
 }
 
 pre:empty {
     display: none;
-}
-
-div {
-    clear: both;
 }
 
 h1 {
