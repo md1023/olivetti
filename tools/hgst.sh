@@ -12,11 +12,13 @@ if [ "$2" ]; then
 fi
 
 find $1 -type d -name '-*' \
-    -exec echo '</pre><div class="repository"><h1>{}</h1><pre class="files">' \; \
-    -exec hg diff --color true --stat {} \; \
-    -exec echo '</pre><div class="diff"><pre>' \; \
+    -exec echo '</pre><div class="repository"><h1>{}</h1>' \; \
+    -exec echo '<pre class="diffs">' \; \
     -exec hg diff --color true {} \; \
-    -exec echo '</pre></div></div>' \; | \
+    -exec echo '</pre>' \; \
+    -exec echo '<pre class="files">' \; \
+    -exec hg diff --color true --stat {} \; \
+    -exec echo '</pre></div>' \; | \
 /tmp/ansi2html.sh | \
     sed 's/&lt;/</g' | sed 's/&gt;/>/g' | sed 's/&quot;/"/g' | \
     sed 's;<style;<link rel="stylesheet" href="hgst.css" type="text/css">\n<style;' | \
