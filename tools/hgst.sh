@@ -1,3 +1,4 @@
+#!/bin/bash
 # Download other tool here:
 # wget "http://www.pixelbeat.org/scripts/ansi2html.sh" && chmod +x ansi2html.sh
 
@@ -11,16 +12,35 @@ if [ "$2" ]; then
     OUTPUT=$2
 fi
 
-find $1 -type d -name '-*' \
-    -exec echo '</pre><div class="repository"><h1>{}</h1>' \; \
-    -exec echo '<pre class="diffs">' \; \
-    -exec hg diff --color true {} \; \
-    -exec echo '</pre>' \; \
-    -exec echo '<pre class="files">' \; \
-    -exec hg diff --color true --stat {} \; \
-    -exec echo '</pre></div>' \; | \
-/tmp/ansi2html.sh | \
+HANDLER=
+
+TMP=/tmp/hgst.tmp
+touch $TMP
+echo "<div class=\"content\">" > $TMP
+for i in `find $1 -type d -name "-*"`; do
+    REPO=`basename $i`
+    SHORT_STATUS=`hg diff --repository $i --stat --color true`
+    if [ -z "$SHORT_STATUS" ]; then
+	# echo "$REPO no changes"
+	continue
+    fi;
+    DIFFS=`hg diff --repository $i --color true`
+    echo "
+</pre>
+<div class=\"repository sources\">
+  <h1>$REPO</h1>
+    <pre class=\"diffs\">$DIFFS</pre>
+    <pre class=\"files\">$SHORT_STATUS</pre>
+</div>" >> $TMP
+done;
+echo "</div>" >> $TMP
+cat $TMP | \
+./ansi2html.sh | \
     sed 's/&lt;/</g' | sed 's/&gt;/>/g' | sed 's/&quot;/"/g' | \
+    sed '/<pre>/d' | sed '/<\/pre>/d' | \
     sed 's;<style;<link rel="stylesheet" href="hgst.css" type="text/css">\n<style;' | \
-    sed 's/<span class="bold">diff -r/<hr\/><span class="bold newdiff">diff -r/g' \
+    sed 's/<span class="bold">diff -r/<hr\/><span class="bold newdiff">diff -r/g' | \
+    sed 's#<body#<body onload=\"window.addEventListener('\''message'\'', '\
+'function(e) {e.source.postMessage(this.document.body.scrollHeight, '\''http://localhost:8008'\''); }, false);"#' \
     > $OUTPUT
+rm $TMP
