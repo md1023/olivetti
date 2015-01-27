@@ -26,9 +26,8 @@ for i in `find $1 -type d -name "-*"`; do
     fi;
     DIFFS=`hg diff --repository $i --color true`
     echo "
-</pre>
 <div class=\"repository sources\">
-  <h1>$REPO</h1>
+  <h2>$REPO</h2>
     <pre class=\"diffs\">$DIFFS</pre>
     <pre class=\"files\">$SHORT_STATUS</pre>
 </div>" >> $TMP
@@ -37,7 +36,7 @@ echo "</div>" >> $TMP
 cat $TMP | \
 ./ansi2html.sh | \
     sed 's/&lt;/</g' | sed 's/&gt;/>/g' | sed 's/&quot;/"/g' | \
-    sed '/<pre>/d' | sed '/<\/pre>/d' | \
+    sed '/<pre>/d' | \
     sed 's;<style;<link rel="stylesheet" href="hgst.css" type="text/css">\n<style;' | \
     sed 's/<span class="bold">diff -r/<hr\/><span class="bold newdiff">diff -r/g' | \
     sed 's#<body#<body onload=\"window.addEventListener('\''message'\'', '\
