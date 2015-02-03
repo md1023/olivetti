@@ -22,13 +22,58 @@ div.content {
     display: inline-block;
 }
 
-pre {
-    background-color: #f9f9f9;
-    font-family: consolas;
-    font-size: 12px;
+pre, .ids {
     display: inline-block;
+    background-color: #f9f9f9;
     padding: 10px;
     border-radius: 5px;
+}
+
+/* taken from boundstate */
+.ids {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+}
+
+.ids th, .ids td {
+    text-align: left;
+    border-top: 1px solid #DDD;
+    padding: 8px;
+    vertical-align: top;
+    line-height: 18px;
+}
+
+.ids th {
+    border-top: 0px none;
+}
+
+.ids .repository {
+    color: #008FBE;
+}
+
+.tag:empty, .bookmark:empty, .branch:empty {
+    display: none;
+}
+
+.tag, .bookmark, .branch {
+    background-color: #888;
+    border-radius: 3px;
+    color: #FFF;
+    font-weight: bold;
+    line-height: 14px;
+    padding: 2px 4px;
+    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2);
+    vertical-align: baseline;
+    white-space: nowrap;
+}
+
+.branch {
+    background-color: #BBB;
+}
+
+pre {
+    font-family: consolas;
+    font-size: 12px;
     vertical-align: top;
 }
 

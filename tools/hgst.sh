@@ -12,19 +12,33 @@ if [ "$2" ]; then
     OUTPUT=$2
 fi
 
-HANDLER=
-
 TMP=/tmp/hgst.tmp
 touch $TMP
 echo "<div class=\"content\">" > $TMP
-for i in `find $1 -type d -name "-*"`; do
-    REPO=`basename $i`
-    SHORT_STATUS=`hg diff --repository $i --stat --color true`
+
+# build short summary
+echo "<table class=\"ids\">" >> $TMP
+echo "<tr><th>Name</th><th>Rev</th><th>Labels</th></tr>" >> $TMP
+for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
+    echo "<tr><td><span class=\"repository\">$REPO</span></td>" >> $TMP
+    echo "<td><span class=\"revision\">`hg id --repository $1/$REPO -n`</span></td><td>" >> $TMP
+    PARAMETERS=("-b" "-t" "-B")
+    FIELD=("branch" "tag" "bookmark")
+    for i in {0..2} ; do
+	echo "<span class=\"${FIELD[$i]}\">`hg id --repository $1/$REPO ${PARAMETERS[$i]}`</span>" >> $TMP
+    done;
+    echo "</td></tr>" >> $TMP
+done;
+echo "</table>" >> $TMP
+
+# build diffs
+for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
+    SHORT_STATUS=`hg diff --repository $1/$REPO --stat --color true`
     if [ -z "$SHORT_STATUS" ]; then
-	# echo "$REPO no changes"
+	echo "$REPO no changes"
 	continue
     fi;
-    DIFFS=`hg diff --repository $i --color true`
+    DIFFS=`hg diff --repository $1/$REPO --color true`
     echo "
 <div class=\"repository sources\">
   <h2>$REPO</h2>
