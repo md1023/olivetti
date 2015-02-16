@@ -2,7 +2,6 @@
 # Download other tool here:
 # wget "http://www.pixelbeat.org/scripts/ansi2html.sh" && chmod +x ansi2html.sh
 # SEARCH_NAME='-name repo' /home/m-nikolaev/olivetti/tools/hgst.sh /home/m-nikolaev/work
-LANG=en_US.UTF-8
 
 if [ ! "$1" ]; then
     echo "Supply working dir parameter"
