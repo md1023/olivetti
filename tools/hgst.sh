@@ -1,11 +1,15 @@
 #!/bin/bash
 # Download other tool here:
 # wget "http://www.pixelbeat.org/scripts/ansi2html.sh" && chmod +x ansi2html.sh
+# SEARCH_NAME='-name repo' /home/m-nikolaev/olivetti/tools/hgst.sh /home/m-nikolaev/work
+LANG=en_US.UTF-8
 
 if [ ! "$1" ]; then
     echo "Supply working dir parameter"
     exit 1;
 fi
+
+DIR="$( cd "$( dirname "$0" )" && pwd )"
 
 OUTPUT=./hgst.html
 if [ "$2" ]; then
@@ -48,7 +52,7 @@ for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
 done;
 echo "</div>" >> $TMP
 cat $TMP | \
-./ansi2html.sh | \
+    $DIR/ansi2html.sh | \
     sed 's/&lt;/</g' | sed 's/&gt;/>/g' | sed 's/&quot;/"/g' | \
     sed '/<pre>/d' | \
     sed 's;<style;<link rel="stylesheet" href="hgst.css" type="text/css">\n<style;' | \
