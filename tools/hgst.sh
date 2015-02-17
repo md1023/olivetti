@@ -62,6 +62,7 @@ for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
 </div>" >> $TMP
 done;
 echo "</div>" >> $TMP
+# iframe counterpart lies in mercurial.js within boundstate
 cat $TMP | \
     $DIR/ansi2html.sh | \
     sed 's/&lt;/</g' | sed 's/&gt;/>/g' | sed 's/&quot;/"/g' | \
@@ -69,6 +70,6 @@ cat $TMP | \
     sed 's;<style;<link rel="stylesheet" href="styles.css" type="text/css"><link rel="stylesheet" href="hgst.css" type="text/css">\n<style;' | \
     sed 's/<span class="bold">diff -r/<hr\/><span class="bold newdiff">diff -r/g' | \
     sed 's#<body#<body onload=\"window.addEventListener('\''message'\'', '\
-'function(e) {e.source.postMessage(this.document.body.scrollHeight, '\''http://localhost:8008'\''); }, false);"#' \
+'function(e) {e.source.postMessage(this.document.body.scrollHeight, '\''http://192.168.200.83:8008'\''); }, false);"#' \
     > $OUTPUT
 rm $TMP
