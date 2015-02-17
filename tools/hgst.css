@@ -33,6 +33,11 @@ a.job:hover {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px;
     width: auto;
+    margin-bottom: 0;
+}
+
+.issues {
+    margin-bottom: 18px;
 }
 
 .table th {

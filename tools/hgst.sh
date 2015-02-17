@@ -22,13 +22,15 @@ echo "<div class=\"content\">
 
 # build redmine and jenkins references
 JOBS_DIR=/var/lib/jenkins/jobs/
-ROW=`for f in \`find -L $JOBS_DIR -path "*lastSuccessful/archive*" -name "last_issues.html"\`; do
+ROWS=`for f in \`find -L $JOBS_DIR -path "*lastSuccessful/archive*" -name "last_issues.html"\`; do
     echo "<tr>\`cat $f\`</tr>"
 done;`
-echo "<table class=\"table issues\">
+if [[ -n "$ROWS" ]]; then
+    echo "<table class=\"table issues\">
 <tr><th>Job</th><th>Redmine</th><th>Rev</th></tr>
-$ROW
+$ROWS
 </table>" >> $TMP
+fi
 
 # build short summary
 echo "<table class=\"table ids\">
