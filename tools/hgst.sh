@@ -2,7 +2,7 @@
 # Download other tool here:
 # wget "http://www.pixelbeat.org/scripts/ansi2html.sh" && chmod +x ansi2html.sh
 # SEARCH_NAME='-name repo' /home/m-nikolaev/olivetti/tools/hgst.sh /home/m-nikolaev/work
-
+# script is launched from /usr/lib/python2.7/dist-packages/mercurial/hgweb/hgwebdir_mod.py
 if [ ! "$1" ]; then
     echo "Supply working dir parameter"
     exit 1;
@@ -17,16 +17,28 @@ fi
 
 TMP=/tmp/hgst.tmp
 touch $TMP
-echo "<div class=\"content\">" > $TMP
+echo "<div class=\"content\">
+<base target=\"_parent\">" > $TMP
+
+# build redmine and jenkins references
+JOBS_DIR=/var/lib/jenkins/jobs/
+ROW=`for f in \`find -L $JOBS_DIR -path "*lastSuccessful/archive*" -name "last_issues.html"\`; do
+    echo "<tr>\`cat $f\`</tr>"
+done;`
+echo "<table class=\"issues\">
+<tr><th>Job</th><th>Redmine</th><th>Rev</th></tr>
+$ROW
+</table>" >> $TMP
 
 # build short summary
-echo "<table class=\"ids\">" >> $TMP
-echo "<tr><th>Name</th><th>Rev</th><th>Labels</th></tr>" >> $TMP
+echo "<table class=\"ids\">
+<tr><th>Name</th><th>Rev</th><th>Labels</th></tr>" >> $TMP
 for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
-    echo "<tr><td><span class=\"repository\">$REPO</span></td>" >> $TMP
-    echo "<td><span class=\"revision\">`hg id --repository $1/$REPO -n`</span></td><td>" >> $TMP
+    echo "<tr><td><span class=\"repository\">$REPO</span></td>
+<td><span class=\"revision\">`hg log --rev -1 --repository $1/$REPO --template \"{rev}:{node|short}\"`</span></td><td>" \
+    >> $TMP
     PARAMETERS=("-b" "-t" "-B")
-    FIELD=("branch" "tag" "bookmark")
+    FIELD=("tag branchhead" "tag" "tag")
     for i in {0..2} ; do
 	echo "<span class=\"${FIELD[$i]}\">`hg id --repository $1/$REPO ${PARAMETERS[$i]}`</span>" >> $TMP
     done;
@@ -54,7 +66,7 @@ cat $TMP | \
     $DIR/ansi2html.sh | \
     sed 's/&lt;/</g' | sed 's/&gt;/>/g' | sed 's/&quot;/"/g' | \
     sed '/<pre>/d' | \
-    sed 's;<style;<link rel="stylesheet" href="hgst.css" type="text/css">\n<style;' | \
+    sed 's;<style;<link rel="stylesheet" href="styles.css" type="text/css"><link rel="stylesheet" href="hgst.css" type="text/css">\n<style;' | \
     sed 's/<span class="bold">diff -r/<hr\/><span class="bold newdiff">diff -r/g' | \
     sed 's#<body#<body onload=\"window.addEventListener('\''message'\'', '\
 'function(e) {e.source.postMessage(this.document.body.scrollHeight, '\''http://localhost:8008'\''); }, false);"#' \
