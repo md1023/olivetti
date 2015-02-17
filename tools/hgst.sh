@@ -25,13 +25,13 @@ JOBS_DIR=/var/lib/jenkins/jobs/
 ROW=`for f in \`find -L $JOBS_DIR -path "*lastSuccessful/archive*" -name "last_issues.html"\`; do
     echo "<tr>\`cat $f\`</tr>"
 done;`
-echo "<table class=\"issues\">
+echo "<table class=\"table issues\">
 <tr><th>Job</th><th>Redmine</th><th>Rev</th></tr>
 $ROW
 </table>" >> $TMP
 
 # build short summary
-echo "<table class=\"ids\">
+echo "<table class=\"table ids\">
 <tr><th>Name</th><th>Rev</th><th>Labels</th></tr>" >> $TMP
 for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
     echo "<tr><td><span class=\"repository\">$REPO</span></td>
