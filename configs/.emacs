@@ -17,6 +17,8 @@
 
 (require 'skype)
 (setq skype--my-user-handle "maxim.simno.nikolaev")
+(require 'git-annex)
+
 
 ;; display watch
 (setq display-time-format "%Y.%m.%d %H:%M")
