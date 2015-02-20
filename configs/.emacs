@@ -3,6 +3,7 @@
 (add-to-list 'load-path (concat HOME "/emacs"))
 (add-to-list 'load-path (concat HOME "/emacs/flycheck"))
 (add-to-list 'load-path (concat HOME "/emacs/magit"))
+(add-to-list 'load-path (concat HOME "/emacs/git"))
 (add-to-list 'load-path (concat HOME "/emacs/monky"))
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-jabber")
 (add-to-list 'load-path (concat HOME "/emacs/pep8"))
@@ -15,10 +16,8 @@
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
-(require 'skype)
-(setq skype--my-user-handle "maxim.simno.nikolaev")
-(require 'git-annex)
-
+;; (require 'skype)
+;; (setq skype--my-user-handle "maxim.simno.nikolaev")
 
 ;; display watch
 (setq display-time-format "%Y.%m.%d %H:%M")
@@ -93,6 +92,8 @@
 (set-default 'truncate-lines 1)
 
 (require 'magit)
+(require 'git-annex)
+(require 'magit-annex)
 (defalias 'ms 'magit-status)
 
 ;; mercurial's "magit"
