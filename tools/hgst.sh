@@ -18,7 +18,6 @@ fi
 TMP=/tmp/hgst.tmp
 touch $TMP
 echo "<div class=\"content\">
-`env`
 <base target=\"_parent\">" > $TMP
 
 # build redmine and jenkins references
