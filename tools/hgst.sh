@@ -18,6 +18,7 @@ fi
 TMP=/tmp/hgst.tmp
 touch $TMP
 echo "<div class=\"content\">
+`env`
 <base target=\"_parent\">" > $TMP
 
 # build redmine and jenkins references
@@ -44,6 +45,10 @@ for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
     for i in {0..2} ; do
 	echo "<span class=\"${FIELD[$i]}\">`hg id --repository $1/$REPO ${PARAMETERS[$i]}`</span>" >> $TMP
     done;
+    INCOMING=`hg incoming --repository $1/$REPO --quiet --template="{node|short}\n" noauth | wc --lines`
+    if [ $INCOMING -gt 0 ]; then
+	echo "<span class=\"tag outdated\"/>outdated $INCOMING</span>" >> $TMP
+    fi;
     echo "</td></tr>" >> $TMP
 done;
 echo "</table>" >> $TMP

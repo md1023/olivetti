@@ -36,6 +36,10 @@ a.job:hover {
     margin-bottom: 0;
 }
 
+.outdated {
+    background-color: #f1b500;
+}
+
 .issues {
     margin-bottom: 18px;
 }
