@@ -100,7 +100,7 @@
 (require 'monky)
 (setq monky-process-type 'cmdserver)
 (require 'ahg)
-(defalias 'hg 'ahg-short-log)
+(defalias 'hg 'monky-status)
 
 (require 'git-gutter-fringe)
 (global-git-gutter-mode t)
@@ -187,10 +187,18 @@
 (define-key function-key-map [?\C-ц] [?\C-w])
 (define-key function-key-map [?\C-н] [?\C-y])
 (define-key function-key-map [?\C-д] [?\C-l])
-(define-key function-key-map [?\C-а] [?\C-f])
 (define-key function-key-map [?\C-л] [?\C-k])
-(define-key function-key-map [?\C-в] [?\C-d])
 (define-key function-key-map [?\C-р] [?\C-h])
+
+;; movement keys
+(define-key function-key-map [?\C-ф] [?\C-a])
+(define-key function-key-map [?\C-в] [?\C-d])
+(define-key function-key-map [?\C-а] [?\C-f])
+(define-key function-key-map [?\C-и] [?\C-b])
+(define-key function-key-map [?\C-о] [?\C-j])
+(define-key function-key-map [?\C-з] [?\C-p])
+(define-key function-key-map [?\C-т] [?\C-n])
+
 (define-key function-key-map [?и] [?b])
 (define-key function-key-map [?\C-ж] [?\C-\;])
 
