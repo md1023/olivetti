@@ -191,6 +191,7 @@
 (define-key function-key-map [?\C-р] [?\C-h])
 
 ;; movement keys
+(define-key function-key-map [?\C-у] [?\C-e])
 (define-key function-key-map [?\C-ф] [?\C-a])
 (define-key function-key-map [?\C-в] [?\C-d])
 (define-key function-key-map [?\C-а] [?\C-f])
@@ -198,6 +199,8 @@
 (define-key function-key-map [?\C-о] [?\C-j])
 (define-key function-key-map [?\C-з] [?\C-p])
 (define-key function-key-map [?\C-т] [?\C-n])
+(define-key function-key-map [?\C-м] [?\C-v])
+(define-key function-key-map [?\M-м] [?\M-v])
 
 (define-key function-key-map [?и] [?b])
 (define-key function-key-map [?\C-ж] [?\C-\;])
