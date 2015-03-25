@@ -179,6 +179,7 @@
 (global-set-key (kbd "C-<tab>") 'hs-toggle-hiding)
 
 ;; russian hotkeys layout fixer
+(define-key function-key-map [?\M-ж] [?\M-;])
 (define-key function-key-map [?\C-ч] [?\C-x])
 (define-key function-key-map [?\M-ч] [?\M-x])
 (define-key function-key-map [?\C-ы] [?\C-s])
