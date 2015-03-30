@@ -35,6 +35,9 @@
 ;; open files via ssh: C-x C-f /sudo:root@jenkins:/
 (set-default 'tramp-default-proxies-alist (quote ((".*" "\\`root\\'" "/ssh:%h:"))))
 
+;; python-like css ruby utility
+(require 'sass-mode)
+
 ;; ActionScript
 (add-to-list 'auto-mode-alist '("\\.as\\'" . ecmascript-mode))
 
@@ -181,6 +184,7 @@
 ;; russian hotkeys layout fixer
 (define-key function-key-map [?\M-ж] [?\M-;])
 (define-key function-key-map [?\C-ч] [?\C-x])
+(define-key function-key-map [?\C-с] [?\C-c])
 (define-key function-key-map [?\M-ч] [?\M-x])
 (define-key function-key-map [?\C-ы] [?\C-s])
 (define-key function-key-map [?\C-к] [?\C-r])

@@ -581,7 +581,7 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(org-scheduled-today ((t (:foreground ,zenburn-blue+1))))
    `(org-special-keyword ((t (:foreground ,zenburn-fg-1 :weight normal))))
    `(org-table ((t (:foreground ,zenburn-green+2))))
-   `(org-tag ((t (:bold t :weight bold))))
+   `(org-tag ((t (:background ,zenburn-blue+1 :foreground ,zenburn-bg :bold t :weight bold))))
    `(org-time-grid ((t (:foreground ,zenburn-orange))))
    `(org-todo ((t (:bold t :foreground ,zenburn-red :weight bold))))
    `(org-upcoming-deadline ((t (:inherit font-lock-keyword-face))))
