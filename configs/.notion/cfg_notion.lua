@@ -15,6 +15,11 @@ else
     XTERM="/usr/bin/xterm"
 end
 
+-- File manager
+if os and os.execute("test -x /usr/bin/terminator") then
+    FILEMANAGER="/usr/bin/dolphin"
+end
+
 -- Program launcher
 if os and os.execute("test -x /usr/bin/gmrun") == 0 then
     LAUNCHER="ioncore.exec_on(_, '/usr/bin/gmrun')"
