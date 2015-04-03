@@ -22,9 +22,9 @@ echo "<div class=\"content\">
 
 # build redmine and jenkins references
 JOBS_DIR=/var/lib/jenkins/jobs/
-ROWS=`for f in \`find -L $JOBS_DIR -path "*lastSuccessful/archive*" -name "last_issues.html"\`; do
+ROWS=`ssh $JENKINS_SERVER 'for f in \`find -L /var/lib/jenkins/jobs/ -path "*lastSuccessful/archive*" -name "last_issues.html"\`; do
     echo "<tr>\`cat $f\`</tr>"
-done;`
+done;'`
 if [[ -n "$ROWS" ]]; then
     echo "<table class=\"table issues\">
 <tr><th>Job</th><th>Redmine</th><th>Rev</th></tr>
@@ -44,7 +44,7 @@ for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
     for i in {0..2} ; do
 	echo "<span class=\"${FIELD[$i]}\">`hg id --repository $1/$REPO ${PARAMETERS[$i]}`</span>" >> $TMP
     done;
-    INCOMING=`hg incoming --repository $1/$REPO --quiet --template="{node|short}\n" noauth | wc --lines`
+    INCOMING=`hg incoming --repository $1/$REPO --quiet --template="{node|short}\n" | wc --lines`
     if [ $INCOMING -gt 0 ]; then
 	echo "<span class=\"tag outdated\"/>outdated $INCOMING</span>" >> $TMP
     fi;
