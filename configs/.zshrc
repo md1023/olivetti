@@ -58,7 +58,7 @@ alias findxml='find . \( -name "*test*" -o -path "*towel*" -o -path "*.git*" -pr
 alias findsql='find . -name "*.sql" -print0 | xargs -0e grep -n --color'
 alias findpybtwn='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.py" -print0 | xargs -0e btwngrep'
 alias findjsbtwn='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.js" -print0 | xargs -0e btwngrep'
-alias ack='ack-grep --ignore-dir=env,.env'
+alias ag='ag --hidden'
 
 # myscripts
 export MAGRATHEA=$HOME/Work/magrathea
