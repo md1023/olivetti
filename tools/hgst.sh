@@ -32,26 +32,6 @@ $ROWS
 </table>" >> $TMP
 fi
 
-# build short summary
-echo "<table class=\"table ids\">
-<tr><th>Name</th><th>Rev</th><th>Labels</th></tr>" >> $TMP
-for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
-    echo "<tr><td><span class=\"repository\">$REPO</span></td>
-<td><span class=\"revision\">`hg log --rev -1 --repository $1/$REPO --template \"{rev}:{node|short}\"`</span></td><td>" \
-    >> $TMP
-    PARAMETERS=("-b" "-t" "-B")
-    FIELD=("tag branchhead" "tag" "tag")
-    for i in {0..2} ; do
-	echo "<span class=\"${FIELD[$i]}\">`hg id --repository $1/$REPO ${PARAMETERS[$i]}`</span>" >> $TMP
-    done;
-    INCOMING=`hg incoming --repository $1/$REPO --quiet --template="{node|short}\n" | wc --lines`
-    if [ $INCOMING -gt 0 ]; then
-	echo "<span class=\"tag outdated\"/>outdated $INCOMING</span>" >> $TMP
-    fi;
-    echo "</td></tr>" >> $TMP
-done;
-echo "</table>" >> $TMP
-
 # build diffs
 for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
     SHORT_STATUS=`hg diff --repository $1/$REPO --stat --color true`
@@ -68,6 +48,7 @@ for REPO in `find $1 -type d $SEARCH_NAME -printf "%f\n"`; do
 </div>" >> $TMP
 done;
 echo "</div>" >> $TMP
+
 # iframe counterpart lies in mercurial.js within boundstate
 cat $TMP | \
     $DIR/ansi2html.sh | \

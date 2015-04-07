@@ -40,10 +40,6 @@ a.job:hover {
     background-color: #f1b500;
 }
 
-.issues {
-    margin-bottom: 18px;
-}
-
 .table th {
     border-top: 0px none;
 }
@@ -61,7 +57,7 @@ pre {
 
 h2 {
     margin: 0;
-    padding: 10px 0;
+    padding: 10px 0 0 0;
     font-weight: bold;
 }
 
