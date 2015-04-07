@@ -152,7 +152,10 @@ defbindings("WMPlex.toplevel", {
     kpress(META.."F2", "ioncore.exec_on(_, XTERM or 'xterm')"),
     
     bdoc("Open file manager"),
-    kpress(META.."Shift+F2", "ioncore.exec_on(_, FILEMANAGER)"),
+    kpress(META.."Control+F2", "ioncore.exec_on(_, FILEMANAGER)"),
+
+    bdoc("Open browser"),
+    kpress(META.."Shift+F2", "ioncore.exec_on(_, BROWSER)"),
 
     bdoc("Query for command line to execute."),
     kpress(META.."z", "mod_query.query_exec(_)"),

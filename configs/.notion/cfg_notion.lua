@@ -20,6 +20,11 @@ if os and os.execute("test -x /usr/bin/terminator") then
     FILEMANAGER="/usr/bin/dolphin"
 end
 
+-- Browser
+if os and os.execute("test -x /usr/bin/seamonkey") then
+    BROWSER="/usr/bin/seamonkey"
+end
+
 -- Program launcher
 if os and os.execute("test -x /usr/bin/gmrun") == 0 then
     LAUNCHER="ioncore.exec_on(_, '/usr/bin/gmrun')"
