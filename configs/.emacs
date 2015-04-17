@@ -1,16 +1,22 @@
-(defconst HOME (getenv "HOME") "User's home directory")
+;;; .emacs --- simno's Emacs config
+;;; Commentary:
+;;; *.el files are updated manually and is subject to change
+;;; flycheck shows warnings for unloaded files
+;;; Code:
 
-(add-to-list 'load-path (concat HOME "/emacs"))
-(add-to-list 'load-path (concat HOME "/emacs/flycheck"))
-(add-to-list 'load-path (concat HOME "/emacs/magit"))
-(add-to-list 'load-path (concat HOME "/emacs/git"))
-(add-to-list 'load-path (concat HOME "/emacs/monky"))
+(defconst -HOME (getenv "HOME") "User's home director.")
+
+(add-to-list 'load-path (concat -HOME "/emacs"))
+(add-to-list 'load-path (concat -HOME "/emacs/flycheck"))
+(add-to-list 'load-path (concat -HOME "/emacs/magit"))
+(add-to-list 'load-path (concat -HOME "/emacs/git"))
+(add-to-list 'load-path (concat -HOME "/emacs/monky"))
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-jabber")
-(add-to-list 'load-path (concat HOME "/emacs/pep8"))
-(add-to-list 'load-path (concat HOME "/emacs/skype"))
+(add-to-list 'load-path (concat -HOME "/emacs/pep8"))
+(add-to-list 'load-path (concat -HOME "/emacs/skype"))
 
 (when (>= emacs-major-version 24)
-  (setq package-archives 
+  (defvar package-archives
 	'(("gnu" . "http://elpa.gnu.org/packages/")
 	  ("marmalade" . "http://marmalade-repo.org/packages/")
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
@@ -20,7 +26,7 @@
 ;; (setq skype--my-user-handle "maxim.simno.nikolaev")
 
 ;; display watch
-(setq display-time-format "%Y.%m.%d %H:%M")
+(defvar display-time-format "%Y.%m.%d %H:%M")
 (display-time)
 
 ;; jump to word beginning/end
@@ -45,6 +51,7 @@
 (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 (add-hook 'javascript-mode-hook 'javascript-custom-setup)
 (defun javascript-custom-setup ()
+  "Custom setup for minor mode."
   (moz-minor-mode 1))
 
 (require 'column-marker)
@@ -230,6 +237,7 @@
 ;; database
 (require 'sql)
 (defun erase-sql-buffer ()
+  "Erase SQL buffer."
   (interactive)
   (when sql-buffer
     (save-excursion
@@ -238,6 +246,7 @@
 (require 'term)
 
 (defun erase-terminal-buffer ()
+  "Erase terminal buffer."
   (interactive)
   (when "*terminal*"
     (save-excursion
@@ -245,6 +254,7 @@
       (erase-buffer))))
 
 (defun erase-sql-buffer-and-exec ()
+  "Execute SQL after previous output is killed."
   (interactive)
   (save-buffer)
   (erase-sql-buffer)
@@ -252,6 +262,7 @@
 (define-key sql-mode-map "\C-c\C-w" 'erase-sql-buffer-and-exec)
 
 (defun mydb-cms1 ()
+  "Connect to SQL database."
   (interactive)
   (message "Login...")
   (setf sql-database "cms1"
@@ -276,7 +287,7 @@
 ;; irc settings
 (require 'erc)
 (defun office-chat ()
-  "Connect to IRC and Jabber at igrade.ru"
+  "Connect to IRC and Jabber at igrade.ru."
   (interactive)
   (let ((password (read-passwd "Enter password: ")))
   (erc-tls :server "irc.igrade.ru" :port 6667
@@ -313,7 +324,7 @@
 
 ;; color behave feature files
 (setq feature-default-language "ru")
-(setq feature-default-i18n-file (concat HOME "emacs/i18n.yml"))
+(setq feature-default-i18n-file (concat -HOME "emacs/i18n.yml"))
 (require 'feature-mode)
 (add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
 
@@ -329,3 +340,5 @@
 
 ;; default layout for C-\ switch
 (setq default-input-method "russian-computer")
+
+;;; .emacs ends here
