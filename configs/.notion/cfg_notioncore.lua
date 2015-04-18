@@ -157,6 +157,9 @@ defbindings("WMPlex.toplevel", {
     bdoc("Open browser"),
     kpress(META.."Shift+F2", "ioncore.exec_on(_, BROWSER)"),
 
+    bdoc("Open emacs client window"),
+    kpress(META.."Mod1+F2", "ioncore.exec_on(_, EMACSCLIENT)"),
+
     bdoc("Query for command line to execute."),
     kpress(META.."z", "mod_query.query_exec(_)"),
 

@@ -25,6 +25,11 @@ if os and os.execute("test -x /usr/bin/seamonkey") then
     BROWSER="/usr/bin/seamonkey"
 end
 
+-- Emacs
+if os and os.execute("test -x /usr/bin/emacs") then
+    EMACSCLIENT="/usr/bin/emacsclient -c"
+end
+
 -- Program launcher
 if os and os.execute("test -x /usr/bin/gmrun") == 0 then
     LAUNCHER="ioncore.exec_on(_, '/usr/bin/gmrun')"
