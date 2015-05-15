@@ -28,6 +28,19 @@
     cursor_shape = underline
     font = Consolas 9
     background_color = "#004373"
+  [[srvs]]
+    scrollbar_position = hidden
+    use_system_font = False
+    copy_on_selection = True
+    background_darkness = 0.42
+    scrollback_lines = 2000
+    background_type = image
+    background_image = /home/m-nikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
+    foreground_color = "#bcb285"
+    scroll_on_output = False
+    cursor_shape = underline
+    font = Consolas 9
+    background_color = "#744300"
 [layouts]
   [[default]]
     [[[child1]]]

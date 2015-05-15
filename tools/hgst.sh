@@ -18,7 +18,11 @@ fi
 TMP=/tmp/hgst.tmp
 touch $TMP
 echo "<div class=\"content\">
-<base target=\"_parent\">" > $TMP
+<base target=\"_parent\">
+<span class=\"redmine\">
+  <strong>Warning:</strong> SSH <u>passphrase</u> must be empty due to <em>\$ROWS</em> generation.
+</span><br/>
+" > $TMP
 
 # build redmine and jenkins references
 JOBS_DIR=/var/lib/jenkins/jobs/
@@ -27,6 +31,7 @@ ROWS=`ssh $JENKINS_SERVER 'for f in \`find -L /var/lib/jenkins/jobs/ -path "*las
 done;'`
 if [[ -n "$ROWS" ]]; then
     echo "<table class=\"table issues\">
+</br>
 <tr><th>Job</th><th>Redmine</th><th>Rev</th></tr>
 $ROWS
 </table>" >> $TMP
