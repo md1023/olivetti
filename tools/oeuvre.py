@@ -4,20 +4,24 @@
 import os
 import eyed3
 
-mp3s = []
+def get_mp3s(folder="."):
+    mp3s = []
+    for path, subdirs, files in os.walk(folder):
+        mp3s.extend(
+            [os.path.join(path, name) for name in files if name[-4:] == ".mp3"])
+    return mp3s
 
-for path, subdirs, files in os.walk("."):
-    mp3s.extend(
-        [os.path.join(path, name) for name in files if name[-4:] == ".mp3"])
+def get_song_info(mp3s, predicate=lambda:None, fields=("artist", "title")):
+    for name in mp3s:
+        mp3 = eyed3.load(name)
+        song = []
+        for f in (getattr(mp3.tag, f, None) for f in fields):
+            if predicate(f):
+                song.extend([f])
+        yield name, song
 
-for name in mp3s:
-    f = eyed3.load(name)
-    artist = getattr(f.tag, "artist", None)
-    title = getattr(f.tag, "title", None)
-    if "," in str(artist):
-        artist = artist.split(",")
-    if "," in str(artist):
-        title = title.split(",")
-    print name, artist or "", title or ""
-
-# all mp3s' tags should contain comma as separator
+if __name__ == "__main__":
+    mp3s = get_mp3s()
+    for s in get_song_info(mp3s, lambda s: "," not in (s or "")):
+        # continue
+        print s
