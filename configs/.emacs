@@ -74,6 +74,11 @@
 (put 'unit-test 'safe-local-variable
      '(lambda (val) 1))
 
+;; no tab indentation
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq indent-line-function 'insert-tab)
+
 ;; smooth scrolling
 (setq redisplay-dont-pause 1
   scroll-margin 1
