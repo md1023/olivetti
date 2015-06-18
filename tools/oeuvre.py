@@ -32,21 +32,45 @@ def get_song_info(mp3s, # gen,
         yield info
 
 def split_song_times(songs):
-    # [["zzz" if j<0 or j>=len(l) else l[j] for j in (i-1, i, i+1)] for i in range(len(l))]
-    # [['zzz', 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 'zzz']]
-    for s in songs:
-        if re.search("%(time)s" % CONSTS, s):
-            time = re.search("(%(time)s+)(?:-)?(%(time)s+)? ?(.*)" % CONSTS, s).groups()
-            yield time # tuple(t for t in time if t))
+    if isinstance(songs, basestring):
+        if re.search("%(time)s" % CONSTS, songs):
+            b, e, n = re.search("(%(time)s+)(?:-)?(%(time)s+)? ?(.*)" % CONSTS, songs).groups()
+            yield (b, e, n)
+        # else:
+        #     yield (None, None, songs)
+    else:
+        for s in songs:
+            if re.search("%(time)s" % CONSTS, s):
+                b, e, n = re.search("(%(time)s+)(?:-)?(%(time)s+)? ?(.*)" % CONSTS, s).groups()
+                yield (b, e, n)
+            # else:
+            #     yield (None, None, s)
+
+# rewrite for pairs instead of triples
+def combine_song_times(songs, length):
+    if len(songs) == 1:
+        print ">>1", songs
+    if len(songs) == 2:
+        print ">>2", songs
+    pairs = []
+    for i in range(1, len(songs) - 1):
+        prev = songs[i-1]
+        pos = songs[i]
+        next_ = songs[i+1]
+        pairs.append([prev, pos, next_])
+    if pairs:
+        print ">>>", pairs
 
 def split_song_name(info):
-    artist, name = info[1:3]
+    artist, name, length = info[1:4]
+    
     if artist and name:  # and re.search(): check if time is in name!
         comma = lambda s: s.split(",") if "," in s else s
         artists = comma(artist)
         songs = comma(name)
         times = list(split_song_times(songs))
-        print artists, "-", songs, "", times, "\n"
+        print "\n", artists, "-", songs
+        combine_song_times(times, length)
 
 if __name__ == "__main__":
     mp3s = get_mp3s()
