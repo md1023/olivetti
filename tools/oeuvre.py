@@ -43,23 +43,22 @@ def split_song_times(songs):
             if re.search("%(time)s" % CONSTS, s):
                 b, e, n = re.search("(%(time)s+)(?:-)?(%(time)s+)? ?(.*)" % CONSTS, s).groups()
                 yield (b, e, n)
-            # else:
-            #     yield (None, None, s)
+            else:
+                yield (None, None, s)
 
-# rewrite for pairs instead of triples
 def combine_song_times(songs, length):
-    if len(songs) == 1:
-        print ">>1", songs
-    if len(songs) == 2:
-        print ">>2", songs
-    pairs = []
-    for i in range(1, len(songs) - 1):
-        prev = songs[i-1]
-        pos = songs[i]
-        next_ = songs[i+1]
-        pairs.append([prev, pos, next_])
-    if pairs:
-        print ">>>", pairs
+    if not songs:
+        return ""
+    periods = []
+    for i in range(len(songs) - 1):
+        cb, ce, cn = songs[i]
+        nb, ne, nn = songs[i+1]
+        if i == 0 and not cb:
+            cb = u"0:00"
+        periods.append((cb, ce or nb, cn))
+    lb, le, ln = songs[-1]
+    periods.append((lb, le or length, ln))
+    return periods
 
 def split_song_name(info):
     artist, name, length = info[1:4]
@@ -68,9 +67,8 @@ def split_song_name(info):
         comma = lambda s: s.split(",") if "," in s else s
         artists = comma(artist)
         songs = comma(name)
-        times = list(split_song_times(songs))
-        print "\n", artists, "-", songs
-        combine_song_times(times, length)
+        times = combine_song_times(list(split_song_times(songs)), length)
+        print artists, "-", name, times
 
 if __name__ == "__main__":
     mp3s = get_mp3s()
