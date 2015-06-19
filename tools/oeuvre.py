@@ -5,7 +5,9 @@ import re
 import os
 import eyed3
 
-CONSTS=dict(time="[0-9]+:[0-9]")
+# avconv -i IMG_0111.MOV.mp3 -ss 00:02:24 -t 00:03:42 -b:a 256k -f mp3 IMG_0111_part1.MOV.mp3
+CONSTS=dict(time="[0-9]+:[0-9]",
+            comm="avconv -i %(name)s.mp3 --ss %(start)s -t %(duration)s -b:a 256k -f mp3 %(name)s_part%(piece)s.mp3")
 
 def get_mp3s(folder="."):
     mp3s = []
@@ -60,6 +62,17 @@ def combine_song_times(songs, length):
     periods.append((lb, le or length, ln))
     return periods
 
+def generate_command(subsongs):
+    l = []
+    for s in subsongs:
+        # print "$$", s
+        b, e, n = s
+        if not b or not e:
+            print ">>> skip", s
+            return
+        # l.append(s)
+        print ">", CONSTS["comm"]
+
 def split_song_name(info):
     artist, name, length = info[1:4]
     
@@ -68,9 +81,12 @@ def split_song_name(info):
         artists = comma(artist)
         songs = comma(name)
         times = combine_song_times(list(split_song_times(songs)), length)
-        print artists, "-", name, times
+        print "\n", artists, "-", name, times
+        if times:
+            command = generate_command(times)
 
 if __name__ == "__main__":
     mp3s = get_mp3s()
     for s in get_song_info(mp3s):
         split_song_name(s)
+
