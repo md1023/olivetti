@@ -206,6 +206,7 @@
 (define-key function-key-map [?\C-д] [?\C-l])
 (define-key function-key-map [?\C-л] [?\C-k])
 (define-key function-key-map [?\C-р] [?\C-h])
+(define-key function-key-map [?\C-е] [?\C-t])
 
 ;; movement keys
 (define-key function-key-map [?\C-у] [?\C-e])

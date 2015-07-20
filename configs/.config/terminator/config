@@ -4,6 +4,7 @@
   title_transmit_bg_color = "#0076c9"
   focus = mouse
   enabled_plugins = LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
+  geometry_hinting = False
 [keybindings]
   cycle_prev = <Control>Page_Up
   go_up = <Shift>Up
