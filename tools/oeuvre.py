@@ -6,10 +6,16 @@ import os
 import eyed3
 import datetime
 import time
+import subprocess
+import sys
 
 # avconv -i IMG_0111.MOV.mp3 -ss 00:02:24 -t 00:03:42 -b:a 256k -f mp3 IMG_0111_part1.MOV.mp3
+NOT_DRY = False
+if len(sys.argv) > 1:
+    NOT_DRY = bool(sys.argv[1])
+# TODO -metadata should be optional if it is none
 CONSTS=dict(time="[0-9]+:[0-9]",
-            comm="avconv -i %(name)s.mp3 -ss %(start)s -t %(duration)s -b:a 256k -f mp3 %(name)s_part%(piece)s.mp3")
+            comm="avconv -i %(name)s -ss %(start)s -t %(duration)s -b:a 256k -f mp3 -metadata title=\"%(song)s\" -metadata artist=\"%(artist)s\" %(name)s_part%(piece)s.mp3")
 
 def get_mp3s(folder="."):
     mp3s = []
@@ -29,6 +35,7 @@ def get_song_info(mp3s, # gen,
                   fields=("artist", "title")):
     for name in mp3s:
         mp3 = eyed3.load(name)
+        # TODO cut mp3 extension
         info = (name,)
         for f in (getattr(mp3.tag, f, None) for f in fields):
             info += (f,)
@@ -68,16 +75,22 @@ def seconds(s):
     t = time.strptime(s, "%M:%S")
     return int(datetime.timedelta(minutes=t.tm_min, seconds=t.tm_sec).total_seconds())
 
-def generate_command(fname, subsongs):
+def generate_command(fname, subsongs, dry_run=not NOT_DRY):
     l = []
     for piece, s in enumerate(subsongs):
-        # print "$$", s
-        b, e, n = s
+        b, e, n, a = s
         if not b or not e:
             print ">>> skip", s
             return
         # l.append(s)
-        print CONSTS["comm"] % dict(name=fname, start=seconds(b), duration=seconds(e) - seconds(b), piece=piece)
+        cmd = CONSTS["comm"] % dict(name=fname, start=seconds(b), duration=seconds(e) - seconds(b),
+                                    piece=piece,
+                                    song=n.strip(),
+                                    artist=a.strip()
+                                )
+        print ">", cmd
+        if not dry_run:
+            subprocess.call(cmd, shell=True)        
 
 def split_song_name(info):
     # split .mp3 in fname!
@@ -88,9 +101,10 @@ def split_song_name(info):
         artists = comma(artist)
         songs = comma(name)
         times = combine_song_times(list(split_song_times(songs)), length)
-        print "\n", artists, "-", name, times
+        times_with_artists = [t + (artists[i],) for i,t in enumerate(times)]
+        print name, times_with_artists
         if times:
-            command = generate_command(fname, times)
+            command = generate_command(fname, times_with_artists)
 
 if __name__ == "__main__":
     mp3s = get_mp3s()
