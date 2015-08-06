@@ -114,7 +114,6 @@
 ;; mercurial's "magit"
 (require 'monky)
 (setq monky-process-type 'cmdserver)
-(require 'ahg)
 (defalias 'hg 'monky-status)
 
 (require 'git-gutter-fringe)
