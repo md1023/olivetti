@@ -9,10 +9,12 @@ import time
 import subprocess
 import sys
 
-# avconv -i IMG_0111.MOV.mp3 -ss 00:02:24 -t 00:03:42 -b:a 256k -f mp3 IMG_0111_part1.MOV.mp3
+# TODO beauify this
 NOT_DRY = False
 if len(sys.argv) > 1:
     NOT_DRY = bool(sys.argv[1])
+
+# avconv -i IMG_0111.MOV.mp3 -ss 00:02:24 -t 00:03:42 -b:a 256k -f mp3 IMG_0111_part1.MOV.mp3
 # TODO -metadata should be optional if it is none
 CONSTS=dict(time="[0-9]+:[0-9]",
             comm="avconv -i %(name)s -ss %(start)s -t %(duration)s -b:a 256k -f mp3 -metadata title=\"%(song)s\" -metadata artist=\"%(artist)s\" %(name)s_part%(piece)s.mp3")
@@ -29,7 +31,7 @@ def convert_seconds(time):
         seconds = str(time - 60 * (time / 60)).zfill(2)
         return "%s:%s" % (minutes, seconds)
 
-def get_song_info(mp3s, # gen,
+def get_song_info(mp3s,
                   predicate=lambda:None,
                   chain=lambda:None,
                   fields=("artist", "title")):
@@ -47,8 +49,6 @@ def split_song_times(songs):
         if re.search("%(time)s" % CONSTS, songs):
             b, e, n = re.search("(%(time)s+)(?:-)?(%(time)s+)? ?(.*)" % CONSTS, songs).groups()
             yield (b, e, n)
-        # else:
-        #     yield (None, None, songs)
     else:
         for s in songs:
             if re.search("%(time)s" % CONSTS, s):
@@ -76,24 +76,22 @@ def seconds(s):
     return int(datetime.timedelta(minutes=t.tm_min, seconds=t.tm_sec).total_seconds())
 
 def generate_command(fname, subsongs, dry_run=not NOT_DRY):
-    l = []
     for piece, s in enumerate(subsongs):
         b, e, n, a = s
         if not b or not e:
             print ">>> skip", s
             return
-        # l.append(s)
-        cmd = CONSTS["comm"] % dict(name=fname, start=seconds(b), duration=seconds(e) - seconds(b),
-                                    piece=piece,
-                                    song=n.strip(),
-                                    artist=a.strip()
-                                )
+        cmd = CONSTS["comm"] % dict(
+            name=fname, start=seconds(b), duration=seconds(e) - seconds(b),
+            piece=piece,
+            song=n.strip() or "part%s %s-%s" % (piece, b, e),
+            artist=a.strip())
         print ">", cmd
         if not dry_run:
-            subprocess.call(cmd, shell=True)        
+            subprocess.call(cmd, shell=True)
 
 def split_song_name(info):
-    # split .mp3 in fname!
+    # TODO split .mp3 in fname!
     fname, artist, name, length = info[0:4]
 
     if artist and name:  # and re.search(): check if time is in name!
