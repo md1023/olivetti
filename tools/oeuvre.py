@@ -15,9 +15,9 @@ if len(sys.argv) > 1:
     NOT_DRY = bool(sys.argv[1])
 
 # avconv -i IMG_0111.MOV.mp3 -ss 00:02:24 -t 00:03:42 -b:a 256k -f mp3 IMG_0111_part1.MOV.mp3
-# TODO -metadata should be optional if it is none
+# TODO -metadata should be optional if it is none or should be set by eyeD3
 CONSTS=dict(time="[0-9]+:[0-9]",
-            comm="avconv -i %(name)s -ss %(start)s -t %(duration)s -b:a 256k -f mp3 -metadata title=\"%(song)s\" -metadata artist=\"%(artist)s\" %(name)s_part%(piece)s.mp3")
+            comm="avconv -i %(name)s.mp3 -ss %(start)s -t %(duration)s -b:a 256k -f mp3 -metadata title=\"%(song)s\" -metadata artist=\"%(artist)s\" -metadata comment=\"%(comment)s\" %(name)s_part%(piece)s.mp3")
 
 def get_mp3s(folder="."):
     mp3s = []
@@ -57,6 +57,7 @@ def split_song_times(songs):
             else:
                 yield (None, None, s)
 
+# TODO songs get skipped, times split uncorrectly
 def combine_song_times(songs, length):
     if not songs:
         return ""
@@ -80,12 +81,17 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
         b, e, n, a = s
         if not b or not e:
             print ">>> skip", s
-            return
+            continue
+        fname_no_suffix = fname.split(".mp3")[0]
+        part_time = "part%s %s-%s" % (piece, b, e)
         cmd = CONSTS["comm"] % dict(
-            name=fname, start=seconds(b), duration=seconds(e) - seconds(b),
+            name=fname_no_suffix,
+            start=seconds(b),
+            duration=seconds(e) - seconds(b),
             piece=piece,
-            song=n.strip() or "part%s %s-%s" % (piece, b, e),
-            artist=a.strip())
+            song=n.strip() or part_time,
+            artist=a.strip(),
+            comment=fname_no_suffix[2:] + " " + part_time)
         print ">", cmd
         if not dry_run:
             subprocess.call(cmd, shell=True)
@@ -100,7 +106,7 @@ def split_song_name(info):
         songs = comma(name)
         times = combine_song_times(list(split_song_times(songs)), length)
         times_with_artists = [t + (artists[i],) for i,t in enumerate(times)]
-        print name, times_with_artists
+        print times_with_artists
         if times:
             command = generate_command(fname, times_with_artists)
 
