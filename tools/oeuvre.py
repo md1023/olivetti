@@ -38,9 +38,14 @@ def get_song_info(mp3s,
     for name in mp3s:
         mp3 = eyed3.load(name)
         # TODO cut mp3 extension
-        info = (name,)
-        for f in (getattr(mp3.tag, f, None) for f in fields):
-            info += (f,)
+        info = tuple(getattr(mp3.tag, f, None) for f in fields)
+        # skip if no info or single song
+        # TODO single song must be cut if it has start time!
+        if not all(info) or not any("," in f for f in info):
+            print "\nskipped:", name
+            continue
+        print "\n", name
+        info = (name,) + info
         info += (convert_seconds(mp3.info.time_secs),)
         yield info
 
@@ -59,6 +64,7 @@ def split_song_times(songs):
 
 # TODO songs get skipped, times split uncorrectly
 def combine_song_times(songs, length):
+    # may be obsolete (check for single songs)
     if not songs:
         return ""
     periods = []
@@ -69,7 +75,11 @@ def combine_song_times(songs, length):
             cb = u"0:00"
         periods.append((cb, ce or nb, cn))
     lb, le, ln = songs[-1]
+    # single song does not need to be cut
+    # if len(songs) == 1:
+    #     lb = u"0:00"
     periods.append((lb, le or length, ln))
+    # print "periods", lb, le, ln, length
     return periods
 
 def seconds(s):
@@ -98,6 +108,7 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
 
 def split_song_name(info):
     # TODO split .mp3 in fname!
+    print info
     fname, artist, name, length = info[0:4]
 
     if artist and name:  # and re.search(): check if time is in name!
@@ -106,7 +117,7 @@ def split_song_name(info):
         songs = comma(name)
         times = combine_song_times(list(split_song_times(songs)), length)
         times_with_artists = [t + (artists[i],) for i,t in enumerate(times)]
-        print times_with_artists
+        print "times:", times_with_artists
         if times:
             command = generate_command(fname, times_with_artists)
 
@@ -114,4 +125,3 @@ if __name__ == "__main__":
     mp3s = get_mp3s()
     for s in get_song_info(mp3s):
         split_song_name(s)
-
