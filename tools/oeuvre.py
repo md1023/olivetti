@@ -16,9 +16,8 @@ if len(sys.argv) > 1:
     NOT_DRY = bool(sys.argv[1])
 
 # avconv -i IMG_0111.MOV.mp3 -ss 00:02:24 -t 00:03:42 -b:a 256k -f mp3 IMG_0111_part1.MOV.mp3
-# TODO -metadata should be optional if it is none or should be set by eyeD3
 CONSTS=dict(time="[0-9]+:[0-9]",
-            comm="avconv -i %(name)s.mp3 -ss %(start)s -t %(duration)s -b:a 256k -f mp3 -metadata title=\"%(song)s\" -metadata artist=\"%(artist)s\" -metadata comment=\"%(comment)s\" %(name)s_part%(piece)s.mp3")
+            comm="avconv -i %(name)s.mp3 -ss %(start)s -t %(duration)s -b:a 256k -f mp3 %(metadata)s %(name)s_part%(piece)s.mp3")
 
 def get_mp3s(folder="."):
     mp3s = []
@@ -95,14 +94,19 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
             continue
         fname_no_suffix = fname.split(".mp3")[0]
         part_time = "part%s %s-%s" % (piece, b, e)
+
+        metadata = dict(song=n.strip() or part_time,
+                        artist=a.strip(),
+                        comment=fname_no_suffix[2:] + " " + part_time)
+        metadata = " ".join(
+            ["-metadata %s=\'%s\'" % (k, v) for k,v in metadata.items() if v])
+
         cmd = CONSTS["comm"] % dict(
             name=fname_no_suffix,
             start=seconds(b),
             duration=seconds(e) - seconds(b),
             piece=piece,
-            song=n.strip() or part_time,
-            artist=a.strip(),
-            comment=fname_no_suffix[2:] + " " + part_time)
+            metadata=metadata)
         print ">", cmd
         if not dry_run:
             subprocess.call(cmd, shell=True)
