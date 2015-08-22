@@ -107,11 +107,7 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
         if not dry_run:
             subprocess.call(cmd, shell=True)
 
-def split_song_name(info):
-    # TODO split .mp3 in fname!
-    print info
-    fname, artist, name, length = info[0:4]
-
+def split_song_name(fname, artist, name, length):
     comma = lambda s: s.split(SEPARATOR) if SEPARATOR in s else s
     songs = comma(name)
 
@@ -129,4 +125,4 @@ def split_song_name(info):
 if __name__ == "__main__":
     mp3s = get_mp3s()
     for s in get_song_info(mp3s):
-        split_song_name(s)
+        split_song_name(*s)
