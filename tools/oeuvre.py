@@ -9,6 +9,7 @@ import time
 import subprocess
 import sys
 
+SEPARATOR=","
 # TODO beauify this
 NOT_DRY = False
 if len(sys.argv) > 1:
@@ -41,7 +42,7 @@ def get_song_info(mp3s,
         info = tuple(getattr(mp3.tag, f, None) for f in fields)
         # skip if no info or single song
         # TODO single song must be cut if it has start time!
-        if not all(info) or not any("," in f for f in info):
+        if not info[1]:
             print "\nskipped:", name
             continue
         print "\n", name
@@ -111,15 +112,19 @@ def split_song_name(info):
     print info
     fname, artist, name, length = info[0:4]
 
-    if artist and name:  # and re.search(): check if time is in name!
-        comma = lambda s: s.split(",") if "," in s else s
-        artists = comma(artist)
-        songs = comma(name)
-        times = combine_song_times(list(split_song_times(songs)), length)
-        times_with_artists = [t + (artists[i],) for i,t in enumerate(times)]
-        print "times:", times_with_artists
-        if times:
-            command = generate_command(fname, times_with_artists)
+    comma = lambda s: s.split(SEPARATOR) if SEPARATOR in s else s
+    songs = comma(name)
+
+    if not artist:
+        artist = SEPARATOR * (len(songs) - 1)
+    artists = comma(artist)
+    assert len(songs) == len(artists)
+
+    times = combine_song_times(list(split_song_times(songs)), length)
+    times_with_artists = [t + (artists[i],) for i,t in enumerate(times)]
+    print "times:", times_with_artists
+    if times:
+        command = generate_command(fname, times_with_artists)
 
 if __name__ == "__main__":
     mp3s = get_mp3s()
