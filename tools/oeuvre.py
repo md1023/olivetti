@@ -42,7 +42,10 @@ def get_song_info(mp3s,
         # skip if no info or single song
         # TODO single song must be cut if it has start time!
         if not info[1]:
-            print "\nskipped:", name
+            print "\nskipped:", name, "no names"
+            continue
+        if not SEPARATOR in info[1]:
+            print "\nskipped:", name, "no separator"
             continue
         print "\n", name
         info = (name,) + info
@@ -90,7 +93,7 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
     for piece, s in enumerate(subsongs):
         b, e, n, a = s
         if not b or not e:
-            print ">>> skip", s
+            print "\nskipped", fname, "song", s, "hasn't beginning or end"
             continue
         fname_no_suffix = fname.split(".mp3")[0]
         part_time = "part%s %s-%s" % (piece, b, e)
@@ -113,12 +116,19 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
 
 def split_song_name(fname, artist, name, length):
     comma = lambda s: s.split(SEPARATOR) if SEPARATOR in s else s
+    assert name
     songs = comma(name)
 
     if not artist:
         artist = SEPARATOR * (len(songs) - 1)
     artists = comma(artist)
-    assert len(songs) == len(artists)
+
+    # elaborate better solution
+    try:
+        assert len(songs) == len(artists), (songs, artists)
+    except AssertionError:
+        print "\nskipped:", songs, artists, "error in songs and artists",
+        return
 
     times = combine_song_times(list(split_song_times(songs)), length)
     times_with_artists = [t + (artists[i],) for i,t in enumerate(times)]
