@@ -71,17 +71,19 @@ def combine_song_times(songs, length):
     if not songs:
         return ""
     periods = []
+    pe = None # previous song ending in case of many
     for i in range(len(songs) - 1):
         cb, ce, cn = songs[i]
         nb, ne, nn = songs[i+1]
         if i == 0 and not cb:
             cb = u"0:00"
-        periods.append((cb, ce or nb, cn))
+        pe = ce or nb
+        periods.append((cb, pe, cn))
     lb, le, ln = songs[-1]
     # single song does not need to be cut
     # if len(songs) == 1:
     #     lb = u"0:00"
-    periods.append((lb, le or length, ln))
+    periods.append((lb or pe, le or length, ln))
     # print "periods", lb, le, ln, length
     return periods
 
@@ -90,10 +92,12 @@ def seconds(s):
     return int(datetime.timedelta(minutes=t.tm_min, seconds=t.tm_sec).total_seconds())
 
 def generate_command(fname, subsongs, dry_run=not NOT_DRY):
+    success = True
     for piece, s in enumerate(subsongs):
         b, e, n, a = s
         if not b or not e:
             print "\nskipped", fname, "song", s, "hasn't beginning or end"
+            success = False
             continue
         fname_no_suffix = fname.split(".mp3")[0]
         part_time = "part%s %s-%s" % (piece, b, e)
@@ -113,6 +117,7 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
         print ">", cmd
         if not dry_run:
             subprocess.call(cmd, shell=True)
+    return success
 
 def split_song_name(fname, artist, name, length):
     comma = lambda s: s.split(SEPARATOR) if SEPARATOR in s else s
@@ -135,6 +140,8 @@ def split_song_name(fname, artist, name, length):
     print "times:", times_with_artists
     if times:
         command = generate_command(fname, times_with_artists)
+        if command:
+            print "\nsuccessful:", fname
 
 if __name__ == "__main__":
     mp3s = get_mp3s()
