@@ -227,6 +227,10 @@
     (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
     (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
+;; face in comments for TODO highlights
+(require 'fic-mode)
+(dolist (h '(python-mode-hook js-mode-hook)) (add-hook h 'turn-on-fic-mode))
+
 ;; org mode
 (print "MY ORG LOADED")
 (setf org-replace-disputed-keys 1
