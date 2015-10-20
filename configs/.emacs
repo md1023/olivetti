@@ -22,6 +22,11 @@
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
+(setq url-proxy-services
+   '(("no_proxy" . "^\\(localhost\\|10.*\\)")
+     ("http" . "192.168.200.105:8088")
+     ("https" . "192.168.200.105:8088")))
+
 ;; (require 'skype)
 ;; (setq skype--my-user-handle "maxim.simno.nikolaev")
 
@@ -229,7 +234,7 @@
 
 ;; face in comments for TODO highlights
 (require 'fic-mode)
-(dolist (h '(python-mode-hook js-mode-hook)) (add-hook h 'turn-on-fic-mode))
+(dolist (h '(python-mode-hook js-mode-hook sh-mode-hook)) (add-hook h 'turn-on-fic-mode))
 
 ;; org mode
 (print "MY ORG LOADED")
