@@ -21,7 +21,7 @@
     use_system_font = False
     copy_on_selection = True
     background_darkness = 0.36
-    scrollback_lines = 5000
+    scrollback_lines = 10000
     background_type = image
     background_image = /home/m-nikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
     foreground_color = "#bcb285"

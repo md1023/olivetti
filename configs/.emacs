@@ -246,7 +246,14 @@
                                ))
 
 ;; tests
-(require 'nose)
+(defun nose-buffer ()
+  (interactive)
+  (compile
+   (concat "nosetests -s " (buffer-file-name) )))
+
+(add-hook 'python-mode-hook
+          '(lambda ()
+             (local-set-key "\C-c\C-t" 'nose-buffer)))
 
 ;; database
 (require 'sql)
