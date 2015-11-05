@@ -249,7 +249,9 @@
 (defun nose-buffer ()
   (interactive)
   (compile
-   (concat "nosetests -s " (buffer-file-name) )))
+   (concat "nosetests -s "
+           (replace-regexp-in-string
+            "\\(^.*/\\)\\(?:test_\\)?\\(.+\\)$" "\\1test_\\2" buffer-file-name))))
 
 (add-hook 'python-mode-hook
           '(lambda ()

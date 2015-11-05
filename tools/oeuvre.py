@@ -73,7 +73,7 @@ def combine_song_times(songs, length):
         cb, ce, cn = songs[i]
         nb, ne, nn = songs[i+1]
         if i == 0 and not cb:
-            cb = u"0:00"
+            cb = "0:00"
         pe = ce or nb
         periods.append((cb, pe, cn))
     lb, le, ln = songs[-1]
@@ -118,9 +118,9 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
             subprocess.call(cmd, shell=True)
     return success
 
+comma = lambda s: s.split(SEPARATOR) if SEPARATOR in s else s
 
 def split_song_name(fname, artist, name, length):
-    comma = lambda s: s.split(SEPARATOR) if SEPARATOR in s else s
     assert name
     songs = comma(name)
 
