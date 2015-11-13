@@ -14,10 +14,22 @@ class TestOeuvreMP3Tags(unittest.TestCase):
             list(gen_split_song_times(comma(self.song))))
 
     def test_combine_song_times(self):
-        song = list(gen_split_song_times(comma(self.song)))
+        song_end = "3:54"
         self.assertEqual(
             [('0:00', '1:12', 'a'), ('1:12', '2:30', 'b'), ('2:30', '3:54', 'c')],
-            combine_song_times(song, "3:54"))
+            combine_song_times(
+                list(gen_split_song_times(comma(self.song))),
+                song_end))
+
+    def test_wrong_combine_song_times(self):
+        song = "a, 1:12 b, c 2:30"
+        song_end = "3:54"
+        self.assertRaises"
+        self.assertEqual(
+            [('0:00', '1:12', 'a'), ('1:12', '2:30', 'b'), ('2:30', '3:54', 'c')],
+            combine_song_times(
+                list(gen_split_song_times(comma(song))),
+                song_end))
 
 if __name__ == '__main__':
     unittest.main()
