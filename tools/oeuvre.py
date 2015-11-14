@@ -112,7 +112,7 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
                         artist=a.strip(),
                         comment=fname_no_suffix[2:] + " " + part_time)
         metadata = " ".join(
-            ["-metadata %s=\'%s\'" % (k, v) for k,v in metadata.items() if v])
+            ["-metadata %s=\'%s\'" % (k, v) for k,v in metadata.items()])
 
         cmd = CONSTS["comm"] % dict(
             name=fname_no_suffix,
