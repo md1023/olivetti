@@ -47,9 +47,11 @@ def gen_get_song_info(mp3s):
         # skip if no info or single song
         # TODO single song must be cut if it has start time!
         if not info[1]:
-            logger.info("skipped: %s no names" % name)
+            logger.info("skipped: %s no names", name)
+            continue
         if not SEPARATOR in info[1]:
-            logger.info("skipped: %s no separator" % name)
+            logger.info("skipped: %s no separator", name)
+            continue
         logger.info("%s" % name)
         yield ( (name,) + info + (convert_seconds(mp3.info.time_secs),) )
 
@@ -102,7 +104,7 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
     for piece, s in enumerate(subsongs):
         b, e, n, a = s
         if not b or not e:
-            raise OeuvreException("skipped %s song %s hasn't beginning or end" % (fname, s))
+            raise OeuvreException("skipped %s song %s hasn't beginning or end", fname, s)
         fname_no_suffix = fname.split(".mp3")[0]
         part_time = "part%s %s-%s" % (piece, b, e)
 
@@ -129,7 +131,7 @@ def split_names(s, sep=SEPARATOR):
 
 def process_song(fname, artist, name, length):
     if not name:
-        raise OeuvreException("bad song name '%s'" % name)
+        raise OeuvreException("bad song name '%s'", name)
     songs = split_names(name)
 
     if not artist:
@@ -137,7 +139,7 @@ def process_song(fname, artist, name, length):
     artists = split_names(artist)
 
     if len(songs) != len(artists):
-        raise OeuvreException("skipped: %s %s error in songs and artists" % (songs, artists))
+        raise OeuvreException("skipped: %s %s error in songs and artists", songs, artists)
 
     songs = list(gen_split_song_times(songs))
     periods = combine_song_times(songs, length)
@@ -160,6 +162,4 @@ if __name__ == "__main__":
         try:
             process_song(*s)
         except OeuvreException as e:
-            logger.warning("%s %s" % (e, dir(e)))
-        else:
-            logger.critical("unhandled exception")
+            logger.warning("%s", e.message)
