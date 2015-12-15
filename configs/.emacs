@@ -175,7 +175,7 @@
 (global-set-key (kbd "C-S-d") 'kill-word)
 (global-set-key (kbd "C-S-h") 'backward-kill-word)
 (global-set-key (kbd "C-h") 'delete-backward-char)
-(global-set-key (kbd "C-?") 'help)
+(global-set-key (kbd "C-?") 'help-command)
 
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
