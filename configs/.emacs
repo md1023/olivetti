@@ -298,7 +298,7 @@
   (message "Login...done")
   (pop-to-buffer "*SQL*"))
 
-;; flycheck
+;; flycheck, be sure to install flake8 and gjslint
 (require 's)
 (require 'dash)
 (require 'flycheck)
