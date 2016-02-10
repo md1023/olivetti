@@ -39,6 +39,11 @@
 (define-key global-map [remap right-word] 'forward-to-word)
 (define-key global-map [remap left-word] 'backward-word)
 
+;; record last
+(require 'goto-last-point)
+(goto-last-point-mode 1)
+(global-set-key (kbd "M-_") 'goto-last-point)
+
 ;; jump around text
 (require 'ace-jump-mode)
 (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
