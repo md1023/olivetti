@@ -239,7 +239,7 @@
 
 ;; face in comments for TODO highlights
 (require 'fic-mode)
-(dolist (h '(python-mode-hook js-mode-hook sh-mode-hook)) (add-hook h 'turn-on-fic-mode))
+(dolist (h '(python-mode-hook js-mode-hook sh-mode-hook php-mode)) (add-hook h 'turn-on-fic-mode))
 
 ;; org mode
 (print "MY ORG LOADED")
