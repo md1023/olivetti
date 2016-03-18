@@ -75,6 +75,9 @@ export LEIZEN_LIBS=$HOME/Work/leizen/.env/lib/python2.7/site-packages
 # pip install --install-option="--user" virtualenvwrapper
 source $HOME/.local/bin/virtualenvwrapper.sh
 
+# git clone https://github.com/thejoshwolfe/svn-color ~/Documents/svn-color
+alias svn="python -u $HOME/Documents/svn-color/svn-color.py"
+
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" \
     -layout "us,ru"
