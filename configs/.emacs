@@ -89,7 +89,7 @@
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
 
-;; smooth scrolling
+;; better scrolling, check sublimity for smooth scrolling
 (setq redisplay-dont-pause 1
   scroll-margin 1
   scroll-step 1
@@ -143,8 +143,13 @@
 
 (require 'org-install)
 (require 'hl-line+)
-(require 'highlight)
 (require 'highlight-indentation)
+
+(require 'highlight-symbol)
+(setq highlight-symbol-idle-delay 0)
+;; TODO move add-hooks elsewhere
+(dolist (h '(highlight-symbol-mode highlight-symbol-nav-mode)) (add-hook 'prog-mode-hook h))
+
 (require 'ecmascript-mode)
 (require 'minimap)
 (require 'php-mode)
@@ -239,7 +244,7 @@
 
 ;; face in comments for TODO highlights
 (require 'fic-mode)
-(dolist (h '(python-mode-hook js-mode-hook sh-mode-hook php-mode)) (add-hook h 'turn-on-fic-mode))
+(add-hook 'prog-mode-hook 'turn-on-fic-mode)
 
 ;; org mode
 (print "MY ORG LOADED")
