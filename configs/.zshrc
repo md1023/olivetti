@@ -75,8 +75,29 @@ export LEIZEN_LIBS=$HOME/Work/leizen/.env/lib/python2.7/site-packages
 # pip install --install-option="--user" virtualenvwrapper
 source $HOME/.local/bin/virtualenvwrapper.sh
 
+# connect to svn:// behind proxy
+# sudo apt-get install libnet-proxy-perl
+# connect-tunnel -v -L -P 192.168.200.105:8088 -T 10234:79.104.197.230:9036
+# svn checkout svn://localhost:10234 .
+# svn update --username nikolaev --password nikolaev
+
 # git clone https://github.com/thejoshwolfe/svn-color ~/Documents/svn-color
 alias svn="python -u $HOME/Documents/svn-color/svn-color.py"
+
+# beep from speakers
+_alarm() {
+    ( speaker-test --frequency $1 --test sine )&
+    pid=$!
+    sleep 0.${2}s
+    kill -9 $pid
+}
+alias alarm='(_alarm 440 2 > /dev/null)'
+# "( speaker-test -t sine -f 440 > /dev/null )& pid=$! ; sleep 0.2s ; kill -9 $pid"
+
+# kill trailing whitespace
+alias kill_trailing_whitespace='sed -i -r "s/\s+$//g" `hg st -man | xargs`'
+# put two newlines before class definition
+alias class_double_newlines='for f in `hg st -n | egrep "*.py"`; do cat $f | tr "\n" "\r" | sed "s/\r\+class/\r\r\rclass/g" | tr "\r" "\n" > $f; done'
 
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" \
