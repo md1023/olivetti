@@ -39,13 +39,18 @@ where the car is a JID and the CDR is an alist.
 JID is a full Jabber ID string (e.g. foo@bar.tld). You can also
 specify the resource (e.g. foo@bar.tld/emacs).
 The following keys can be present in the alist:
-:password is a string to authenticate ourself against the server.
-It can be empty.
-:network-server is a string identifying the address to connect to,
-if it's different from the server part of the JID.
-:port is the port to use (default depends on connection type).
-:connection-type is a symbol. Valid symbols are `starttls',
-`network' and `ssl'.
+
+  :password is a string to authenticate ourself against the server.
+  It can be empty.  If you don't want to store your password in your
+  Emacs configuration, try auth-source (info node `(auth)Top').
+
+  :network-server is a string identifying the address to connect to,
+  if it's different from the server part of the JID.
+
+  :port is the port to use (default depends on connection type).
+
+  :connection-type is a symbol. Valid symbols are `starttls',
+  `network' and `ssl'.
 
 Only JID is mandatory.  The rest can be guessed at run-time.
 
@@ -88,7 +93,6 @@ configure a Google Talk account like this:
 				   (const :tag "Legacy SSL/TLS" ssl))))))
   :group 'jabber)
 
-;;;###autoload
 (defcustom jabber-default-show ""
   "default show state"
   :type '(choice (const :tag "Online" "")
@@ -98,13 +102,11 @@ configure a Google Talk account like this:
 		 (const :tag "Do not disturb" "dnd"))
   :group 'jabber)
 
-;;;###autoload
 (defcustom jabber-default-status ""
   "default status string"
   :type 'string
   :group 'jabber)
 
-;;;###autoload
 (defcustom jabber-default-priority 10
   "default priority"
   :type 'integer
@@ -148,6 +150,7 @@ configure a Google Talk account like this:
 
 ;; External notifiers
 (require 'jabber-screen)
+(require 'jabber-tmux)
 (require 'jabber-ratpoison)
 (require 'jabber-sawfish)
 (require 'jabber-festival)
@@ -155,8 +158,8 @@ configure a Google Talk account like this:
 (require 'jabber-wmii)
 (require 'jabber-osd)
 (require 'jabber-awesome)
-
-(require 'jabber-autoloads)
+(require 'jabber-libnotify)
+(require 'jabber-notifications)
 
 ;;;###autoload
 (defvar *jabber-current-status* nil
@@ -194,18 +197,23 @@ configure a Google Talk account like this:
 (defgroup jabber-debug nil "debugging options"
   :group 'jabber)
 
-;;;###autoload
 (defcustom jabber-debug-log-xml nil
-  "log all XML i/o in *-jabber-xml-log-JID-*"
-  :type 'boolean
+  "Set to non-nil to log all XML i/o in *-jabber-console-JID-* buffer. Set to string to also dump XML i/o in specified file."
+  :type '(choice (const :tag "Do not dump XML i/o" nil)
+                 (const :tag "Dump XML i/o in console" t)
+                 (string :tag "Dump XML i/o in console and this file"))
   :group 'jabber-debug)
 
-;;;###autoload
 (defcustom jabber-debug-keep-process-buffers nil
   "If nil, kill process buffers when the process dies.
 Contents of process buffers might be useful for debugging."
   :type 'boolean
   :group 'jabber-debug)
+
+(defcustom jabber-silent-mode nil
+  "Silent mode switch. Not ask confirmanions for some operations. DANGEROUS!"
+  :type 'boolean
+  :group 'jabber)
 
 ;;;###autoload
 (defconst jabber-presence-faces

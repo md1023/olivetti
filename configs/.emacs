@@ -317,25 +317,12 @@
 ;; ack-grep
 (require 'ack)
 
-;; irc settings
-(require 'erc)
-(defun office-chat ()
-  "Connect to IRC and Jabber at igrade.ru."
-  (interactive)
-  (let ((password (read-passwd "Enter password: ")))
-  (erc-tls :server "irc.igrade.ru" :port 6667
-  	     :nick "m-nikolaev" :full-name "Maxim Nikolaev"
-  	     :password password)
-  (setq erc-autojoin-channels-alist '(("igrade.ru" "#it" "#notify" "#flood")))
-  (jabber-connect "m-nikolaev@igrade.ru" "igrade.ru" "" nil password
-		  "igrade.ru" 5223 'ssl)))
-
 ;;jabber settings
 (require 'jabber-autoloads)
-(setq jabber-account-list '(("m-nikolaev@igrade.ru"
-			     (:network-server . "igrade.ru")
-			     (:port . 5223)
-			     (:connection-type . ssl)))
+(setq jabber-account-list '(("simno@serv69u"
+			     (:network-server . "192.168.200.69")
+			     (:port . 5222)
+                 (:connection-type "network")))
       ;; jabber-alert-message-hooks '(jabber-message-echo jabber-message-display jabber-message-scroll)
       jabber-auto-reconnect 1
       jabber-vcard-avatars-retrieve nil
