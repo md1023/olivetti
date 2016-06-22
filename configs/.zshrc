@@ -97,7 +97,15 @@ alias alarm='(_alarm 440 2 > /dev/null)'
 # kill trailing whitespace
 alias kill_trailing_whitespace='sed -i -r "s/\s+$//g" `hg st -man | xargs`'
 # put two newlines before class definition
-alias class_double_newlines='for f in `find ibd3/orm -type f`; do cat $f | tr "\n" "\r" | sed "s/\r\+class/\r\r\rclass/g" | tr "\r" "\n" > $f".copy"; mv $f".copy" $f; done'
+class_double_newlines() {
+    for f in $@; do
+        cat $f | \
+            tr "\n" "\r" | \
+            sed "s/\r\+class/\r\r\rclass/g" | \
+            tr "\r" "\n" > $f".copy"
+        mv $f".copy" $f
+    done
+}
 
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" \
