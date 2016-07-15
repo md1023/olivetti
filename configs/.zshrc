@@ -9,34 +9,64 @@ ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 ZSH_THEME="kardan"
 
-# Set to this to use case-sensitive completion
+# Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
-# Comment this out to disable bi-weekly auto-update checks
+# Uncomment the following line to use hyphen-insensitive completion. Case
+# sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
+
+# Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
 
-# Uncomment to change how many often would you like to wait before auto-updates occur? (in days)
+# Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
 
-# Uncomment following line if you want to disable colors in ls
+# Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
 
-# Uncomment following line if you want to disable autosetting terminal title.
+# Uncomment the following line to disable auto-setting terminal title.
 # DISABLE_AUTO_TITLE="true"
 
-# Uncomment following line if you want red dots to be displayed while waiting for completion
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
 # COMPLETION_WAITING_DOTS="true"
+
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+HIST_STAMPS="yyyy.mm.dd"
+
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
 plugins=(git cp web-search colored-man)
+
+# User configuration
+
+# export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+# export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
 
-# Customize to your needs...
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
-export PATH=/usr/lib/lightdm/lightdm:$PATH
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# For a full list of active aliases, run `alias`.
 
 # m-nikolaev customizations:
 alias ls='ls --classify --color=auto --human-readable --time-style=locale --group-directories-first'
@@ -46,26 +76,7 @@ alias df='df --human-readable'
 alias du='du --human-readable'
 alias grep='grep --color'
 alias cal='ncal -Mb'
-
-# find python, javascript, xml files
-alias findpy='find . \( -name "*test*" -o -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.py" -print0 | xargs -0e grep -n --color'
-alias findpytest='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.py" -print0 | xargs -0e grep -n --color'
-alias findjs='find . \( -name "*test*" -o -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.js" -print0 | xargs -0e grep -n --color'
-alias findjstest='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.js" -print0 | xargs -0e grep -n --color'
-alias findlisp='find . -name "*.el" -print0 | xargs -0e grep -n --color'
-alias findcss='find . \( -name "*test*" -o -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.css" -print0 | xargs -0e grep -n --color'
-alias findxml='find . \( -name "*test*" -o -path "*towel*" -o -path "*.git*" -prune \) -o \( -name "*.xsl" -o -name "*.xml" \) -print0 | xargs -0e grep -n --color'
-alias findsql='find . -name "*.sql" -print0 | xargs -0e grep -n --color'
-alias findpybtwn='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.py" -print0 | xargs -0e btwngrep'
-alias findjsbtwn='find . \( -path "*towel*" -o -path "*.git*" -prune \) -o -name "*.js" -print0 | xargs -0e btwngrep'
 alias ag='ag --hidden'
-
-# myscripts
-export MAGRATHEA=$HOME/Work/magrathea
-export WORKON_HOME=$HOME/work/virtualenvs
-export FLASH=$HOME/Public/Flash_SVN/
-export LEIZEN=$HOME/Work/leizen
-export LEIZEN_LIBS=$HOME/Work/leizen/.env/lib/python2.7/site-packages
 
 # psql horizontal scroll
 # export PAGER=cat
@@ -110,4 +121,3 @@ class_double_newlines() {
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" \
     -layout "us,ru"
-
