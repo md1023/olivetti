@@ -19,7 +19,8 @@ de.defstyle("*", {
     padding_pixels = 0,
     spacing = 0,
     
-    font = "-xos4-consolas-medium-r-*-*-12-*-*-*-*-*-iso8859-*",
+    --font = "-xos4-consolas-medium-r-*-*-12-*-*-*-*-*-iso8859-*",
+    font = "terminus",
     text_align = "center",
 })
 

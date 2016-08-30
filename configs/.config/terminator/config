@@ -1,91 +1,54 @@
 [global_config]
-  use_custom_url_handler = True
   custom_url_handler = seamonkey
-  title_transmit_bg_color = "#0076c9"
-  focus = mouse
   enabled_plugins = LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
+  focus = mouse
   geometry_hinting = False
+  suppress_multiple_term_dialog = True
+  title_transmit_bg_color = "#0076c9"
+  use_custom_url_handler = True
 [keybindings]
+  cycle_next = <Control>Page_Down
   cycle_prev = <Control>Page_Up
+  go_down = <Shift>Down
+  go_left = <Shift>Left
+  go_right = <Shift>Right
   go_up = <Shift>Up
   next_tab = <Shift><Super>Tab
-  split_horiz = <Shift><Control>s
   prev_tab = <Control>Tab
-  go_down = <Shift>Down
-  cycle_next = <Control>Page_Down
-  go_right = <Shift>Right
-  go_left = <Shift>Left
-[profiles]
-  [[default]]
-    scrollbar_position = hidden
-    use_system_font = False
-    copy_on_selection = True
-    background_darkness = 0.36
-    scrollback_lines = 10000
-    background_type = image
-    background_image = /home/m-nikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
-    foreground_color = "#bcb285"
-    scroll_on_output = False
-    cursor_shape = underline
-    font = Consolas 9
-    background_color = "#004373"
-  [[srvs]]
-    scrollbar_position = hidden
-    use_system_font = False
-    copy_on_selection = True
-    background_darkness = 0.42
-    scrollback_lines = 5000
-    background_type = image
-    background_image = /home/m-nikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
-    foreground_color = "#bcb285"
-    scroll_on_output = False
-    cursor_shape = underline
-    font = Consolas 9
-    background_color = "#744300"
+  split_horiz = <Shift><Control>s
 [layouts]
   [[default]]
     [[[child1]]]
-      type = Terminal
       parent = window0
-      profile = default
+      type = Terminal
     [[[window0]]]
-      type = Window
       parent = ""
-  [[right]]
-    [[[child0]]]
-      position = 0:0
       type = Window
-      order = 0
-      parent = ""
-      size = 1280, 989
-    [[[terminal1]]]
-      profile = default
-      group = main
-      type = Terminal
-      order = 0
-      parent = child0
-  [[left]]
-    [[[child0]]]
-      position = 0:0
-      type = Window
-      order = 0
-      parent = ""
-      size = 1280, 1003
-    [[[child1]]]
-      position = 852
-      type = HPaned
-      order = 0
-      parent = child0
-    [[[terminal3]]]
-      profile = default
-      group = server
-      type = Terminal
-      order = 1
-      parent = child1
-    [[[terminal2]]]
-      profile = default
-      group = main
-      type = Terminal
-      order = 0
-      parent = child1
 [plugins]
+[profiles]
+  [[default]]
+    background_color = "#004373"
+    background_darkness = 0.36
+    background_image = /home/m-nikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
+    background_type = image
+    copy_on_selection = True
+    cursor_shape = underline
+    font = Consolas 9
+    foreground_color = "#bcb285"
+    scroll_on_output = False
+    scrollback_lines = 10000
+    scrollbar_position = hidden
+    use_system_font = False
+  [[srvs]]
+    background_color = "#744300"
+    background_darkness = 0.42
+    background_image = /home/m-nikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
+    background_type = image
+    copy_on_selection = True
+    cursor_shape = underline
+    font = Consolas 9
+    foreground_color = "#bcb285"
+    scroll_on_output = False
+    scrollback_lines = 5000
+    scrollbar_position = hidden
+    use_system_font = False
