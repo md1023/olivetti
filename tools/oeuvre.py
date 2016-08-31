@@ -164,4 +164,4 @@ if __name__ == "__main__":
         try:
             process_song(*s)
         except OeuvreException as e:
-            logger.warning("%s" % e.message)
+            logger.warning("%s" % e)

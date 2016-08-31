@@ -22,11 +22,6 @@
 	  ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
-(setq url-proxy-services
-   '(("no_proxy" . "^\\(localhost\\|10.*\\)")
-     ("http" . "192.168.200.105:8088")
-     ("https" . "192.168.200.105:8088")))
-
 ;; (require 'skype)
 ;; (setq skype--my-user-handle "maxim.simno.nikolaev")
 
@@ -87,6 +82,7 @@
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
+(setq-default c-basic-offset 4)
 (setq indent-line-function 'insert-tab)
 
 ;; better scrolling, check sublimity for smooth scrolling

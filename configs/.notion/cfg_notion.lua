@@ -9,7 +9,7 @@ META="Mod4+"
 --ALTMETA=""
 
 -- Terminal emulator
-if os and os.execute("test -x /usr/bin/terminator") == 0 then
+if os and os.execute("test -x /usr/bin/terminator") then
     XTERM="/usr/bin/terminator"
 else
     XTERM="/usr/bin/xterm"
