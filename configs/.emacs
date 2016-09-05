@@ -51,7 +51,8 @@
 (defconst -HOME (getenv "HOME") "User's home director.")
 
 ;; display watch
-(defvar display-time-format "%H:%M %Y.%m.%d")
+(defvar display-time-format "%Y.%m.%d %H:%M")
+(defvar display-time-default-load-average nil)
 (display-time)
 
 ;; jump to word beginning/end
@@ -139,5 +140,3 @@
 (setq git-gutter:handled-backends '(git hg))
 ;; (set-face-foreground 'git-gutter-fr:modified "#d080d0")
 (set-face-foreground 'git-gutter:modified "#d080d0")
-
-(autoload 'dirtree "dirtree" "Add directory to tree view" t)
