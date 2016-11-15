@@ -1,3 +1,0 @@
-AddType application/x-httpd-php .html
-RewriteEngine On
-RewriteRule ^blog/(.+)\.html$ blog/zzz.php?name=$1 [NC,L]
