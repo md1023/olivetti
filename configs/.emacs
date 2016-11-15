@@ -1,32 +1,54 @@
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
+ '(custom-enabled-themes (quote (quasi-monochrome)))
+ '(custom-safe-themes
+   (quote
+    ("1fab355c4c92964546ab511838e3f9f5437f4e68d9d1d073ab8e36e51b26ca6a" "db2ecce0600e3a5453532a89fc19b139664b4a3e7cbefce3aaf42b6d9b1d6214" "35fc36f6bcd5acfc0ca68a0120b78c472337dc92746c81c763c9274d9e7d8afb" "ce557950466bf42096853c6dac6875b9ae9c782b8665f62478980cc5e3b6028d" "100d6bde8ef749efd2984f24db31434d90348d9aaf718f94231208e95fae37a2" "9e147cee63e1a2a6b16021e0645bc66c633c42b849e78b8e295df4b7fe55c56a" "bac3f5378bc938e96315059cd0488d6ef7a365bae73dac2ff6698960df90552d" "40f6a7af0dfad67c0d4df2a1dd86175436d79fc69ea61614d668a635c2cd94ab" default)))
+ '(git-gutter:handled-backends (quote (hg git)))
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(package-archives
+   (quote
+    (("melpa" . "http://melpa.org/packages/")
+     ("gnu" . "http://elpa.gnu.org/packages/"))))
+ '(package-enable-at-startup nil)
+ '(package-selected-packages
+   (quote
+    (quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode python-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+
 ;;; .emacs --- simno's Emacs config
-;;; Commentary:
-;;; *.el files are updated manually and is subject to change
-;;; flycheck shows warnings for unloaded files
-;;; Code:
+
+;; THEME
+(defconst -HOME (getenv "HOME") "User's home directory")
+(add-to-list 'load-path (concat -HOME "/Documents/olivetti/configs/emacs"))
+;;(require 'zenburn-theme)
+
+;; GENERAL
 
 (defconst -HOME (getenv "HOME") "User's home director.")
 
-(add-to-list 'load-path (concat -HOME "/emacs"))
-(add-to-list 'load-path (concat -HOME "/emacs/flycheck"))
-(add-to-list 'load-path (concat -HOME "/emacs/magit"))
-(add-to-list 'load-path (concat -HOME "/emacs/git"))
-(add-to-list 'load-path (concat -HOME "/emacs/monky"))
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-jabber")
-(add-to-list 'load-path (concat -HOME "/emacs/pep8"))
-(add-to-list 'load-path (concat -HOME "/emacs/skype"))
-
-(when (>= emacs-major-version 24)
-  (defvar package-archives
-	'(("gnu" . "http://elpa.gnu.org/packages/")
-	  ("marmalade" . "http://marmalade-repo.org/packages/")
-	  ("melpa" . "http://melpa.milkbox.net/packages/")))
-  (package-initialize))
-
-;; (require 'skype)
-;; (setq skype--my-user-handle "maxim.simno.nikolaev")
-
 ;; display watch
 (defvar display-time-format "%Y.%m.%d %H:%M")
+(defvar display-time-default-load-average nil)
 (display-time)
 
 ;; jump to word beginning/end
@@ -34,65 +56,13 @@
 (define-key global-map [remap right-word] 'forward-to-word)
 (define-key global-map [remap left-word] 'backward-word)
 
-;; record last
-(require 'goto-last-point)
-(goto-last-point-mode 1)
-(global-set-key (kbd "M-_") 'goto-last-point)
-
-;; jump around text
-(require 'ace-jump-mode)
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
-
-;; open files via ssh: C-x C-f /sudo:root@jenkins:/
-(set-default 'tramp-default-proxies-alist (quote ((".*" "\\`root\\'" "/ssh:%h:"))))
-
-;; python-like css ruby utility
-(require 'sass-mode)
-
-;; ActionScript
-(add-to-list 'auto-mode-alist '("\\.as\\'" . ecmascript-mode))
-
-;; MozRepl
-(autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
-(add-hook 'javascript-mode-hook 'javascript-custom-setup)
-(defun javascript-custom-setup ()
-  "Custom setup for minor mode."
-  (moz-minor-mode 1))
-
-(require 'column-marker)
-
 ;; change font here
 (add-to-list 'default-frame-alist '(font . "Consolas-9"))
-
-;; autocompletion
-(autoload 'tern-mode "tern.el" nil t)
-
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward)
-
-(setq python-python-command "python2.7"
-      calendar-week-start-day 0
-      inhibit-startup-message 1
-      global-font-lock-mode 1
-      current-language-environment "Cyrillic-UTF8")
-
-(put 'unit-test 'safe-local-variable
-     '(lambda (val) 1))
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
-(setq-default c-basic-offset 4)
 (setq indent-line-function 'insert-tab)
-
-;; better scrolling, check sublimity for smooth scrolling
-(setq redisplay-dont-pause 1
-  scroll-margin 1
-  scroll-step 1
-  scroll-conservatively 10000
-  scroll-preserve-screen-position 1
-  auto-window-vscroll 0
-)
 
 ;; scroll bindings
 (global-set-key (kbd "M-<down>") 'scroll-up-line)
@@ -103,6 +73,10 @@
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 
+;; show line and columns numbers
+(setq line-number-mode 1)
+(setq column-number-mode 1)
+
 ;; cursor type
 (setq-default cursor-type '(hbar . 2))
 ;; (setq x-stretch-cursor 1)
@@ -112,135 +86,26 @@
 ;; use toggle-truncate-lines to override
 (set-default 'truncate-lines 1)
 
-(require 'magit)
-(require 'git-annex)
-(require 'magit-annex)
-(defalias 'ms 'magit-status)
+(require 'linum)
+(global-linum-mode)
 
-;; mercurial's "magit"
-(require 'monky)
-(setq monky-process-type 'cmdserver)
-(defalias 'hg 'monky-status)
+;; move around buffers with cursor keys
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings))
 
-(require 'git-gutter-fringe)
-(global-git-gutter-mode t)
-(setq git-gutter:modified-sign "M")
-(setq git-gutter:handled-backends '(git hg))
-;; (fringe-helper-define 'git-gutter-fr:modified nil
-;;   ".X...X."
-;;   ".XX.XX."
-;;   ".X.X.X."
-;;   "X..X..X"
-;;   "X..X..X"
-;;   "X.....X"
-;;   "X.....X")
-(set-face-foreground 'git-gutter-fr:modified "#d080d0")
-(set-face-foreground 'git-gutter:modified "#d080d0")
-
-(require 'org-install)
-(require 'hl-line+)
-(require 'highlight-indentation)
+(show-paren-mode 1)
 
 (require 'highlight-symbol)
 (setq highlight-symbol-idle-delay 0)
 ;; TODO move add-hooks elsewhere
 (dolist (h '(highlight-symbol-mode highlight-symbol-nav-mode)) (add-hook 'prog-mode-hook h))
 
-(require 'ecmascript-mode)
-(require 'minimap)
-(require 'php-mode)
-
-;; colorize emacs, check zenburn overrides
-(require 'zenburn-theme)
-
-;;(set-fringe-mode 4) ;; half-width fringe line
-(show-paren-mode 1)
-(set-face-attribute 'show-paren-match-face 0 :weight 'bold)
-(set-face-background 'show-paren-match-face "#5F7F5F")
-(require 'rainbow-delimiters)
-(global-rainbow-delimiters-mode)
-
-(require 'linum)
-(global-linum-mode)
-
-(require 'ido)
-;; buffer and frames focus behaviour
-(ido-mode 1)
-(setq ido-default-buffer-method 'selected-window
-      ido-decorations '(" { " " }" "  " "  ..." " [ " " ]  " " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")
-      ido-enable-dot-prefix 1
-      ido-enable-last-directory-history 1
-      ido-enable-record-commands 1
-      ido-enable-flex-matching 1
-      ibuffer-shrink-to-minimum-size 1)
-
-;; move around buffers with cursor keys
-(when (fboundp 'windmove-default-keybindings)
-  (windmove-default-keybindings))
-
-(global-set-key (kbd "C-S-d") 'kill-word)
-(global-set-key (kbd "C-S-h") 'backward-kill-word)
-(global-set-key (kbd "C-h") 'delete-backward-char)
-(global-set-key (kbd "C-?") 'help-command)
-
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
 
-;; hs
-(require 'hideshowvis)
-(autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
-(autoload 'hideshowvis-minor-mode
-  "hideshowvis"
-  "Will indicate regions foldable with hideshow in the fringe."
-  'interactive)
-(dolist (hook (list 'emacs-lisp-mode-hook
-                    'c++-mode-hook))
-  (add-hook hook 'hideshowvis-enable))
-(hideshowvis-symbols)
-
-(load-library "hideshow")
-(add-hook 'python-mode-hook 'hs-minor-mode)
-(add-hook 'js-mode-hook 'hs-minor-mode)
-(global-set-key (kbd "C-<tab>") 'hs-toggle-hiding)
-
-;; russian hotkeys layout fixer
-(define-key function-key-map [?\M-ж] [?\M-;])
-(define-key function-key-map [?\C-ч] [?\C-x])
-(define-key function-key-map [?\C-с] [?\C-c])
-(define-key function-key-map [?\M-ч] [?\M-x])
-(define-key function-key-map [?\C-ы] [?\C-s])
-(define-key function-key-map [?\C-к] [?\C-r])
-(define-key function-key-map [?\C-п] [?\C-g])
-(define-key function-key-map [?\C-ц] [?\C-w])
-(define-key function-key-map [?\C-н] [?\C-y])
-(define-key function-key-map [?\C-д] [?\C-l])
-(define-key function-key-map [?\C-л] [?\C-k])
-(define-key function-key-map [?\C-р] [?\C-h])
-(define-key function-key-map [?\C-е] [?\C-t])
-
-;; movement keys
-(define-key function-key-map [?\C-у] [?\C-e])
-(define-key function-key-map [?\C-ф] [?\C-a])
-(define-key function-key-map [?\C-в] [?\C-d])
-(define-key function-key-map [?\C-а] [?\C-f])
-(define-key function-key-map [?\C-и] [?\C-b])
-(define-key function-key-map [?\C-о] [?\C-j])
-(define-key function-key-map [?\C-з] [?\C-p])
-(define-key function-key-map [?\C-т] [?\C-n])
-(define-key function-key-map [?\C-м] [?\C-v])
-(define-key function-key-map [?\M-м] [?\M-v])
-
-(define-key function-key-map [?и] [?b])
-(define-key function-key-map [?\C-ж] [?\C-\;])
-
-;; lua mode
-(autoload 'lua-mode "lua-mode" "Lua editing mode." 1)
-    (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
-    (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
-
 ;; face in comments for TODO highlights
 (require 'fic-mode)
-(add-hook 'prog-mode-hook 'turn-on-fic-mode)
+(add-hook 'prog-mode-hook 'fic-mode)
 
 ;; org mode
 (print "MY ORG LOADED")
@@ -251,110 +116,23 @@
                                ("FAIL" . '(:foreground "#EE1010" :weight bold))
                                ))
 
-;; tests
-(defun nose-buffer ()
-  (interactive)
-  (compile
-   (concat "nosetests -s "
-           (replace-regexp-in-string
-            "\\(^.*/\\)\\(?:test_\\)?\\(.+\\)$" "\\1test_\\2" buffer-file-name))))
+;; buffer and frames focus behaviour
+(ido-mode 1)
+(setq ido-default-buffer-method 'selected-window
+      ido-decorations '(" { " " }" "  " "  ..." " [ " " ]  " " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")
+      ido-enable-dot-prefix 1
+      ido-enable-last-directory-history 1
+      ido-enable-record-commands 1
+      ido-enable-flex-matching 1
+      ibuffer-shrink-to-minimum-size 1)
 
-(add-hook 'python-mode-hook
-          '(lambda ()
-             (local-set-key "\C-c\C-t" 'nose-buffer)))
+;; colorize emacs, check zenburn overrides
+;; (require 'zenburn-theme)
 
-;; database
-(require 'sql)
-(defun erase-sql-buffer ()
-  "Erase SQL buffer."
-  (interactive)
-  (when sql-buffer
-    (save-excursion
-      (set-buffer sql-buffer)
-      (erase-buffer))))
-(require 'term)
+;; VCS
 
-(defun erase-terminal-buffer ()
-  "Erase terminal buffer."
-  (interactive)
-  (when "*terminal*"
-    (save-excursion
-      (set-buffer "*terminal*")
-      (erase-buffer))))
-
-(defun erase-sql-buffer-and-exec ()
-  "Execute SQL after previous output is killed."
-  (interactive)
-  (save-buffer)
-  (erase-sql-buffer)
-  (sql-send-string (format "\\i %s" (buffer-file-name))))
-(define-key sql-mode-map "\C-c\C-w" 'erase-sql-buffer-and-exec)
-
-(defun mydb-cms1 ()
-  "Connect to SQL database."
-  (interactive)
-  (message "Login...")
-  (setf sql-database "cms1"
-        sql-server ""
-        sql-user ""
-        sql-postgres-options '("-P" "pager=off"))
-  (sql-postgres)
-  ;; All done.
-  (sql-set-sqli-buffer-generally)
-  (message "Login...done")
-  (pop-to-buffer "*SQL*"))
-
-;; flycheck, be sure to install flake8 and gjslint
-(require 's)
-(require 'dash)
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
-;; ack-grep
-(require 'ack)
-
-;;jabber settings
-(require 'jabber-autoloads)
-(setq jabber-account-list '(("simno@serv69u"
-			     (:network-server . "192.168.200.69")
-			     (:port . 5222)
-                 (:connection-type "network")))
-      ;; jabber-alert-message-hooks '(jabber-message-echo jabber-message-display jabber-message-scroll)
-      jabber-auto-reconnect 1
-      jabber-vcard-avatars-retrieve nil
-      jabber-vcard-avatars-publish nil
-      jabber-show-offline-contacts nil
-      jabber-roster-show-bindings nil
-      jabber-rare-time-format "%e %b %Y %H:00"
-      jabber-connection-ssl-program 'gnutls
-      jabber-history-enabled 1
-      jabber-history-size-limit 8192
-      jabber-roster-line-format " %c %-25n %u %-8s  %S"
-      ;; jabber-roster-line-format "%a %c %-25n %u %-8s  %S"
-      ;; jabber-roster-sort-functions (quote (jabber-roster-sort-by-status jabber-roster-sort-by-displayname jabber-roster-sort-by-group))
-      jabber-use-global-history 0)
-
-;; show line and columns numbers
-(setq line-number-mode 1)
-(setq column-number-mode 1)
-
-;; color behave feature files
-(setq feature-default-language "ru")
-(setq feature-default-i18n-file (concat -HOME "emacs/i18n.yml"))
-(require 'feature-mode)
-(add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(hi-blue ((((background dark)) (:background "LightBlue3" :foreground "black"))))
- '(hi-green ((((min-colors 88) (background dark)) (:background "OliveDrab3" :foreground "black"))))
- '(hi-yellow ((((min-colors 88) (background dark)) (:background "yellow3" :foreground "black")))))
-(put 'narrow-to-region 'disabled nil)
-
-;; default layout for C-\ switch
-(setq default-input-method "russian-computer")
-
-;;; .emacs ends here
+(global-git-gutter-mode t)
+(setq git-gutter:modified-sign "M")
+(setq git-gutter:handled-backends '(git hg))
+;; (set-face-foreground 'git-gutter-fr:modified "#d080d0")
+(set-face-foreground 'git-gutter:modified "#d080d0")

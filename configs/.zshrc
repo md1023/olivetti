@@ -119,5 +119,5 @@ class_double_newlines() {
 }
 
 # keyboard settings
-setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:ctrl_shift_toggle" \
+setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:shifts_toggle" \
     -layout "us,ru"
