@@ -6,8 +6,7 @@ Token = namedtuple('Tuple', ['kind', 'value'])
 
 class Lexer:
     def __init__(self, input):
-        # self.input = iter(input.replace(' ', '') + '$')
-        self.input = iter(input.replace(' ', ''))
+        self.input = iter(input.replace(' ', '') + '$')
         self.repeat_same_token = False
 
     def _get_next_token(self):
@@ -109,50 +108,49 @@ class Parser:
         
 
     def Number(self):
-        print()
+        print('\n\n')
         l = self.lexer
         rule_map = {
-            (Number, Digit): [Integer, Dot, Integer],
+            (Number, Digit): [Digit, Number],
             (Number, Dot): [Dot, Integer],
-            (Integer, Digit): [Digit, Digit]
-        }
-
-        # rule_map = {
-        #     (Number, Dot): [Dot, Number],
-        #     (Number, Digit): [Digit, Number]
-        # }
-
-        # rule_map = {
-        #     (Number, Dot): [Dot, Integer],
-        #     (Number, Digit): [Digit, Number],
-        #     (Integer, Digit): [Digit, Integer],
-        #     (Integer, End): [End]
-        # }
-        
-        step = 0
+            (Number, End): [],
+            (Integer, Digit): [Digit, Integer],
+            (Integer, End): []
+        }        
         value = ''
-        stack = [Number]
-        token = l.get_next_token()
+        stack = [Number, End]
+        t = l.get_next_token()
+        tokens = []
+        while t:
+            tokens.append(t)
+            t = l.get_next_token()
+        print(tokens, stack)
         
-        while token:
-            if not len(stack):
-                raise ParserError()
+        if len(tokens) == 1:
+            raise ParserError()
+
+        position = 0
+        while len(stack) > 0:
             first = stack.pop(0)
-            print(token, first, match(token, first), (first, token.__class__) in rule_map)
-            if match(token, first):
-                value += token.value
-                token = l.get_next_token()
-            elif (first, token.__class__) in rule_map:
+            token = tokens[position]
+            if issubclass(first, Terminal):
+                if match(token, first):
+                    position += 1
+                    value += token.value
+                    print('pop', value)
+                    if match(token, End):
+                        print('input accepted')
+                else:
+                    raise ParserError()
+            elif issubclass(first, NonTerminal):
+                # print('first', first, 'token', token)
                 rule = rule_map[(first, token.__class__)]
                 stack = rule + stack
-            else:
-                raise ParserError()
-            print('{0})'.format(step), stack, token, '[{0}]'.format(value))
-            step += 1
+            # print('stack', stack)
+        return float(value[:-1])
 
-        if not value or len(stack):
-            raise ParserError()
-        return float(value)
-
-# p = Parser('3.5')
-# print(p.Number())
+# s = '342.5'
+# p = Parser(s)
+# n = p.Number()
+# print(n)
+# assert n, s
