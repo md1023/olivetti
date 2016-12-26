@@ -3,20 +3,6 @@ import re
 from collections import namedtuple
 
 Token = namedtuple('Tuple', ['kind', 'value'])
-terminals = dict(
-    ADD = '\+',
-    MUL = '\*',
-    SUB = '-',
-    DIV = '/',
-    MOD = '%',
-    ASG = '=',
-    DOT = '\.',
-    LPR = '\(',
-    RPR = '\)',
-    LTR = '[A-Za-z]',
-    DGT = '[0-9]',
-    END = '\$'
-)
 
 class Lexer:
     def __init__(self, input):
@@ -33,7 +19,11 @@ class Lexer:
         
         for _type, regexp in terminals.items():
             if re.match(regexp, character):
-                token = Token(_type, character)
+                if isinstance(_type, str):
+                    # TODO drive away namedtuples
+                    token = Token(_type, character)
+                else:
+                    token = _type(character)
                 
         if not token:
             raise ValueError('unknown token %s' % _type)
@@ -44,76 +34,17 @@ class Lexer:
 
     def get_next_token(self):
         token = self._get_next_token()
-        print("got token", token)
+        # print("got token", token)
         return token
 
     def repeat(self):
-        print('repeating', self.previous_token)
+        # print('repeating', self.previous_token)
         self.repeat_same_token = True
 
+        
 class ParserError(Exception):
     pass
 
-
-class Parser:
-    def parse(self, input):
-        self.lexer = Lexer(input)
-        self.stack = [Number]
-        # token = self.lexer.get_next_token()
-
-        node = self.stack.pop()(Integer, Integer)
-        
-        self.stack = getattr(self, 'visit' + type(node).__name__)(node)
-        print(self.stack)
-        
-
-    def visit(self, node):
-        print(node, node.__name__, self.stack)
-        new_node = getattr(self, 'visit' + node.__name__)(node)
-        print("bbb", new_node)
-
-        
-    def visitDigit(self, token):
-        """
-        Digit(1)
-        """
-        number = int(token.value)
-        return number
-
-    
-    def visitInteger(self, node):
-        """
-        Integer(Digit(1), Digit(2))
-        """
-        token = self.lexer.get_next_token()
-        digits = []
-        while token.kind is 'DGT':
-            print('while', token)
-            digits.append(self.visitDigit(token))
-            token = self.lexer.get_next_token()
-        self.lexer.repeat()
-        print('gaer', digits)
-        if digits:
-            number = "".join(str(d) for d in digits)
-            return int(number)
-        raise ParserError()
-
-    
-    def visitNumber(self, node):
-        """
-        Number(Integer(Digit(1), Digit(2)), Integer(Digit(3)))
-        """
-        integer1 = self.visitInteger(node)
-        token = self.lexer.get_next_token()
-        if token.kind is 'DOT':
-            # eat dot
-            token = self.lexer.get_next_token()
-        else:
-            self.lexer.repeat()
-            return int(integer1)
-        integer2 = self.visitInteger(node)
-        number = "{0}.{1}".format(integer1, integer2)
-        return float(number)
 
 class Node:
     pass
@@ -123,6 +54,8 @@ class Terminal(Node):
     def __init__(self, value):
         self.value = value
 
+    def __repr__(self):
+        return "{0}[{1}]".format(self.__class__.__name__, self.value)
         
 class Digit(Terminal):
     pass
@@ -132,21 +65,66 @@ class Dot(Terminal):
     pass
 
 
+class End(Terminal):
+    pass
+
+
+terminals = {
+    'ADD': '\+',
+    'MUL': '\*',
+    'SUB': '-',
+    'DIV': '/',
+    'MOD': '%',
+    'ASG': '=',
+    Dot: '\.',
+    'LPR': '\(',
+    'RPR': '\)',
+    'LTR': '[A-Za-z]',
+    Digit: '[0-9]',
+    End: '\$'
+}
+
 class NonTerminal(Node):
     pass
 
 
 class Number(NonTerminal):
-    def __init__(self, integral, fraction):
-        self.integral = integral
-        self.fraction = fraction
+    pass
+
 
 class Integer(NonTerminal):
-    def __init__(self, *digits):
-        if not digits:
-            digits = []
-        self.digits = digits
+    pass
 
 
-p = Parser()
-p.parse('5.3')
+def match(token, first):
+    return isinstance(token, first)
+
+
+l = Lexer('3..5')
+
+rule_map = {
+    (Number, Dot): [Dot, Integer],
+    (Number, Digit): [Digit, Number],
+    (Integer, Digit): [Digit, Integer],
+    (Integer, End): [End]
+}
+
+step = 0
+value = ''
+stack = [Number]
+token = l.get_next_token()
+
+
+while token:
+    first = stack.pop(0)
+    print(token, first, match(token, first), (first, token.__class__) in rule_map)
+    if match(token, first):
+        value += token.value
+        token = l.get_next_token()
+    elif (first, token.__class__) in rule_map:
+        rule = rule_map[(first, token.__class__)]
+        stack = rule + stack
+    else:
+        raise ParserError()
+    print('{0})'.format(step), stack, token, '[{0}]'.format(value),'\n')
+    step += 1
