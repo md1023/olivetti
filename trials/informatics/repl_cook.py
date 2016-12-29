@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-from repl_node3 import Lexer
-
 
 from collections import namedtuple
 
@@ -95,20 +93,24 @@ class ExpressionEvaluator:
         'factor ::= digit | identifier | assignment | ( expr )'
         if self._accept('DGT'):
             return float(self.token.value)
-        elif self._accept('LTR') and self._accept('ASG'):
-            self.assignment()
         elif self._accept('LTR'):
-            self.identifier()
+            # print('gaer', self.token, self.next_token)
+            variable_name = self.token.value
+            if self._accept('ASG'):
+                self.assignment(variable_name)
+            else:
+                self.identifier()
         elif self._accept('LPR'):
             expression_value = self.expr()
             self._expect('RPR')
             return expression_value
         else:
-            raise SyntaxError('expected NUM or LPR')
+            raise SyntaxError('expected DGT or LPR')
 
 
-    def assignment(self):
-        print('fgareg')
+    def assignment(self, variable_name):
+        print('fgareg', self.token, self.next_token, variable_name)
+        self.memory[variable_name] = self.expr()
 
     def identifier(self):
         variable_name = self.token.value
@@ -124,5 +126,6 @@ class ExpressionEvaluator:
     #     raise NotImplemented()
 
 e = ExpressionEvaluator()
-# print(e.parse('ab_c = 2.8+543.'))
-print(e.parse('ab_c'))
+print(e.parse('ab_c = 2.8+543.'))
+print(e.memory)
+# print(e.parse('ab_c'))
