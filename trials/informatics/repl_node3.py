@@ -36,16 +36,13 @@ class Lexer:
     map = [Digit, Dot, End]
     
     def __init__(self, input):
-        self.tokens = self.tokenizer(input)
+        self.tokens = [self.tokenize(c) for c in input]
 
-    def tokenizer(self, characters):
-        for c in characters:
-            token = next(
-                (T(c) for T in self.map if re.match(T.regex, c)),
-                None)
-            if not token:
-                raise TokenNotFound('unknown character \'{0}\''.format(c))
-            yield token
+    def tokenize(self, character):
+        for T in self.map:
+            if re.match(T.regex, character):
+                return T(character)
+        raise TokenNotFound('unknown character \'{0}\''.format(character))
 
 
 class Node(Printable):
@@ -54,28 +51,42 @@ class Node(Printable):
             self.subnodes = subnodes
         self.value = value
 
+    @classmethod
+    def regex_matches(cls, text):
+        return re.match(cls.regex, text)
+
 
 class Integer(Node):
-    regex = '^\d+$'
+    regex = '^(\d+)$'
 
 
 class Real(Node):
-    regex = '^\d+\.(\d+)?$|^(\d+)?\.\d+$'
+    regex = '^(\d+\.(\d+)?$|^(\d+)?\.\d+)$'
+
+
+class Expression(Node):
+    regex = '^\((.*)\)$'
 
 
 class Parser:
+    pass
+
+
+class NumberParser(Parser):
     hierarchy = [Real, Integer]
 
     def __init__(self, input):
-        pass
         self.input = input
 
     def get_rule(self, input):
         for N in self.hierarchy:
-            if self.match_rule(N, input):
+            if N.regex_matches(input):
                 return N(input)
         raise RuleNotFound(input)
 
 
-    def match_rule(self, node, text):
-        return re.match(node.regex, text)
+# class Evaluator:
+#     precedence = [Expression
+
+#     def __init__(self):
+#         pass

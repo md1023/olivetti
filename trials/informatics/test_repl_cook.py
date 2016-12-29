@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
 # test_repl_node2.py
 
-import re
-from unittest import TestCase, main
-from repl_node2 import Parser, ParserError
-from repl_node3 import Lexer, \
-    TokenNotFound, RuleNotFound, \
-    Digit, Dot, End, \
-    Integer, Real, Expression, \
-    NumberParser as RegexParser
+from repl_cook import ExpressionEvaluator
 
-
-# class ParserTestCase(TestCase):
 class B():
     def setUp(self):
         self.p = Parser
