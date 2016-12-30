@@ -34,19 +34,26 @@ def lexer(expression):
             if re.match(regexp, t):
                 yield Token(_type, t)
 
-# l = list(lexer('a= 1+ 2'))
-# print(l)
 
-
-class ExpressionEvaluator:
-    def parse(self, text):
-        self.tokens = lexer(text)
+class Interpreter:
+    def __init__(self):
         self.memory = dict()
+
+    def input(self, text):
+        return self.parse(text)
+
+    def parse(self, text):
+        print('test', text)
+        if not text.replace(' ', ''):
+            return ''
+        self.tokens = lexer(text)
         print(list(lexer(text)))
         self.token = None
         self.next_token = None
         self._advance()
-        return self.expr()
+        res = self.expr()
+        print('result', res)
+        return res
 
     def _advance(self):
         self.token, self.next_token = self.next_token, next(self.tokens, None)
@@ -70,6 +77,7 @@ class ExpressionEvaluator:
         while self._accept('ADD') or self._accept('SUB'):
             operation = self.token.type
             right = self.term()
+            print('expr', right, operation, expression_value)
             if operation == 'ADD':
                 expression_value += right
             elif operation == 'SUB':
@@ -80,26 +88,30 @@ class ExpressionEvaluator:
     def term(self):
         'term ::= factor { ("*"|"/") factor }*'
         term_val = self.factor()
-        while self._accept('MUL') or self._accept('DIV'):
+        while self._accept('MUL') or self._accept('DIV') or self._accept('MOD'):
             operation = self.token.type
             right = self.factor()
             if operation == 'MUL':
                 term_val *= right
             elif operation == 'DIV':
                 term_val /= right
+            elif operation == 'MOD':
+                term_val %= right
         return term_val
 
     def factor(self):
         'factor ::= digit | identifier | assignment | ( expr )'
         if self._accept('DGT'):
-            return float(self.token.value)
+            value = float(self.token.value)
+            if self._accept('DGT') or self._accept('LTR'):
+                raise SyntaxError('unexpected DGT')
+            return value
         elif self._accept('LTR'):
-            # print('gaer', self.token, self.next_token)
             variable_name = self.token.value
             if self._accept('ASG'):
-                self.assignment(variable_name)
+                return self.assignment(variable_name)
             else:
-                self.identifier()
+                return self.identifier()
         elif self._accept('LPR'):
             expression_value = self.expr()
             self._expect('RPR')
@@ -110,22 +122,19 @@ class ExpressionEvaluator:
 
     def assignment(self, variable_name):
         print('fgareg', self.token, self.next_token, variable_name)
-        self.memory[variable_name] = self.expr()
+        value = self.expr()
+        self.memory[variable_name] = value
+        return value
 
     def identifier(self):
         variable_name = self.token.value
+        print('remember', variable_name, self.memory)
         if variable_name in self.memory:
             return self.memory[variable_name]
         raise ValueError('undefined variable')
 
-
-    # RUBBISH
-    # def number(self):
-    #     'number ::= { digit }* { "." digit { digit }* }'
-    #     print('number', self.token, self.next_token)
-    #     raise NotImplemented()
-
-e = ExpressionEvaluator()
+e = Interpreter()
 print(e.parse('ab_c = 2.8+543.'))
-print(e.memory)
+print('memory', e.memory)
+print(e.parse('ab_c - 483'))
 # print(e.parse('ab_c'))
