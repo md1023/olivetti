@@ -51,7 +51,7 @@ class Interpreter:
         self.token = None
         self.next_token = None
         self._advance()
-        res = self.expr()
+        res = Expression(self).value
         print('result', res)
         return res
 
@@ -73,67 +73,72 @@ class Interpreter:
         if any(self._accept(token_type) for token_type in token_types):
             raise SyntaxError('unexpected {0}'.format(token_type))
 
-    def expr(self):
-        'expression ::= term { ("+"|"-") term }*'
-        expression_value = self.term()
-        while self._accept('ADD') or self._accept('SUB'):
-            operation = self.token.type
-            right = self.term()
+
+class Expression:
+    'expression ::= term { ("+"|"-") term }*'
+    def __init__(self, parser):
+        expression_value = Term(parser).value
+        while parser._accept('ADD') or parser._accept('SUB'):
+            operation = parser.token.type
+            right = Term(parser).value
             print('expr', right, operation, expression_value)
             if operation == 'ADD':
                 expression_value += right
             elif operation == 'SUB':
                 expression_value -= right
-        return expression_value
+        self.value = expression_value
 
-
-    def term(self):
-        'term ::= factor { ("*"|"/") factor }*'
-        term_val = self.factor()
-        while self._accept('MUL', 'DIV', 'MOD'):
-            operation = self.token.type
-            right = self.factor()
+    
+class Term:
+    'term ::= factor { ("*"|"/") factor }*'
+    def __init__(self, parser):
+        self.value = Factor(parser).value
+        while parser._accept('MUL', 'DIV', 'MOD'):
+            operation = parser.token.type
+            right = Factor(parser).value
             if operation == 'MUL':
-                term_val *= right
+                self.value *= right
             elif operation == 'DIV':
-                term_val /= right
+                self.value /= right
             elif operation == 'MOD':
-                term_val %= right
-        return term_val
-
-    def factor(self):
-        'factor ::= digit | identifier | assignment | ( expr )'
-        if self._accept('DGT'):
-            value = float(self.token.value)
-            self._reject('DGT', 'VAR')
-            return value
-        elif self._accept('VAR'):
-            variable_name = self.token.value
-            if self._accept('ASG'):
-                return self.assignment(variable_name)
+                self.value %= right
+        
+        
+class Factor:
+    'factor ::= digit | identifier | assignment | ( expr )'
+    def __init__(self, parser):
+        if parser._accept('DGT'):
+            value = float(parser.token.value)
+            parser._reject('DGT', 'VAR')
+            self.value = value
+        elif parser._accept('VAR'):
+            variable_name = parser.token.value
+            if parser._accept('ASG'):
+                self.value = Assignment(parser, variable_name).value
             else:
-                return self.identifier()
-        elif self._accept('LPR'):
-            expression_value = self.expr()
-            self._expect('RPR')
-            return expression_value
+                self.value = Identifier(parser).value
+        elif parser._accept('LPR'):
+            expression_value = Expression(parser).value
+            parser._expect('RPR')
+            self.value = expression_value
         else:
             raise SyntaxError('expected DGT or LPR')
 
+        
+class Assignment:
+    def __init__(self, parser, variable_name):
+        self.value = Expression(parser).value
+        parser.memory[variable_name] = self.value
 
-    def assignment(self, variable_name):
-        print('fgareg', self.token, self.next_token, variable_name)
-        value = self.expr()
-        self.memory[variable_name] = value
-        return value
+        
+class Identifier:
+    def __init__(self, parser):
+        variable_name = parser.token.value
+        if variable_name not in parser.memory:
+            raise ValueError('undefined variable')
+        self.value = parser.memory[variable_name]
 
-    def identifier(self):
-        variable_name = self.token.value
-        print('remember', variable_name, self.memory)
-        if variable_name in self.memory:
-            return self.memory[variable_name]
-        raise ValueError('undefined variable')
-
+    
 e = Interpreter()
 print(e.parse('ab_c = 2.8+543.'))
 print('memory', e.memory)
