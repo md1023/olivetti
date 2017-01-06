@@ -30,7 +30,7 @@ class SpiralPath:
         yield from iter(self._path)
 
 
-class Board(object):
+class Board:
     # x, y and neighbour on the right
     directions = dict(
 
