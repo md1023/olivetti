@@ -24,7 +24,7 @@ terminals = dict(
     DOT = '\.',
     LPR = '\(',
     RPR = '\)',
-    LTR = '[A-Za-z]',
+    VAR = '[A-Za-z]',
     DGT = '[0-9]'
 )
 
@@ -58,18 +58,20 @@ class Interpreter:
     def _advance(self):
         self.token, self.next_token = self.next_token, next(self.tokens, None)
 
-    def _accept(self, token_type):
-        if self.next_token and self.next_token.type == token_type:
-            print('_accept', self.next_token, self.next_token.type, token_type)
-            self._advance()
-            return True
-        else:
-            return False
+    def _accept(self, *token_types):
+        for token_type in token_types:
+            if self.next_token and self.next_token.type == token_type:
+                self._advance()
+                return True
+        return False
 
     def _expect(self, token_type):
         if not self._accept(token_type):
             raise SyntaxError('Expected {0}'.format(token_type))
 
+    def _reject(self, *token_types):
+        if any(self._accept(token_type) for token_type in token_types):
+            raise SyntaxError('unexpected {0}'.format(token_type))
 
     def expr(self):
         'expression ::= term { ("+"|"-") term }*'
@@ -88,7 +90,7 @@ class Interpreter:
     def term(self):
         'term ::= factor { ("*"|"/") factor }*'
         term_val = self.factor()
-        while self._accept('MUL') or self._accept('DIV') or self._accept('MOD'):
+        while self._accept('MUL', 'DIV', 'MOD'):
             operation = self.token.type
             right = self.factor()
             if operation == 'MUL':
@@ -103,10 +105,9 @@ class Interpreter:
         'factor ::= digit | identifier | assignment | ( expr )'
         if self._accept('DGT'):
             value = float(self.token.value)
-            if self._accept('DGT') or self._accept('LTR'):
-                raise SyntaxError('unexpected DGT')
+            self._reject('DGT', 'VAR')
             return value
-        elif self._accept('LTR'):
+        elif self._accept('VAR'):
             variable_name = self.token.value
             if self._accept('ASG'):
                 return self.assignment(variable_name)
