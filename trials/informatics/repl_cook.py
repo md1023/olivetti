@@ -74,19 +74,13 @@ class Interpreter:
             raise SyntaxError('unexpected {0}'.format(token_types))
 
 
-class NonTerminal:
-    def __init__(self, parser):
-        self.parser = parser
-
-
-class Expression(NonTerminal):
+class Expression:
     'expression ::= term { ("+"|"-") term }*'
     def __init__(self, parser):
-        super().__init__(parser)
-        expression_value = Term(self.parser).value
-        while self.parser._accept('ADD', 'SUB'):
-            operation = self.parser.token.type
-            right = Term(self.parser).value
+        expression_value = Term(parser).value
+        while parser._accept('ADD', 'SUB'):
+            operation = parser.token.type
+            right = Term(parser).value
             print('expr', right, operation, expression_value)
             if operation == 'ADD':
                 expression_value += right
@@ -110,14 +104,17 @@ class Term:
                 self.value %= right
 
 
-class Factor(NonTerminal):
+class Factor:
     'factor ::= digit | variable | ( expr )'
+    subfactors = [FactorDigit, FactorVariable, FactorExpression]
+
     def __init__(self, parser):
-        super().__init__(parser)
-        self.value = FactorDigit(parser).value or \
-                     FactorVariable(parser).value or \
-                     FactorExpression(parser).value
-        if not self.value:
+        for SF in self.subfactors:
+            self.value = SF(parser).value
+            if self.value is not None:
+                break
+
+        if self.value is None:
             raise SyntaxError('expected DGT or LPR')
 
 
@@ -127,6 +124,7 @@ class FactorSub:
         if parser._accept(self.token_type):
             self.visit(parser)
 
+
 class FactorDigit(FactorSub):
     token_type = 'DGT'
 
@@ -134,38 +132,50 @@ class FactorDigit(FactorSub):
         value = float(parser.token.value)
         parser._reject('DGT', 'VAR')
         self.value = value
-        
-    
-            
+
+
 class FactorVariable(FactorSub):
     token_type = 'VAR'
-    
+    subfactors = [Assignment, Identifier]
+
     def visit(self, parser):
         variable_name = parser.token.value
         if parser._accept('ASG'):
             self.value = Assignment(parser, variable_name).value
         else:
-            self.value = Identifier(parser).value
+            self.value = Identifier(parser, variable_name).value
 
-                
+        # for SF2 in self.subfactors:
+        #     self.value = SF2(parser, variable_name).value
+        #     if self.value is not None:
+        #         break
+
+        # self.value = Assignment(parser, variable_name).value or Identifier(parser, variable_name).value
+
+        if self.value is None:
+            raise NotImplementedError('fucking error')
+
 class FactorExpression(FactorSub):
     token_type = 'LPR'
-    
+
     def visit(self, parser):
         expression_value = Expression(parser).value
         parser._expect('RPR')
         self.value = expression_value
-    
+
 
 class Assignment:
     def __init__(self, parser, variable_name):
+        # variable_name = parser.token.value
+        print('ASG', variable_name, parser.token, parser.next_token)
         self.value = Expression(parser).value
         parser.memory[variable_name] = self.value
 
 
 class Identifier:
-    def __init__(self, parser):
-        variable_name = parser.token.value
+    def __init__(self, parser, variable_name):
+        # variable_name = parser.token.value
+        print('IDE', variable_name)
         if variable_name not in parser.memory:
             raise ValueError('undefined variable')
         self.value = parser.memory[variable_name]
