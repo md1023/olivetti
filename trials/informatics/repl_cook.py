@@ -74,13 +74,19 @@ class Interpreter:
             raise SyntaxError('unexpected {0}'.format(token_type))
 
 
-class Expression:
+class NonTerminal:
+    def __init__(self, parser):
+        self.parser = parser
+
+        
+class Expression(NonTerminal):
     'expression ::= term { ("+"|"-") term }*'
     def __init__(self, parser):
-        expression_value = Term(parser).value
-        while parser._accept('ADD') or parser._accept('SUB'):
-            operation = parser.token.type
-            right = Term(parser).value
+        super().__init__(parser)
+        expression_value = Term(self.parser).value
+        while self.parser._accept('ADD') or self.parser._accept('SUB'):
+            operation = self.parser.token.type
+            right = Term(self.parser).value
             print('expr', right, operation, expression_value)
             if operation == 'ADD':
                 expression_value += right
@@ -104,33 +110,43 @@ class Term:
                 self.value %= right
         
         
-class Factor:
+class Factor(NonTerminal):
     'factor ::= digit | identifier | assignment | ( expr )'
     def __init__(self, parser):
+        super().__init__(parser)
         if parser._accept('DGT'):
-            value = float(parser.token.value)
-            parser._reject('DGT', 'VAR')
-            self.value = value
+            self.value = self.digit()
         elif parser._accept('VAR'):
-            variable_name = parser.token.value
-            if parser._accept('ASG'):
-                self.value = Assignment(parser, variable_name).value
-            else:
-                self.value = Identifier(parser).value
+            self.value = self.variable()
         elif parser._accept('LPR'):
-            expression_value = Expression(parser).value
-            parser._expect('RPR')
-            self.value = expression_value
+            self.value = self.expression()
         else:
             raise SyntaxError('expected DGT or LPR')
 
-        
+    def digit(self):
+        value = float(self.parser.token.value)
+        self.parser._reject('DGT', 'VAR')
+        return value
+
+    def variable(self):
+        variable_name = self.parser.token.value
+        if self.parser._accept('ASG'):
+            return Assignment(self.parser, variable_name).value
+        else:
+            return Identifier(self.parser).value
+
+    def expression(self):
+        expression_value = Expression(self.parser).value
+        self.parser._expect('RPR')
+        return expression_value
+
+
 class Assignment:
     def __init__(self, parser, variable_name):
         self.value = Expression(parser).value
         parser.memory[variable_name] = self.value
 
-        
+
 class Identifier:
     def __init__(self, parser):
         variable_name = parser.token.value
@@ -138,7 +154,7 @@ class Identifier:
             raise ValueError('undefined variable')
         self.value = parser.memory[variable_name]
 
-    
+
 e = Interpreter()
 print(e.parse('ab_c = 2.8+543.'))
 print('memory', e.memory)
