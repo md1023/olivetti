@@ -65,13 +65,13 @@ class Interpreter:
                 return True
         return False
 
-    def _expect(self, token_type):
-        if not self._accept(token_type):
-            raise SyntaxError('Expected {0}'.format(token_type))
+    def _expect(self, *token_types):
+        if not all(self._accept(token_type) for token_type in token_types):
+            raise SyntaxError('Expected {0}'.format(token_types))
 
     def _reject(self, *token_types):
         if any(self._accept(token_type) for token_type in token_types):
-            raise SyntaxError('unexpected {0}'.format(token_type))
+            raise SyntaxError('unexpected {0}'.format(token_types))
 
 
 class NonTerminal:
@@ -84,7 +84,7 @@ class Expression(NonTerminal):
     def __init__(self, parser):
         super().__init__(parser)
         expression_value = Term(self.parser).value
-        while self.parser._accept('ADD') or self.parser._accept('SUB'):
+        while self.parser._accept('ADD', 'SUB'):
             operation = self.parser.token.type
             right = Term(self.parser).value
             print('expr', right, operation, expression_value)
@@ -114,35 +114,48 @@ class Factor(NonTerminal):
     'factor ::= digit | variable | ( expr )'
     def __init__(self, parser):
         super().__init__(parser)
-        if parser._accept('DGT'):
-            self.value = self.digit()
-        elif parser._accept('VAR'):
-            self.value = Variable(parser).value
-        elif parser._accept('LPR'):
-            self.value = self.expression()
-        else:
+        self.value = FactorDigit(parser).value or \
+                     FactorVariable(parser).value or \
+                     FactorExpression(parser).value
+        if not self.value:
             raise SyntaxError('expected DGT or LPR')
 
-    def digit(self):
-        value = float(self.parser.token.value)
-        self.parser._reject('DGT', 'VAR')
-        return value
 
-    def expression(self):
-        expression_value = Expression(self.parser).value
-        self.parser._expect('RPR')
-        return expression_value
-
-
-class Variable(NonTerminal):
-    'varible ::= assignment | identifier'
+class FactorSub:
     def __init__(self, parser):
+        self.value = None
+        if parser._accept(self.token_type):
+            self.visit(parser)
+
+class FactorDigit(FactorSub):
+    token_type = 'DGT'
+
+    def visit(self, parser):
+        value = float(parser.token.value)
+        parser._reject('DGT', 'VAR')
+        self.value = value
+        
+    
+            
+class FactorVariable(FactorSub):
+    token_type = 'VAR'
+    
+    def visit(self, parser):
         variable_name = parser.token.value
         if parser._accept('ASG'):
             self.value = Assignment(parser, variable_name).value
         else:
             self.value = Identifier(parser).value
 
+                
+class FactorExpression(FactorSub):
+    token_type = 'LPR'
+    
+    def visit(self, parser):
+        expression_value = Expression(parser).value
+        parser._expect('RPR')
+        self.value = expression_value
+    
 
 class Assignment:
     def __init__(self, parser, variable_name):
