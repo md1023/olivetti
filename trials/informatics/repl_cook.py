@@ -78,7 +78,7 @@ class NonTerminal:
     def __init__(self, parser):
         self.parser = parser
 
-        
+
 class Expression(NonTerminal):
     'expression ::= term { ("+"|"-") term }*'
     def __init__(self, parser):
@@ -94,7 +94,7 @@ class Expression(NonTerminal):
                 expression_value -= right
         self.value = expression_value
 
-    
+
 class Term:
     'term ::= factor { ("*"|"/") factor }*'
     def __init__(self, parser):
@@ -108,16 +108,16 @@ class Term:
                 self.value /= right
             elif operation == 'MOD':
                 self.value %= right
-        
-        
+
+
 class Factor(NonTerminal):
-    'factor ::= digit | identifier | assignment | ( expr )'
+    'factor ::= digit | variable | ( expr )'
     def __init__(self, parser):
         super().__init__(parser)
         if parser._accept('DGT'):
             self.value = self.digit()
         elif parser._accept('VAR'):
-            self.value = self.variable()
+            self.value = Variable(parser).value
         elif parser._accept('LPR'):
             self.value = self.expression()
         else:
@@ -128,17 +128,20 @@ class Factor(NonTerminal):
         self.parser._reject('DGT', 'VAR')
         return value
 
-    def variable(self):
-        variable_name = self.parser.token.value
-        if self.parser._accept('ASG'):
-            return Assignment(self.parser, variable_name).value
-        else:
-            return Identifier(self.parser).value
-
     def expression(self):
         expression_value = Expression(self.parser).value
         self.parser._expect('RPR')
         return expression_value
+
+
+class Variable(NonTerminal):
+    'varible ::= assignment | identifier'
+    def __init__(self, parser):
+        variable_name = parser.token.value
+        if parser._accept('ASG'):
+            self.value = Assignment(parser, variable_name).value
+        else:
+            self.value = Identifier(parser).value
 
 
 class Assignment:
