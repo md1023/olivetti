@@ -43,7 +43,7 @@ class Interpreter:
         return self.parse(text)
 
     def parse(self, text):
-        print('test', text)
+        print('TST', text)
         if not text.replace(' ', ''):
             return ''
         self.tokens = lexer(text)
@@ -52,7 +52,7 @@ class Interpreter:
         self.next_token = None
         self._advance()
         res = Expression(self).value
-        print('result', res)
+        print('RES', res)
         return res
 
     def _advance(self):
@@ -81,7 +81,7 @@ class Expression:
         while parser._accept('ADD', 'SUB'):
             operation = parser.token.type
             right = Term(parser).value
-            print('expr', right, operation, expression_value)
+            print('EXP', right, operation, expression_value)
             if operation == 'ADD':
                 expression_value += right
             elif operation == 'SUB':
@@ -107,27 +107,28 @@ class Term:
 class FactorMixin:
     def next_factor(self, parser, variable_name=None):
         for SF in self.subfactors:
-            value = SF(parser, variable_name).value
-            if value is not None:
-                return value
+            token_type = getattr(SF, 'token_type')
+            if parser._accept(token_type) or token_type == 'ANY':
+                value = SF(parser, variable_name).value
+                if value is not None:
+                    return value
+
+        raise SyntaxError('unexpected end of tokens')
 
 
 class Factor(FactorMixin):
     'factor ::= digit | variable | ( expr )'
     def __init__(self, parser):
         self.value = self.next_factor(parser)
-        if self.value is None:
-            raise SyntaxError('expected DGT or LPR')
 
 
 class FactorSub:
     def __init__(self, parser, variable_name=None):
         self.value = None
-        if parser._accept(self.token_type):
-            if variable_name is None:
-                self.visit(parser)
-            else:
-                self.visit(parser, variable_name)
+        if variable_name is None:
+            self.visit(parser)
+        else:
+            self.visit(parser, variable_name)
 
 
 class FactorDigit(FactorSub):
@@ -142,8 +143,6 @@ class FactorVariable(FactorSub, FactorMixin):
     token_type = 'VAR'
     def visit(self, parser):
         self.value = self.next_factor(parser, parser.token.value)
-        if self.value is None:
-            raise NotImplementedError('fucking error')
 
 
 class FactorExpression(FactorSub):
@@ -161,12 +160,13 @@ class Assignment(FactorSub):
         parser.memory[variable_name] = self.value
 
 
-# doesn't inherit FactorSub, otherwise token will be eaten
 class Identifier:
+    token_type = 'ANY'
     def __init__(self, parser, variable_name):
         if variable_name not in parser.memory:
             raise ValueError('undefined variable')
         self.value = parser.memory[variable_name]
+        parser._reject('DGT', 'VAR')
 
 
 Factor.subfactors = [FactorDigit, FactorVariable, FactorExpression]
