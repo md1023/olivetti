@@ -75,6 +75,7 @@ class Interpreter:
 
 
 class Expression:
+    token_type = None
     'expression ::= term { ("+"|"-") term }*'
     def __init__(self, parser):
         expression_value = Term(parser).value
@@ -92,10 +93,10 @@ class Expression:
 class Term:
     'term ::= factor { ("*"|"/") factor }*'
     def __init__(self, parser):
-        self.value = Factor(parser).value
+        self.value = Parser(parser, FactorObject()).value
         while parser._accept('MUL', 'DIV', 'MOD'):
             operation = parser.token.type
-            right = Factor(parser).value
+            right = Parser(parser, FactorObject()).value
             if operation == 'MUL':
                 self.value *= right
             elif operation == 'DIV':
@@ -104,73 +105,75 @@ class Term:
                 self.value %= right
 
 
-class FactorMixin:
-    def next_factor(self, parser, variable_name=None):
-        for SF in self.subfactors:
+class Parser:
+    def __init__(self, parser, nonterminal):
+        self.parser = parser
+        for SF in nonterminal.subfactors:
             token_type = getattr(SF, 'token_type')
             if parser._accept(token_type) or token_type == 'ANY':
-                value = SF(parser, variable_name).value
+                value = self.visit(SF)
                 if value is not None:
-                    return value
+                    self.value = value
 
         raise SyntaxError('unexpected end of tokens')
 
+    def visit(self, SF):
+        visit_method = getattr(self, 'visit_' + SF.__name__)
+        print('visit', SF.__name__)
+        return visit_method(SF)
 
-class Factor(FactorMixin):
-    'factor ::= digit | variable | ( expr )'
-    def __init__(self, parser):
-        self.value = self.next_factor(parser)
+    def visit_Number(self, SF):
+        value = float(self.parser.token.value)
+        self.parser._reject('DGT', 'VAR')
+        print('num', value)
+        return value
+
+    def visit_Variable(self, SF):
+        assert SF.__name__ == 'Variable'
+        variable = SF()
+        variable.variable_name = self.parser.token.value
+        value = Parser(self.parser, variable).value
+        return value
+
+    def visit_Expression(self, SF):
+        expression_value = SF(self.parser).value
+        self.parser._expect('RPR')
+        return expression_value
+
+    def visit_Assignment(self, SF, variable_name):
+        value = Expression(self.parser).value
+        self.parser.memory[variable_name] = value
+        print('asg', value)
+        return value
+
+    def visit_Identifier(self, SF, variable_name):
+        if variable_name not in self.parser.memory:
+            raise ValueError('undefined variable')
+        value = self.parser.memory[variable_name]
+        self.parser._reject('DGT', 'VAR')
+        return value
 
 
-class FactorSub:
-    def __init__(self, parser, variable_name=None):
-        self.value = None
-        if variable_name is None:
-            self.visit(parser)
-        else:
-            self.visit(parser, variable_name)
-
-
-class FactorDigit(FactorSub):
+class Number:
     token_type = 'DGT'
-    def visit(self, parser):
-        value = float(parser.token.value)
-        parser._reject('DGT', 'VAR')
-        self.value = value
 
 
-class FactorVariable(FactorSub, FactorMixin):
+class FactorObject:
+    subfactors = [Number, Variable] #, Expression]
+
+
+class VariableObject:
     token_type = 'VAR'
-    def visit(self, parser):
-        self.value = self.next_factor(parser, parser.token.value)
+    subfactors = [Assignment, Identifier]
 
 
-class FactorExpression(FactorSub):
-    token_type = 'LPR'
-    def visit(self, parser):
-        expression_value = Expression(parser).value
-        parser._expect('RPR')
-        self.value = expression_value
-
-
-class Assignment(FactorSub):
+class Assignment:
     token_type = 'ASG'
-    def visit(self, parser, variable_name):
-        self.value = Expression(parser).value
-        parser.memory[variable_name] = self.value
 
 
 class Identifier:
     token_type = 'ANY'
-    def __init__(self, parser, variable_name):
-        if variable_name not in parser.memory:
-            raise ValueError('undefined variable')
-        self.value = parser.memory[variable_name]
-        parser._reject('DGT', 'VAR')
 
-
-Factor.subfactors = [FactorDigit, FactorVariable, FactorExpression]
-FactorVariable.subfactors = [Assignment, Identifier]
 
 e = Interpreter()
 print(e.parse('ab_c = 2.8+543.'))
