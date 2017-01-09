@@ -27,11 +27,12 @@
  '(package-selected-packages
    (quote
     (nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode python-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme)))
+ '(python-shell-completion-native-enable nil)
+ '(python-shell-interpreter "python3")
  '(url-proxy-services
    (quote
     (("http" . "192.168.200.105:8088")
      ("https" . "192.168.200.105:8088")))))
- '(python-shell-interpreter "python3"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

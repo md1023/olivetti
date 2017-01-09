@@ -51,7 +51,9 @@ class Interpreter:
         self.token = None
         self.next_token = None
         self._advance()
-        res = Expression(self).value
+        self.stack = [Expression]
+        # res = Expression(self).value
+        res = Parser(self).get_value()
         print('RES', res)
         return res
 
@@ -74,7 +76,7 @@ class Interpreter:
             raise SyntaxError('unexpected {0}'.format(token_types))
 
 
-class Expression:
+class ExpressionOld:
     token_type = None
     'expression ::= term { ("+"|"-") term }*'
     def __init__(self, parser):
@@ -106,18 +108,27 @@ class Term:
 
 
 class Parser:
-    def __init__(self, parser, nonterminal):
+    def __init__(self, parser):
         self.parser = parser
+        self.stack = parser.stack
+        nonterminal = self.stack[-1]
+        print('NT', nonterminal)
         for SF in nonterminal.subfactors:
             token_type = getattr(SF, 'token_type')
+            # print('SF', token_type, parser.token, parser.next_token)
             if parser._accept(token_type) or token_type == 'ANY':
                 value = self.visit(SF)
                 if value is not None:
                     self.value = value
+                    break
 
-        raise SyntaxError('unexpected end of tokens')
+        if value is None:
+            raise SyntaxError('unexpected end of tokens')
 
-    def visit(self, SF):
+    def get_value(self):
+        return self.value
+
+    def visit(self, SF, **kwargs):
         visit_method = getattr(self, 'visit_' + SF.__name__)
         print('visit', SF.__name__)
         return visit_method(SF)
@@ -125,46 +136,41 @@ class Parser:
     def visit_Number(self, SF):
         value = float(self.parser.token.value)
         self.parser._reject('DGT', 'VAR')
-        print('num', value)
         return value
 
     def visit_Variable(self, SF):
-        assert SF.__name__ == 'Variable'
-        variable = SF()
-        variable.variable_name = self.parser.token.value
-        value = Parser(self.parser, variable).value
+        self.stack.append(SF(self.parser.token.value))
+        value = Parser(self.parser).value
         return value
 
-    def visit_Expression(self, SF):
+    def visit_ParenExpression(self, SF):
         expression_value = SF(self.parser).value
         self.parser._expect('RPR')
         return expression_value
 
-    def visit_Assignment(self, SF, variable_name):
-        value = Expression(self.parser).value
+    def visit_Assignment(self, SF):
+        variable_name = self.stack[-1].value
+        self.stack.append(Expression)
+        value = Parser(self.parser).value
         self.parser.memory[variable_name] = value
-        print('asg', value)
         return value
 
-    def visit_Identifier(self, SF, variable_name):
+    def visit_Identifier(self, SF):
         if variable_name not in self.parser.memory:
             raise ValueError('undefined variable')
         value = self.parser.memory[variable_name]
         self.parser._reject('DGT', 'VAR')
         return value
 
+    def visit_Term(self, SF):
+        self.stack.append(Factor)
+        value = Parser(self.parser).value
+        return value
+
 
 class Number:
     token_type = 'DGT'
-
-
-class FactorObject:
-    subfactors = [Number, Variable] #, Expression]
-
-
-class VariableObject:
-    token_type = 'VAR'
-    subfactors = [Assignment, Identifier]
+    # subfactors = [Number]
 
 
 class Assignment:
@@ -175,8 +181,34 @@ class Identifier:
     token_type = 'ANY'
 
 
+class Variable:
+    token_type = 'VAR'
+    subfactors = [Assignment, Identifier]
+    def __init__(self, name):
+        self.value = name
+
+
+class ParenExpression:
+    token_type = 'LPR'
+
+
+class Factor:
+    token_type = 'ANY'
+    subfactors = [Number, Variable, ParenExpression]
+
+
+class Term:
+    token_type = 'ANY'
+
+
+class Expression:
+    token_type = 'ANY'
+    subfactors = [Term]
+
+
 e = Interpreter()
-print(e.parse('ab_c = 2.8+543.'))
+print(e.parse('ab_c = 2.8'))
+# print(e.parse('ab_c = 2.8'))
 print('memory', e.memory, '\n')
-print(e.parse('ab_c - 483'))
+# print(e.parse('ab_c - 483'))
 # print(e.parse('ab_c'))
