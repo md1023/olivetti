@@ -165,6 +165,16 @@ class Parser:
     def visit_Term(self, SF):
         self.stack.append(SF)
         value = Parser(self.parser).value
+        while self.parser._accept('MUL', 'DIV', 'MOD'):
+            operation = self.parser.token.type
+            print('MIUL', operation, value)
+            # TODO precedence failure
+            if operation == 'MUL':
+                value *= Parser(self.parser).value
+            elif operation == 'DIV':
+                value /= Parser(self.parser).value
+            elif operation == 'MOD':
+                value %= Parser(self.parser).value
         return value
 
     def visit_Factor(self, SF):
@@ -175,15 +185,12 @@ class Parser:
     def visit_Expression(self, SF):
         self.stack.append(SF)
         value = Parser(self.parser).value
-
-        # TODO
-        print('start add')
-        self.stack.append(Add)
-        self.parser._advance()
-        value += Parser(self.parser).value
-        
-        print('proceed add', value)
-        print('quitting expr', self.stack, value, self.parser.token, self.parser.next_token)
+        while self.parser._accept('ADD', 'SUB'):
+            operation = self.parser.token.type
+            if operation == 'ADD':
+                value += Parser(self.parser).value
+            elif operation == 'SUB':
+                value -= Parser(self.parser).value
         return value
 
 
@@ -267,7 +274,7 @@ for C in NonTerminal.__subclasses__():
         C.subfactors = [globals()[name] for name in subfactor_names]
 
 e = Interpreter()
-print(e.parse('ab_c = 5 + 545 + 2.8'))
+print(e.parse('ab_c = 5 + 545 - 2.5 * 2'))
 # print(e.parse('ab_c = 2.8'))
 print('memory', e.memory, '\n')
 # print(e.parse('ab_c - 483'))

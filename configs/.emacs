@@ -33,6 +33,7 @@
    (quote
     (("http" . "192.168.200.105:8088")
      ("https" . "192.168.200.105:8088")))))
+ '(python-shell-interpreter "python3"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
