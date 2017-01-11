@@ -92,7 +92,7 @@ class ExpressionOld:
         self.value = expression_value
 
 
-class Term:
+class TermOld:
     'term ::= factor { ("*"|"/") factor }*'
     def __init__(self, parser):
         self.value = Parser(parser, FactorObject()).value
@@ -112,10 +112,10 @@ class Parser:
         self.parser = parser
         self.stack = parser.stack
         nonterminal = self.stack[-1]
-        print('NT', nonterminal)
         for SF in nonterminal.subfactors:
+            print('sdf', SF, nonterminal, nonterminal.subfactors)
             token_type = getattr(SF, 'token_type')
-            # print('SF', token_type, parser.token, parser.next_token)
+            # print('SF', nonterminal, SF, token_type, parser.token, parser.next_token)
             if parser._accept(token_type) or token_type == 'ANY':
                 value = self.visit(SF)
                 if value is not None:
@@ -128,7 +128,7 @@ class Parser:
     def get_value(self):
         return self.value
 
-    def visit(self, SF, **kwargs):
+    def visit(self, SF):
         visit_method = getattr(self, 'visit_' + SF.__name__)
         print('visit', SF.__name__)
         return visit_method(SF)
@@ -150,7 +150,7 @@ class Parser:
 
     def visit_Assignment(self, SF):
         variable_name = self.stack[-1].value
-        self.stack.append(Expression)
+        self.stack.append(SF)
         value = Parser(self.parser).value
         self.parser.memory[variable_name] = value
         return value
@@ -163,51 +163,83 @@ class Parser:
         return value
 
     def visit_Term(self, SF):
-        self.stack.append(Factor)
+        self.stack.append(SF)
         value = Parser(self.parser).value
         return value
+
+    def visit_Factor(self, SF):
+        self.stack.append(SF)
+        value = Parser(self.parser).value
+        return value
+
+    def visit_Expression(self, SF):
+        print('start expression')
+        self.stack.append(SF)
+        value = Parser(self.parser).value
+        print('quitting expr', SF, value)
+        return value
+
+    
+# class NonTerminal:
+#     def __init__(self):
+#         print('fook')
+#         if not hasattr(self, 'token_type'):
+#             setattr(self, 'token_type', 'ANY')
+#             print('hatr', self.token_type)
+            
+#         if hasattr(self, 'subfactors'):
+#             setattr(self, 'subfactors', [])
+#             subfactor_names = getattr(self, 'subfactors').split()
+            
+#             for C in subfactor_names:
+#                 print('C', C)
+#                 if C not in globals():
+#                     raise KeyError('subfactor {0} is not defined'.format(C))
+#                 self.subfactors.append(globals()[C])
+#             print('ysb', self.subfactors)
+        
 
 
 class Number:
     token_type = 'DGT'
-    # subfactors = [Number]
-
-
-class Assignment:
-    token_type = 'ASG'
 
 
 class Identifier:
-    token_type = 'ANY'
-
-
-class Variable:
-    token_type = 'VAR'
-    subfactors = [Assignment, Identifier]
-    def __init__(self, name):
-        self.value = name
+    pass
 
 
 class ParenExpression:
     token_type = 'LPR'
 
 
-class Factor:
-    token_type = 'ANY'
-    subfactors = [Number, Variable, ParenExpression]
-
-
-class Term:
-    token_type = 'ANY'
-
-
 class Expression:
-    token_type = 'ANY'
-    subfactors = [Term]
+    subfactors = 'Term'
+
+    
+class Term:
+    subfactors = 'Factor'
 
 
+class Factor:
+    subfactors = 'Number Variable ParenExpression'
+
+
+class Assignment:
+    token_type = 'ASG'
+    subfactors = 'Expression'
+
+
+class Variable:
+    token_type = 'VAR'
+    subfactors = 'Assignment Identifier'
+    def __init__(self, name):
+        super().__init__()
+        
+        self.value = name
+
+        
 e = Interpreter()
-print(e.parse('ab_c = 2.8'))
+print(e.parse('ab_c = 2.8 + 545'))
 # print(e.parse('ab_c = 2.8'))
 print('memory', e.memory, '\n')
 # print(e.parse('ab_c - 483'))
