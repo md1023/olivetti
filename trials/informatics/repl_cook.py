@@ -179,65 +179,64 @@ class Parser:
         print('quitting expr', SF, value)
         return value
 
-    
-# class NonTerminal:
-#     def __init__(self):
-#         print('fook')
-#         if not hasattr(self, 'token_type'):
-#             setattr(self, 'token_type', 'ANY')
-#             print('hatr', self.token_type)
-            
-#         if hasattr(self, 'subfactors'):
-#             setattr(self, 'subfactors', [])
-#             subfactor_names = getattr(self, 'subfactors').split()
-            
-#             for C in subfactor_names:
-#                 print('C', C)
-#                 if C not in globals():
-#                     raise KeyError('subfactor {0} is not defined'.format(C))
-#                 self.subfactors.append(globals()[C])
-#             print('ysb', self.subfactors)
-        
+
+class NonTerminal:
+    def __repr__(self):
+        s = type(self).__name__
+        s += '[{0}]'.format(getattr(self, 'token_type', ''))
+        s += '{0}'.format(getattr(self, 'subfactors', ''))
+        return s
 
 
 class Number:
     token_type = 'DGT'
 
 
-class Identifier:
+class Identifier(NonTerminal):
     pass
 
 
-class ParenExpression:
+class ParenExpression(NonTerminal):
     token_type = 'LPR'
 
 
-class Expression:
+class Expression(NonTerminal):
     subfactors = 'Term'
 
-    
-class Term:
+
+class Term(NonTerminal):
     subfactors = 'Factor'
 
 
-class Factor:
+class Factor(NonTerminal):
     subfactors = 'Number Variable ParenExpression'
 
 
-class Assignment:
+class Assignment(NonTerminal):
     token_type = 'ASG'
     subfactors = 'Expression'
 
 
-class Variable:
+class Variable(NonTerminal):
     token_type = 'VAR'
     subfactors = 'Assignment Identifier'
     def __init__(self, name):
         super().__init__()
-        
+
         self.value = name
 
-        
+
+for C in NonTerminal.__subclasses__():
+    if not hasattr(C, 'token_type'):
+        setattr(C, 'token_type', 'ANY')
+
+    if hasattr(C, 'subfactors'):
+        subfactor_names = getattr(C, 'subfactors').split()
+        setattr(C, 'subfactors', [])
+        C.subfactors = [globals()[name] for name in subfactor_names]
+    if hasattr(C, 'subfactors'):
+        print(C, C.token_type, C.subfactors)
+
 e = Interpreter()
 print(e.parse('ab_c = 2.8 + 545'))
 # print(e.parse('ab_c = 2.8'))
