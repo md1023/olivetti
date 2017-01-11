@@ -112,10 +112,10 @@ class Parser:
         self.parser = parser
         self.stack = parser.stack
         nonterminal = self.stack[-1]
+        value = None
         for SF in nonterminal.subfactors:
-            print('sdf', SF, nonterminal, nonterminal.subfactors)
             token_type = getattr(SF, 'token_type')
-            # print('SF', nonterminal, SF, token_type, parser.token, parser.next_token)
+            print('SF', nonterminal, SF, token_type, parser.token, parser.next_token)
             if parser._accept(token_type) or token_type == 'ANY':
                 value = self.visit(SF)
                 if value is not None:
@@ -173,10 +173,17 @@ class Parser:
         return value
 
     def visit_Expression(self, SF):
-        print('start expression')
         self.stack.append(SF)
         value = Parser(self.parser).value
-        print('quitting expr', SF, value)
+
+        # TODO
+        print('start add')
+        self.stack.append(Add)
+        self.parser._advance()
+        value += Parser(self.parser).value
+        
+        print('proceed add', value)
+        print('quitting expr', self.stack, value, self.parser.token, self.parser.next_token)
         return value
 
 
@@ -184,7 +191,7 @@ class NonTerminal:
     def __repr__(self):
         s = type(self).__name__
         s += '[{0}]'.format(getattr(self, 'token_type', ''))
-        s += '{0}'.format(getattr(self, 'subfactors', ''))
+        s += '{0}'.format([C.__name__ for C in getattr(self, 'subfactors', '')])
         return s
 
 
@@ -199,6 +206,31 @@ class Identifier(NonTerminal):
 class ParenExpression(NonTerminal):
     token_type = 'LPR'
 
+
+class Add(NonTerminal):
+    token_type = 'ADD'
+    subfactors = 'Term'
+
+            
+class Sub(NonTerminal):
+    token_type = 'SUB'
+    subfactors = 'Factor'
+
+            
+class Mul(NonTerminal):
+    token_type = 'MUL'
+    subfactors = 'Factor'
+
+            
+class Div(NonTerminal):
+    token_type = 'DIV'
+    subfactors = 'Factor'
+
+
+class Mod(NonTerminal):
+    token_type = 'MOD'
+    subfactors = 'Factor'
+            
 
 class Expression(NonTerminal):
     subfactors = 'Term'
@@ -222,7 +254,6 @@ class Variable(NonTerminal):
     subfactors = 'Assignment Identifier'
     def __init__(self, name):
         super().__init__()
-
         self.value = name
 
 
@@ -234,11 +265,9 @@ for C in NonTerminal.__subclasses__():
         subfactor_names = getattr(C, 'subfactors').split()
         setattr(C, 'subfactors', [])
         C.subfactors = [globals()[name] for name in subfactor_names]
-    if hasattr(C, 'subfactors'):
-        print(C, C.token_type, C.subfactors)
 
 e = Interpreter()
-print(e.parse('ab_c = 2.8 + 545'))
+print(e.parse('ab_c = 5 + 545 + 2.8'))
 # print(e.parse('ab_c = 2.8'))
 print('memory', e.memory, '\n')
 # print(e.parse('ab_c - 483'))
