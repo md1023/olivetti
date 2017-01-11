@@ -39,6 +39,7 @@
   '(("zenburn-fg"       . "#DCDCCC")
     ("zenburn-fg-1"     . "#656555")
     ("zenburn-bg-1"     . "#2B2B2B")
+    ("zenburn-bg-025"   . "#303030")
     ("zenburn-bg-05"    . "#383838")
     ("zenburn-bg"       . "#3F3F3F")
     ("zenburn-bg+1"     . "#4F4F4F")
@@ -94,7 +95,7 @@ Also bind `class' to ((class color) (min-colors 89))."
    '(button ((t (:underline t))))
    `(link ((t (:foreground ,zenburn-yellow-2 :weight bold))))
    `(link-visited ((t (:foreground ,zenburn-yellow-2 ))))
-   `(default ((t (:foreground ,zenburn-fg :background ,zenburn-bg))))
+   `(default ((t (:foreground ,zenburn-fg :background ,zenburn-bg-05))))
    `(cursor ((t (:foreground ,zenburn-fg :background "white"))))
    `(escape-glyph ((t (:foreground ,zenburn-yellow :bold t))))
    `(fringe ((t (:foreground ,zenburn-fg :background ,zenburn-bg+1))))
@@ -139,8 +140,8 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(mode-line-buffer-id ((t (:foreground ,zenburn-yellow :weight bold))))
    `(mode-line-inactive
      ((t (:foreground ,zenburn-green-1
-                      :background ,zenburn-bg-05))))
-   `(region ((,class (:background ,zenburn-bg-1))
+                      :background ,zenburn-bg-025))))
+   `(region ((,class (:background ,zenburn-bg-05))
              (t :inverse-video t)))
    `(secondary-selection ((t (:background ,zenburn-bg+2))))
    `(trailing-whitespace ((t (:background ,zenburn-red))))
