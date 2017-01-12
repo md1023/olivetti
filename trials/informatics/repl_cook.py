@@ -75,38 +75,7 @@ class Interpreter:
         if any(self._accept(token_type) for token_type in token_types):
             raise SyntaxError('unexpected {0}'.format(token_types))
 
-
-class ExpressionOld:
-    token_type = None
-    'expression ::= term { ("+"|"-") term }*'
-    def __init__(self, parser):
-        expression_value = Term(parser).value
-        while parser._accept('ADD', 'SUB'):
-            operation = parser.token.type
-            right = Term(parser).value
-            print('EXP', right, operation, expression_value)
-            if operation == 'ADD':
-                expression_value += right
-            elif operation == 'SUB':
-                expression_value -= right
-        self.value = expression_value
-
-
-class TermOld:
-    'term ::= factor { ("*"|"/") factor }*'
-    def __init__(self, parser):
-        self.value = Parser(parser, FactorObject()).value
-        while parser._accept('MUL', 'DIV', 'MOD'):
-            operation = parser.token.type
-            right = Parser(parser, FactorObject()).value
-            if operation == 'MUL':
-                self.value *= right
-            elif operation == 'DIV':
-                self.value /= right
-            elif operation == 'MOD':
-                self.value %= right
-
-
+        
 class Parser:
     def __init__(self, parser):
         self.parser = parser
@@ -115,7 +84,7 @@ class Parser:
         value = None
         for SF in nonterminal.subfactors:
             token_type = getattr(SF, 'token_type')
-            print('SF', nonterminal, SF, token_type, parser.token, parser.next_token)
+            print('2)', token_type, 'SF=', SF, 'STK=', nonterminal, 'TOKEN=', parser.token, parser.next_token)
             if parser._accept(token_type) or token_type == 'ANY':
                 value = self.visit(SF)
                 if value is not None:
@@ -130,8 +99,10 @@ class Parser:
 
     def visit(self, SF):
         visit_method = getattr(self, 'visit_' + SF.__name__)
-        print('visit', SF.__name__)
-        return visit_method(SF)
+        print('VISITING', SF.__name__)
+        value = visit_method(SF) 
+        print('VISITED', SF.__name__, value)
+        return value
 
     def visit_Number(self, SF):
         value = float(self.parser.token.value)
@@ -166,9 +137,9 @@ class Parser:
         self.stack.append(SF)
         value = Parser(self.parser).value
         while self.parser._accept('MUL', 'DIV', 'MOD'):
+            self.stack.append(SF)
             operation = self.parser.token.type
-            print('MIUL', operation, value)
-            # TODO precedence failure
+            print('\nTOP', operation, SF, self.stack[-1], value)
             if operation == 'MUL':
                 value *= Parser(self.parser).value
             elif operation == 'DIV':
@@ -185,8 +156,11 @@ class Parser:
     def visit_Expression(self, SF):
         self.stack.append(SF)
         value = Parser(self.parser).value
+        print()
         while self.parser._accept('ADD', 'SUB'):
+            self.stack.append(SF)
             operation = self.parser.token.type
+            print('\nEOP', operation, 'SF=', SF, 'STK=', self.stack[-1], value)
             if operation == 'ADD':
                 value += Parser(self.parser).value
             elif operation == 'SUB':
@@ -264,6 +238,7 @@ class Variable(NonTerminal):
         self.value = name
 
 
+# TODO use recommendation #34 from Slatkin
 for C in NonTerminal.__subclasses__():
     if not hasattr(C, 'token_type'):
         setattr(C, 'token_type', 'ANY')
@@ -274,8 +249,9 @@ for C in NonTerminal.__subclasses__():
         C.subfactors = [globals()[name] for name in subfactor_names]
 
 e = Interpreter()
-print(e.parse('ab_c = 5 + 545 - 2.5 * 2'))
+print(e.parse('1 + 1'))
+# print(e.parse('ab_c = 5 + 545 - 2.5 * 2'))
 # print(e.parse('ab_c = 2.8'))
-print('memory', e.memory, '\n')
+# print('memory', e.memory, '\n')
 # print(e.parse('ab_c - 483'))
 # print(e.parse('ab_c'))
