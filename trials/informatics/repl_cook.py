@@ -51,9 +51,8 @@ class Interpreter:
         self.token = None
         self.next_token = None
         self._advance()
-        self.stack = [Expression]
-        # res = Expression(self).value
-        res = Parser(self).get_value()
+        self.stack = []
+        res = Parser(self).visit(Expression)
         print('RES', res)
         return res
 
@@ -80,12 +79,14 @@ class Parser:
     def __init__(self, parser):
         self.parser = parser
         self.stack = parser.stack
+
+    def __call__(self):
         nonterminal = self.stack[-1]
         value = None
         for SF in nonterminal.subfactors:
             token_type = getattr(SF, 'token_type')
-            print('2)', token_type, 'SF=', SF, 'STK=', nonterminal, 'TOKEN=', parser.token, parser.next_token)
-            if parser._accept(token_type) or token_type == 'ANY':
+            print('2)', token_type, 'SF=', SF, 'STK=', nonterminal, 'TOKEN=', self.parser.token, self.parser.next_token)
+            if self.parser._accept(token_type) or token_type == 'ANY':
                 value = self.visit(SF)
                 if value is not None:
                     self.value = value
@@ -94,7 +95,6 @@ class Parser:
         if value is None:
             raise SyntaxError('unexpected end of tokens')
 
-    def get_value(self):
         return self.value
 
     def visit(self, SF):
@@ -111,22 +111,23 @@ class Parser:
 
     def visit_Variable(self, SF):
         self.stack.append(SF(self.parser.token.value))
-        value = Parser(self.parser).value
+        value = Parser(self.parser)()
         return value
 
     def visit_ParenExpression(self, SF):
-        expression_value = SF(self.parser).value
+        expression_value = self.visit(Expression)
         self.parser._expect('RPR')
         return expression_value
 
     def visit_Assignment(self, SF):
         variable_name = self.stack[-1].value
         self.stack.append(SF)
-        value = Parser(self.parser).value
+        value = Parser(self.parser)()
         self.parser.memory[variable_name] = value
         return value
 
     def visit_Identifier(self, SF):
+        variable_name = self.stack[-1].value
         if variable_name not in self.parser.memory:
             raise ValueError('undefined variable')
         value = self.parser.memory[variable_name]
@@ -135,36 +136,36 @@ class Parser:
 
     def visit_Term(self, SF):
         self.stack.append(SF)
-        value = Parser(self.parser).value
+        value = Parser(self.parser)()
         while self.parser._accept('MUL', 'DIV', 'MOD'):
             self.stack.append(SF)
             operation = self.parser.token.type
             print('\nTOP', operation, SF, self.stack[-1], value)
             if operation == 'MUL':
-                value *= Parser(self.parser).value
+                value *= Parser(self.parser)()
             elif operation == 'DIV':
-                value /= Parser(self.parser).value
+                value /= Parser(self.parser)()
             elif operation == 'MOD':
-                value %= Parser(self.parser).value
+                value %= Parser(self.parser)()
         return value
 
     def visit_Factor(self, SF):
         self.stack.append(SF)
-        value = Parser(self.parser).value
+        value = Parser(self.parser)()
         return value
 
     def visit_Expression(self, SF):
         self.stack.append(SF)
-        value = Parser(self.parser).value
-        print()
+        value = Parser(self.parser)()
+        print('fook')
         while self.parser._accept('ADD', 'SUB'):
             self.stack.append(SF)
             operation = self.parser.token.type
             print('\nEOP', operation, 'SF=', SF, 'STK=', self.stack[-1], value)
             if operation == 'ADD':
-                value += Parser(self.parser).value
+                value += Parser(self.parser)()
             elif operation == 'SUB':
-                value -= Parser(self.parser).value
+                value -= Parser(self.parser)()
         return value
 
 
@@ -222,7 +223,7 @@ class Term(NonTerminal):
 
 
 class Factor(NonTerminal):
-    subfactors = 'Number Variable ParenExpression'
+    subfactors = 'ParenExpression Number Variable'
 
 
 class Assignment(NonTerminal):
@@ -249,8 +250,9 @@ for C in NonTerminal.__subclasses__():
         C.subfactors = [globals()[name] for name in subfactor_names]
 
 e = Interpreter()
-print(e.parse('1 + 1'))
+# print(e.parse('1 + 1'))
 # print(e.parse('ab_c = 5 + 545 - 2.5 * 2'))
+print(e.parse('(1+2)'))
 # print(e.parse('ab_c = 2.8'))
 # print('memory', e.memory, '\n')
 # print(e.parse('ab_c - 483'))
