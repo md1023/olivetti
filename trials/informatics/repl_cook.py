@@ -40,7 +40,7 @@ class Token(object):
     def __repr__(self):
         return "<{0} '{1}'>".format(self.type, self.value)
 
-    
+
 def lexer(expression):
     for t in tokenize(expression):
         for type, regexp in terminals.items():
@@ -49,9 +49,122 @@ def lexer(expression):
                 break
 
 
-class Interpreter:
+class Visitor:
+    def visit(self, SF):
+        visit_method = getattr(self, 'visit_' + SF.__name__)
+        value = visit_method(SF)
+        return value
+
+    def visit_Number(self, SF):
+        value = float(self.token.value)
+        self._reject('DGT', 'VAR')
+        return value
+
+    def visit_Variable(self, SF):
+        self.stack.append(SF(self.token.value))
+        value = self()
+        return value
+
+    def visit_ParenExpression(self, SF):
+        value = self.visit(Expression)
+        self._expect('RPR')
+        return value
+
+    def visit_Assignment(self, SF):
+        variable_name = self.stack[-1].value
+        self.stack.append(SF)
+        value = self()
+        self.variables[variable_name] = value
+        return value
+
+    def visit_Identifier(self, SF):
+        variable_name = self.stack[-1].value
+        if variable_name not in self.variables:
+            raise ValueError('undefined variable')
+        value = self.variables[variable_name]
+        self._reject('DGT', 'VAR')
+        return value
+
+    def visit_Term(self, SF):
+        self.stack.append(SF)
+        value = self()
+        while self._accept('MUL', 'DIV', 'MOD'):
+            self.stack.append(SF)
+            operation = self.token.type
+            if operation == 'MUL':
+                value *= self()
+            elif operation == 'DIV':
+                value /= self()
+            elif operation == 'MOD':
+                value %= self()
+        return value
+
+    def visit_Factor(self, SF):
+        self.stack.append(SF)
+        value = self()
+        return value
+
+    def visit_FunctionDefinition(self, SF):
+        self.stack.append(SF)
+        value = None
+        arguments = []
+        while self._accept('VAR'):
+            name = self.token.value
+            arguments.append(name)
+        self._expect('FOP')
+        # print(arguments, self.token, self.next_token)
+        expression_tokens = [self.next_token] + [t for t in self.tokens]
+
+        undefined_arguments = [
+            t.value
+            for t in expression_tokens
+            if t.type == 'VAR'
+            if t.value not in arguments
+        ]
+        if undefined_arguments:
+            raise SyntaxError('undefined arguments: {0}'.format(undefined_arguments))
+
+
+        # self.stack.append(Expression)
+        # value = self.visit(Expression)
+        # print(value)
+        print(expression_tokens)
+        raise NotImplementedError('stop')
+        return value
+
+    def visit_Expression(self, SF):
+        self.stack.append(SF)
+        value = self()
+        while self._accept('ADD', 'SUB'):
+            self.stack.append(SF)
+            operation = self.token.type
+            if operation == 'ADD':
+                value += self()
+            elif operation == 'SUB':
+                value -= self()
+        return value
+
+
+class Interpreter(Visitor):
     def __init__(self):
-        self.memory = dict()
+        self.variables = dict()
+
+    def __call__(self):
+        nonterminal = self.stack[-1]
+        value = None
+        for SF in nonterminal.subfactors:
+            token_type = getattr(SF, 'token_type')
+            print(SF, token_type, self.token, self.next_token)
+            if self._accept(token_type) or token_type == 'ANY':
+                value = self.visit(SF)
+                if value is not None:
+                    self.value = value
+                    break
+
+        if value is None:
+            raise SyntaxError('unexpected end of tokens')
+
+        return self.value
 
     def input(self, text):
         return self.parse(text)
@@ -60,12 +173,11 @@ class Interpreter:
         if not text.replace(' ', ''):
             return ''
         self.tokens = lexer(text)
-        print(text, list(self.tokens))
         self.token = None
         self.next_token = None
         self._advance()
         self.stack = []
-        # return Parser(self).visit(Expression)
+        return self.visit(Expression)
 
     def _advance(self):
         self.token, self.next_token = self.next_token, next(self.tokens, None)
@@ -85,94 +197,6 @@ class Interpreter:
         if any(self._accept(token_type) for token_type in token_types):
             raise SyntaxError('unexpected {0}'.format(token_types))
 
-        
-class Parser:
-    def __init__(self, parser):
-        self.parser = parser
-        self.stack = parser.stack
-
-    def __call__(self):
-        nonterminal = self.stack[-1]
-        value = None
-        for SF in nonterminal.subfactors:
-            token_type = getattr(SF, 'token_type')
-            if self.parser._accept(token_type) or token_type == 'ANY':
-                value = self.visit(SF)
-                if value is not None:
-                    self.value = value
-                    break
-
-        if value is None:
-            raise SyntaxError('unexpected end of tokens')
-
-        return self.value
-
-    def visit(self, SF):
-        visit_method = getattr(self, 'visit_' + SF.__name__)
-        value = visit_method(SF) 
-        return value
-
-    def visit_Number(self, SF):
-        value = float(self.parser.token.value)
-        self.parser._reject('DGT', 'VAR')
-        return value
-
-    def visit_Variable(self, SF):
-        self.stack.append(SF(self.parser.token.value))
-        value = Parser(self.parser)()
-        return value
-
-    def visit_ParenExpression(self, SF):
-        value = self.visit(Expression)
-        self.parser._expect('RPR')
-        return value
-
-    def visit_Assignment(self, SF):
-        variable_name = self.stack[-1].value
-        self.stack.append(SF)
-        value = Parser(self.parser)()
-        self.parser.variables[variable_name] = value
-        return value
-
-    def visit_Identifier(self, SF):
-        variable_name = self.stack[-1].value
-        if variable_name not in self.parser.variables:
-            raise ValueError('undefined variable')
-        value = self.parser.variables[variable_name]
-        self.parser._reject('DGT', 'VAR')
-        return value
-
-    def visit_Term(self, SF):
-        self.stack.append(SF)
-        value = Parser(self.parser)()
-        while self.parser._accept('MUL', 'DIV', 'MOD'):
-            self.stack.append(SF)
-            operation = self.parser.token.type
-            if operation == 'MUL':
-                value *= Parser(self.parser)()
-            elif operation == 'DIV':
-                value /= Parser(self.parser)()
-            elif operation == 'MOD':
-                value %= Parser(self.parser)()
-        return value
-
-    def visit_Factor(self, SF):
-        self.stack.append(SF)
-        value = Parser(self.parser)()
-        return value
-
-    def visit_Expression(self, SF):
-        self.stack.append(SF)
-        value = Parser(self.parser)()
-        while self.parser._accept('ADD', 'SUB'):
-            self.stack.append(SF)
-            operation = self.parser.token.type
-            if operation == 'ADD':
-                value += Parser(self.parser)()
-            elif operation == 'SUB':
-                value -= Parser(self.parser)()
-        return value
-
 
 class Representable:
     def __repr__(self):
@@ -181,7 +205,7 @@ class Representable:
         s += '{0}'.format([C.__name__ for C in getattr(self, 'subfactors', '')])
         return s
 
-    
+
 class Terminal(Representable):
     pass
 
@@ -210,11 +234,11 @@ class Term(NonTerminal):
     subfactors = 'Factor'
 
 
-class Function(NonTerminal):
-    token_type = "FNC"
-    
+class FunctionDefinition(NonTerminal):
+    token_type = "FKW"
+
 class Factor(NonTerminal):
-    subfactors = 'ParenExpression Function Number Variable'
+    subfactors = 'ParenExpression FunctionDefinition Number Variable'
 
 
 class Assignment(NonTerminal):
@@ -240,12 +264,12 @@ for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
         C.subfactors = [globals()[name] for name in subfactor_names]
 
 e = Interpreter()
-print(e.parse('fn foo => 1 + 2'))
-print(e.parse('fn ager fnhtr gaer'))
+# print(e.parse('fn foo bar => 1 + foo + bar'))
+# print(e.parse('fn ager fnhtr gaer'))
 # print(e.parse('1 + 2'))
-# print(e.parse('ab_c = 5 + 545 - 2.5 * 2'))
+print(e.parse('ab_c = 5 '))
 # print(e.parse('(1+2)'))
-print(e.parse('ab_c + 2.8'))
+print(e.parse('ab_c * ab_c'))
 # print('variables', e.variables)
 # print(e.parse('ab_c - 483'))
 # print(e.parse('ab_c'))
