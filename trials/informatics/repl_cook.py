@@ -2,7 +2,7 @@
 
 import re
 
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 Token = namedtuple('Token', ['type', 'value'])
 
@@ -14,25 +14,39 @@ def tokenize(expression):
     tokens = regex.findall(expression)
     return [s for s in tokens if not s.isspace()]
 
-terminals = dict(
-    ADD = '\+',
-    MUL = '\*',
-    SUB = '-',
-    DIV = '/',
-    MOD = '%',
-    ASG = '=',
-    DOT = '\.',
-    LPR = '\(',
-    RPR = '\)',
-    VAR = '[A-Za-z]',
-    DGT = '[0-9]'
-)
+terminals = OrderedDict((
+    ('ADD', '\+'),
+    ('MUL', '\*'),
+    ('SUB', '-'),
+    ('DIV', '/'),
+    ('MOD', '%'),
+    ('ASG', '=$'),
+    ('DOT', '\.'),
+    ('LPR', '\('),
+    ('RPR', '\)'),
+    ('FKW', '^fn$'),
+    ('VAR', '[A-Za-z_]'),
+    ('DGT', '[0-9]'),
+    ('FOP', '^=>$')
+))
 
+
+class Token(object):
+    __slots__ = 'type', 'value'
+    def __init__(self, type, value):
+        self.type = type
+        self.value = value
+
+    def __repr__(self):
+        return "<{0} '{1}'>".format(self.type, self.value)
+
+    
 def lexer(expression):
     for t in tokenize(expression):
-        for _type, regexp in terminals.items():
+        for type, regexp in terminals.items():
             if re.match(regexp, t):
-                yield Token(_type, t)
+                yield Token(type, t)
+                break
 
 
 class Interpreter:
@@ -43,18 +57,15 @@ class Interpreter:
         return self.parse(text)
 
     def parse(self, text):
-        print('TST', text)
         if not text.replace(' ', ''):
             return ''
         self.tokens = lexer(text)
-        print(list(lexer(text)))
+        print(text, list(self.tokens))
         self.token = None
         self.next_token = None
         self._advance()
         self.stack = []
-        res = Parser(self).visit(Expression)
-        print('RES', res)
-        return res
+        # return Parser(self).visit(Expression)
 
     def _advance(self):
         self.token, self.next_token = self.next_token, next(self.tokens, None)
@@ -85,7 +96,6 @@ class Parser:
         value = None
         for SF in nonterminal.subfactors:
             token_type = getattr(SF, 'token_type')
-            print('2)', token_type, 'SF=', SF, 'STK=', nonterminal, 'TOKEN=', self.parser.token, self.parser.next_token)
             if self.parser._accept(token_type) or token_type == 'ANY':
                 value = self.visit(SF)
                 if value is not None:
@@ -99,9 +109,7 @@ class Parser:
 
     def visit(self, SF):
         visit_method = getattr(self, 'visit_' + SF.__name__)
-        print('VISITING', SF.__name__)
         value = visit_method(SF) 
-        print('VISITED', SF.__name__, value)
         return value
 
     def visit_Number(self, SF):
@@ -115,22 +123,22 @@ class Parser:
         return value
 
     def visit_ParenExpression(self, SF):
-        expression_value = self.visit(Expression)
+        value = self.visit(Expression)
         self.parser._expect('RPR')
-        return expression_value
+        return value
 
     def visit_Assignment(self, SF):
         variable_name = self.stack[-1].value
         self.stack.append(SF)
         value = Parser(self.parser)()
-        self.parser.memory[variable_name] = value
+        self.parser.variables[variable_name] = value
         return value
 
     def visit_Identifier(self, SF):
         variable_name = self.stack[-1].value
-        if variable_name not in self.parser.memory:
+        if variable_name not in self.parser.variables:
             raise ValueError('undefined variable')
-        value = self.parser.memory[variable_name]
+        value = self.parser.variables[variable_name]
         self.parser._reject('DGT', 'VAR')
         return value
 
@@ -140,7 +148,6 @@ class Parser:
         while self.parser._accept('MUL', 'DIV', 'MOD'):
             self.stack.append(SF)
             operation = self.parser.token.type
-            print('\nTOP', operation, SF, self.stack[-1], value)
             if operation == 'MUL':
                 value *= Parser(self.parser)()
             elif operation == 'DIV':
@@ -157,11 +164,9 @@ class Parser:
     def visit_Expression(self, SF):
         self.stack.append(SF)
         value = Parser(self.parser)()
-        print('fook')
         while self.parser._accept('ADD', 'SUB'):
             self.stack.append(SF)
             operation = self.parser.token.type
-            print('\nEOP', operation, 'SF=', SF, 'STK=', self.stack[-1], value)
             if operation == 'ADD':
                 value += Parser(self.parser)()
             elif operation == 'SUB':
@@ -169,12 +174,20 @@ class Parser:
         return value
 
 
-class NonTerminal:
+class Representable:
     def __repr__(self):
         s = type(self).__name__
         s += '[{0}]'.format(getattr(self, 'token_type', ''))
         s += '{0}'.format([C.__name__ for C in getattr(self, 'subfactors', '')])
         return s
+
+    
+class Terminal(Representable):
+    pass
+
+
+class NonTerminal(Representable):
+    pass
 
 
 class Number:
@@ -189,31 +202,6 @@ class ParenExpression(NonTerminal):
     token_type = 'LPR'
 
 
-class Add(NonTerminal):
-    token_type = 'ADD'
-    subfactors = 'Term'
-
-            
-class Sub(NonTerminal):
-    token_type = 'SUB'
-    subfactors = 'Factor'
-
-            
-class Mul(NonTerminal):
-    token_type = 'MUL'
-    subfactors = 'Factor'
-
-            
-class Div(NonTerminal):
-    token_type = 'DIV'
-    subfactors = 'Factor'
-
-
-class Mod(NonTerminal):
-    token_type = 'MOD'
-    subfactors = 'Factor'
-            
-
 class Expression(NonTerminal):
     subfactors = 'Term'
 
@@ -222,8 +210,11 @@ class Term(NonTerminal):
     subfactors = 'Factor'
 
 
+class Function(NonTerminal):
+    token_type = "FNC"
+    
 class Factor(NonTerminal):
-    subfactors = 'ParenExpression Number Variable'
+    subfactors = 'ParenExpression Function Number Variable'
 
 
 class Assignment(NonTerminal):
@@ -231,7 +222,7 @@ class Assignment(NonTerminal):
     subfactors = 'Expression'
 
 
-class Variable(NonTerminal):
+class Variable(Terminal):
     token_type = 'VAR'
     subfactors = 'Assignment Identifier'
     def __init__(self, name):
@@ -239,8 +230,7 @@ class Variable(NonTerminal):
         self.value = name
 
 
-# TODO use recommendation #34 from Slatkin
-for C in NonTerminal.__subclasses__():
+for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
     if not hasattr(C, 'token_type'):
         setattr(C, 'token_type', 'ANY')
 
@@ -250,10 +240,12 @@ for C in NonTerminal.__subclasses__():
         C.subfactors = [globals()[name] for name in subfactor_names]
 
 e = Interpreter()
-# print(e.parse('1 + 1'))
+print(e.parse('fn foo => 1 + 2'))
+print(e.parse('fn ager fnhtr gaer'))
+# print(e.parse('1 + 2'))
 # print(e.parse('ab_c = 5 + 545 - 2.5 * 2'))
-print(e.parse('(1+2)'))
-# print(e.parse('ab_c = 2.8'))
-# print('memory', e.memory, '\n')
+# print(e.parse('(1+2)'))
+print(e.parse('ab_c + 2.8'))
+# print('variables', e.variables)
 # print(e.parse('ab_c - 483'))
 # print(e.parse('ab_c'))
