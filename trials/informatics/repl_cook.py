@@ -6,6 +6,7 @@ from collections import namedtuple, OrderedDict
 
 Token = namedtuple('Token', ['type', 'value'])
 
+
 def tokenize(expression):
     if expression == "":
         return []
@@ -74,14 +75,14 @@ class Visitor:
         variable_name = self.stack[-1].value
         self.stack.append(SF)
         value = self()
-        self.variables[variable_name] = value
+        self.memory[variable_name] = value
         return value
 
     def visit_Identifier(self, SF):
         variable_name = self.stack[-1].value
-        if variable_name not in self.variables:
+        if variable_name not in self.memory:
             raise ValueError('undefined variable')
-        value = self.variables[variable_name]
+        value = self.memory[variable_name]
         self._reject('DGT', 'VAR')
         return value
 
@@ -104,15 +105,17 @@ class Visitor:
         value = self()
         return value
 
-    def visit_FunctionDefinition(self, SF):
-        self.stack.append(SF)
+    def visit_Function(self, SF):
         value = None
         arguments = []
+        
+        self._expect('VAR')
+        function_name = self.token.value
         while self._accept('VAR'):
             name = self.token.value
             arguments.append(name)
         self._expect('FOP')
-        # print(arguments, self.token, self.next_token)
+        print(arguments, self.token, self.next_token)
         expression_tokens = [self.next_token] + [t for t in self.tokens]
 
         undefined_arguments = [
@@ -147,7 +150,7 @@ class Visitor:
 
 class Interpreter(Visitor):
     def __init__(self):
-        self.variables = dict()
+        self.memory = dict()
 
     def __call__(self):
         nonterminal = self.stack[-1]
@@ -166,12 +169,10 @@ class Interpreter(Visitor):
 
         return self.value
 
-    def input(self, text):
-        return self.parse(text)
-
     def parse(self, text):
         if not text.replace(' ', ''):
             return ''
+        print(text)
         self.tokens = lexer(text)
         self.token = None
         self.next_token = None
@@ -234,11 +235,15 @@ class Term(NonTerminal):
     subfactors = 'Factor'
 
 
-class FunctionDefinition(NonTerminal):
+class Function(NonTerminal):
     token_type = "FKW"
+    def __init__(self, args, body):
+        self.args = args
+        self.body = body
+
 
 class Factor(NonTerminal):
-    subfactors = 'ParenExpression FunctionDefinition Number Variable'
+    subfactors = 'ParenExpression Function Number Variable'
 
 
 class Assignment(NonTerminal):
@@ -250,7 +255,6 @@ class Variable(Terminal):
     token_type = 'VAR'
     subfactors = 'Assignment Identifier'
     def __init__(self, name):
-        super().__init__()
         self.value = name
 
 
@@ -264,12 +268,13 @@ for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
         C.subfactors = [globals()[name] for name in subfactor_names]
 
 e = Interpreter()
-# print(e.parse('fn foo bar => 1 + foo + bar'))
+print(e.parse('foo = 5 '), '\n')
+print(e.parse('fn foo bar => 1 + foo + bar'))
 # print(e.parse('fn ager fnhtr gaer'))
 # print(e.parse('1 + 2'))
-print(e.parse('ab_c = 5 '))
+# print(e.parse('ab_c = 5 '))
 # print(e.parse('(1+2)'))
-print(e.parse('ab_c * ab_c'))
-# print('variables', e.variables)
+# print(e.parse('ab_c * ab_c'))
+# print('memory', e.memory)
 # print(e.parse('ab_c - 483'))
 # print(e.parse('ab_c'))
