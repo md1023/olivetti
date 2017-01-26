@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import re
+import itertools
 
 from collections import namedtuple, OrderedDict
 
@@ -80,8 +81,8 @@ class Visitor:
 
     def visit_FunctionCall(self, SF):
         func = self.memory[self.token.value]
-        
-        from pdb import set_trace; set_trace()
+        print(func.arguments, func.body)
+        # from pdb import set_trace; set_trace()
         # if isinstance(value, Function):
         #     value = self.
         raise NotImplementedError('stop')
@@ -123,21 +124,18 @@ class Visitor:
 
         # get function arguments
         while self._accept('VAR'):
-            arguments.append(self.token.value)
+            arguments.append(name + '__' + self.token.value)
         self._expect('FOP')
 
         # get function body
-        body = [self.next_token] + [t for t in self.tokens]
-
-        # filter undefined arguments
-        undefined_arguments = [
-            t.value
-            for t in body
-            if t.type == 'VAR'
-            if t.value not in arguments
-        ]
-        if undefined_arguments:
-            raise SyntaxError('undefined arguments: {0}'.format(undefined_arguments))
+        body = []
+        for t in itertools.chain([self.next_token], self.tokens):
+            if t.type == 'VAR':
+                old_name = t.value
+                t.value = name + '__' + old_name
+                if t.value not in arguments:
+                    raise SyntaxError('undefined arguments: {0}'.format(old_name))
+            body.append(t)
 
         # save function instance into memory
         if name in self.memory and not isinstance(self.memory[name], SF):
@@ -286,7 +284,7 @@ for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
 e = Interpreter()
 # e.memory['foo'] = list()
 # print(e.parse('foo = 5 '), '\n')
-print(e.parse('fn foo bar => 1 + bar'))
+print(e.parse('fn foo bar => bar + 1'))
 print(e.parse('foo 2'))
 # print(e.parse('fn ager fnhtr gaer'))
 # print(e.parse('1 + 2'))
