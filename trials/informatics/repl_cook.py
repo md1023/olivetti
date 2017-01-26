@@ -59,6 +59,7 @@ class Visitor:
 
     def visit_Number(self, SF):
         value = float(self.token.value)
+        print('number!', value)
         return value
 
     def visit_Variable(self, SF):
@@ -82,12 +83,13 @@ class Visitor:
         return value
 
     def visit_FunctionCall(self, SF):
+        func_name = self.token.value
         func = self.memory[self.token.value]
 
         # TODO backtracking for the first time
         if not isinstance(func, Function):
             return None
-
+        # self._advance()
         # get variable values
         memory = dict()
         for var in func.arguments:
@@ -96,10 +98,10 @@ class Visitor:
             value = self()
             memory[var] = value
 
-        self._reject('DGT', 'VAR')
+        self._reject('DGT')
 
         # substitute variables into function body
-        print('New parser', func.body, memory)
+        print('New parser', func_name, func.body, memory)
         e = Interpreter()
         e.tokens = iter(func.body)
         e.memory = memory
@@ -115,7 +117,17 @@ class Visitor:
         if variable_name not in self.memory:
             raise ValueError('undefined variable \'{0}\' {1}'.format(variable_name, self.memory))
         value = self.memory[variable_name]
-        self._reject('DGT', 'VAR')
+        print('GOT', value, variable_name, self.memory)
+        if not isinstance(value, Function):
+            print('fook1')
+            value = value
+        elif self._accept('VAR'):
+            print('fook2')
+            value = self.visit(Identifier)
+        else:
+            print('fook3')
+            value = self.visit(FunctionCall)
+        # self._reject('DGT', 'VAR')
         return value
 
     def visit_Term(self, SF):
@@ -166,6 +178,7 @@ class Visitor:
             if t.value not in arguments:
                 raise SyntaxError('undefined arguments: {0}'.format(old_name))
             body.append(t)
+        print('BOD', body)
 
         # save function instance into memory
         if name in self.memory and not isinstance(self.memory[name], SF):
@@ -307,7 +320,7 @@ class Assignment(NonTerminal):
 
 class Variable(Terminal):
     token_type = 'VAR'
-    subfactors = 'Assignment FunctionCall Identifier'
+    subfactors = 'Assignment Identifier'
     def __init__(self, name):
         self.value = name
 
@@ -328,10 +341,13 @@ e = Interpreter()
 # print(e.parse('fn foo bar => bar + 1'))
 # print(e.parse('foo 2'))
 
-# print(e.parse('fn avg x y => (x + y) / 2'))
-# print(e.parse('avg 4 2'))
-# print(e.parse('avg 7 2 4')) # wrong
-# print(e.parse('avg = 5')) # wrong
+print(e.parse('fn avg x y => (x + y) / 2'))
+# # print(e.parse('avg 4 2'))
+# # print(e.parse('avg 7 2 4')) # wrong
+# # print(e.parse('avg = 5')) # wrong
+print(e.parse('fn echo var => var'))
+print(e.parse('avg echo 2 echo 4'))
+# print(e.parse('echo 1'))
 
 # print(e.parse('fn one => 1'))
 # print(e.parse('1 2')) # wrong
@@ -349,3 +365,4 @@ e = Interpreter()
 # print('memory', e.memory)
 # # print(e.parse('ab_c - 483'))
 # # print(e.parse('ab_c'))
+
