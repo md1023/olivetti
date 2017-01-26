@@ -81,17 +81,32 @@ class Visitor:
 
     def visit_FunctionCall(self, SF):
         func = self.memory[self.token.value]
-        print(func.arguments, func.body)
-        # from pdb import set_trace; set_trace()
-        # if isinstance(value, Function):
-        #     value = self.
-        raise NotImplementedError('stop')
-        # else:
+
+        # TODO backtracking for the first time
+        if not isinstance(func, Function):
+            return None
+
+        # get variable values
+        memory = dict()
+        for var in func.arguments:
+            self.stack.append(SF)
+            value = self()
+            memory[var] = value
+
+        # substitute variables into function body
+        e = Interpreter()
+        e.tokens = iter(func.body)
+        e.memory = memory
+        value = e.start()
+
+        return value
 
     def visit_Identifier(self, SF):
-        variable_name = self.stack[-1].value
+        # variable_name = self.stack[-1].value
+        variable_name = self.token.value
+        print('id', variable_name, self.token, self.next_token)
         if variable_name not in self.memory:
-            raise ValueError('undefined variable')
+            raise ValueError('undefined variable \'{0}\' {1}'.format(variable_name, self.memory))
         value = self.memory[variable_name]
         self._reject('DGT', 'VAR')
         return value
@@ -128,13 +143,16 @@ class Visitor:
         self._expect('FOP')
 
         # get function body
+        # TODO awkward for maybe better?
         body = []
         for t in itertools.chain([self.next_token], self.tokens):
-            if t.type == 'VAR':
-                old_name = t.value
-                t.value = name + '__' + old_name
-                if t.value not in arguments:
-                    raise SyntaxError('undefined arguments: {0}'.format(old_name))
+            if t.type != 'VAR':
+                body.append(t)
+                continue
+            old_name = t.value
+            t.value = name + '__' + old_name
+            if t.value not in arguments:
+                raise SyntaxError('undefined arguments: {0}'.format(old_name))
             body.append(t)
 
         # save function instance into memory
@@ -161,6 +179,9 @@ class Visitor:
 class Interpreter(Visitor):
     def __init__(self):
         self.memory = dict()
+        self.token = None
+        self.next_token = None
+        self.stack = []
 
     def __call__(self):
         nonterminal = self.stack[-1]
@@ -179,6 +200,10 @@ class Interpreter(Visitor):
 
         return self.value
 
+    def start(self):
+        self._advance()
+        return self.visit(Expression)
+
     def parse(self, text):
         if not text.replace(' ', ''):
             return ''
@@ -186,9 +211,8 @@ class Interpreter(Visitor):
         self.tokens = lexer(text)
         self.token = None
         self.next_token = None
-        self._advance()
         self.stack = []
-        return self.visit(Expression)
+        return self.start()
 
     def _advance(self):
         self.token, self.next_token = self.next_token, next(self.tokens, None)
@@ -253,7 +277,7 @@ class Function(NonTerminal):
 
         
 class FunctionCall(NonTerminal):
-    pass
+    subfactors = 'Number Identifier'
 
 
 class Factor(NonTerminal):
@@ -281,16 +305,20 @@ for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
         setattr(C, 'subfactors', [])
         C.subfactors = [globals()[name] for name in subfactor_names]
 
-e = Interpreter()
-# e.memory['foo'] = list()
-# print(e.parse('foo = 5 '), '\n')
-print(e.parse('fn foo bar => bar + 1'))
-print(e.parse('foo 2'))
-# print(e.parse('fn ager fnhtr gaer'))
-# print(e.parse('1 + 2'))
-# print(e.parse('ab_c = 5 '))
-# print(e.parse('(1+2)'))
-# print(e.parse('ab_c * ab_c'))
-print('memory', e.memory)
-# print(e.parse('ab_c - 483'))
-# print(e.parse('ab_c'))
+# e = Interpreter()
+# # e.memory['foo'] = list()
+# # print(e.parse('foo = 5 '), '\n')
+
+# print(e.parse('fn foo bar => bar + 1'))
+# print(e.parse('foo 2'))
+
+# # print(e.parse('fn ager fnhtr gaer'))
+# # print(e.parse('1 + 2'))
+
+# # print(e.parse('ab_c = 5 '))
+# # print(e.parse('(1+2)'))
+# # print(e.parse('ab_c * ab_c'))
+
+# print('memory', e.memory)
+# # print(e.parse('ab_c - 483'))
+# # print(e.parse('ab_c'))
