@@ -78,6 +78,15 @@ class Visitor:
         self.memory[variable_name] = value
         return value
 
+    def visit_FunctionCall(self, SF):
+        func = self.memory[self.token.value]
+        
+        from pdb import set_trace; set_trace()
+        # if isinstance(value, Function):
+        #     value = self.
+        raise NotImplementedError('stop')
+        # else:
+
     def visit_Identifier(self, SF):
         variable_name = self.stack[-1].value
         if variable_name not in self.memory:
@@ -106,34 +115,37 @@ class Visitor:
         return value
 
     def visit_Function(self, SF):
-        value = None
-        arguments = []
+        arguments = list()
         
+        # get function name
         self._expect('VAR')
-        function_name = self.token.value
-        while self._accept('VAR'):
-            name = self.token.value
-            arguments.append(name)
-        self._expect('FOP')
-        print(arguments, self.token, self.next_token)
-        expression_tokens = [self.next_token] + [t for t in self.tokens]
+        name = self.token.value
 
+        # get function arguments
+        while self._accept('VAR'):
+            arguments.append(self.token.value)
+        self._expect('FOP')
+
+        # get function body
+        body = [self.next_token] + [t for t in self.tokens]
+
+        # filter undefined arguments
         undefined_arguments = [
             t.value
-            for t in expression_tokens
+            for t in body
             if t.type == 'VAR'
             if t.value not in arguments
         ]
         if undefined_arguments:
             raise SyntaxError('undefined arguments: {0}'.format(undefined_arguments))
 
+        # save function instance into memory
+        if name in self.memory and not isinstance(self.memory[name], SF):
+            raise IndexError('Cannot overwrite non function variable \'{0}\''.format(name))
+        self.memory[name] = SF(arguments, body)
 
-        # self.stack.append(Expression)
-        # value = self.visit(Expression)
-        # print(value)
-        print(expression_tokens)
-        raise NotImplementedError('stop')
-        return value
+        # return reference to nameless function instance
+        return self.memory[name]
 
     def visit_Expression(self, SF):
         self.stack.append(SF)
@@ -237,9 +249,13 @@ class Term(NonTerminal):
 
 class Function(NonTerminal):
     token_type = "FKW"
-    def __init__(self, args, body):
-        self.args = args
+    def __init__(self, arguments, body):
+        self.arguments = arguments
         self.body = body
+
+        
+class FunctionCall(NonTerminal):
+    pass
 
 
 class Factor(NonTerminal):
@@ -253,7 +269,7 @@ class Assignment(NonTerminal):
 
 class Variable(Terminal):
     token_type = 'VAR'
-    subfactors = 'Assignment Identifier'
+    subfactors = 'Assignment FunctionCall Identifier'
     def __init__(self, name):
         self.value = name
 
@@ -268,13 +284,15 @@ for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
         C.subfactors = [globals()[name] for name in subfactor_names]
 
 e = Interpreter()
-print(e.parse('foo = 5 '), '\n')
-print(e.parse('fn foo bar => 1 + foo + bar'))
+# e.memory['foo'] = list()
+# print(e.parse('foo = 5 '), '\n')
+print(e.parse('fn foo bar => 1 + bar'))
+print(e.parse('foo 2'))
 # print(e.parse('fn ager fnhtr gaer'))
 # print(e.parse('1 + 2'))
 # print(e.parse('ab_c = 5 '))
 # print(e.parse('(1+2)'))
 # print(e.parse('ab_c * ab_c'))
-# print('memory', e.memory)
+print('memory', e.memory)
 # print(e.parse('ab_c - 483'))
 # print(e.parse('ab_c'))
