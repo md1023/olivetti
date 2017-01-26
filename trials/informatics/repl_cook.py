@@ -59,7 +59,7 @@ class Visitor:
 
     def visit_Number(self, SF):
         value = float(self.token.value)
-        self._reject('DGT', 'VAR')
+        # self._reject('DGT', 'VAR')
         return value
 
     def visit_Variable(self, SF):
@@ -73,10 +73,13 @@ class Visitor:
         return value
 
     def visit_Assignment(self, SF):
-        variable_name = self.stack[-1].value
+        name = self.stack[-1].value
+        print('ass', name, self.token, self.next_token)
+        if name in self.memory and isinstance(self.memory[name], Function):
+            raise IndexError('Cannot overwrite function variable \'{0}\''.format(name))
         self.stack.append(SF)
         value = self()
-        self.memory[variable_name] = value
+        self.memory[name] = value
         return value
 
     def visit_FunctionCall(self, SF):
@@ -89,16 +92,21 @@ class Visitor:
         # get variable values
         memory = dict()
         for var in func.arguments:
+            print('var', var, self.token, self.next_token)
             self.stack.append(SF)
             value = self()
             memory[var] = value
 
+        self._reject('DGT', 'VAR')
+
         # substitute variables into function body
+        print('New parser', func.body, memory)
         e = Interpreter()
         e.tokens = iter(func.body)
         e.memory = memory
         value = e.start()
-
+        print('Parser finished')
+        
         return value
 
     def visit_Identifier(self, SF):
@@ -305,13 +313,18 @@ for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
         setattr(C, 'subfactors', [])
         C.subfactors = [globals()[name] for name in subfactor_names]
 
-# e = Interpreter()
+e = Interpreter()
 # # e.memory['foo'] = list()
 # # print(e.parse('foo = 5 '), '\n')
 
 # print(e.parse('fn foo bar => bar + 1'))
 # print(e.parse('foo 2'))
 
+print(e.parse('fn avg x y => (x + y) / 2'))
+# print(e.parse('avg 7 2 4'))
+print(e.parse('avg = 5'))
+
+    
 # # print(e.parse('fn ager fnhtr gaer'))
 # # print(e.parse('1 + 2'))
 
