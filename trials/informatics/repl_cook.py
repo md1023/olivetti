@@ -59,7 +59,6 @@ class Visitor:
 
     def visit_Number(self, SF):
         value = float(self.token.value)
-        # self._reject('DGT', 'VAR')
         return value
 
     def visit_Variable(self, SF):
@@ -136,6 +135,7 @@ class Visitor:
     def visit_Factor(self, SF):
         self.stack.append(SF)
         value = self()
+        self._reject('DGT', 'VAR')
         return value
 
     def visit_Function(self, SF):
@@ -147,7 +147,11 @@ class Visitor:
 
         # get function arguments
         while self._accept('VAR'):
-            arguments.append(name + '__' + self.token.value)
+            var_name = name + '__' + self.token.value
+            if var_name in arguments:
+                raise SyntaxError('Duplicate variable name \'{0}\''.format(self.token.value))
+            arguments.append(var_name)
+            print('vars', arguments)
         self._expect('FOP')
 
         # get function body
@@ -168,8 +172,12 @@ class Visitor:
             raise IndexError('Cannot overwrite non function variable \'{0}\''.format(name))
         self.memory[name] = SF(arguments, body)
 
+        # self.tokens was exhausted
+        # TODO self.token and self.next_token should be attached to iterator object
+        self.token = self.next_token = None
+        
         # return reference to nameless function instance
-        return self.memory[name]
+        return '' # self.memory[name]
 
     def visit_Expression(self, SF):
         self.stack.append(SF)
@@ -320,11 +328,17 @@ e = Interpreter()
 # print(e.parse('fn foo bar => bar + 1'))
 # print(e.parse('foo 2'))
 
-print(e.parse('fn avg x y => (x + y) / 2'))
-# print(e.parse('avg 7 2 4'))
-print(e.parse('avg = 5'))
+# print(e.parse('fn avg x y => (x + y) / 2'))
+# print(e.parse('avg 4 2'))
+# print(e.parse('avg 7 2 4')) # wrong
+# print(e.parse('avg = 5')) # wrong
 
-    
+# print(e.parse('fn one => 1'))
+# print(e.parse('1 2')) # wrong
+# print(e.parse('1two')) # wrong
+
+# print(e.parse('fn add x x => x + x'))
+
 # # print(e.parse('fn ager fnhtr gaer'))
 # # print(e.parse('1 + 2'))
 
