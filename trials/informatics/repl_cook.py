@@ -63,8 +63,8 @@ class Visitor:
         return value
 
     def visit_Variable(self, SF):
-        # self.stack.append(SF(self.token.value))
-        self.stack.append(SF)
+        self.stack.append(SF(self.token.value))
+        # self.stack.append(SF)
         value = self()
         return value
 
@@ -74,8 +74,8 @@ class Visitor:
         return value
 
     def visit_Assignment(self, SF):
+        print('ass', self.stack[-1], self.token, self.next_token)
         name = self.stack[-1].value
-        print('ass', name, self.token, self.next_token)
         if name in self.memory and isinstance(self.memory[name], Function):
             raise IndexError('Cannot overwrite function variable \'{0}\''.format(name))
         self.stack.append(SF)
@@ -96,6 +96,8 @@ class Visitor:
         # get variable values
         memory = dict()
         for var in func.arguments:
+            if not self.next_token:
+                raise SyntaxError('incomplete argument list')
             # self._advance()
             self.stack.append(Expression)
             print(OFFSET + 'VAR', var, self.token, self.next_token)
@@ -107,7 +109,7 @@ class Visitor:
         # self._reject('DGT')
 
         # substitute variables into function body
-        print(OFFSET + 'NEW PARSER', func.name, func.body)
+        print(OFFSET + 'NEW PARSER', func.name, func.body, memory)
         e = Interpreter()
         e.tokens = iter(func.body)
         e.memory = memory
@@ -209,6 +211,7 @@ class Visitor:
                 value += self()
             elif operation == 'SUB':
                 value -= self()
+        self._reject('DGT', 'VAR')
         return value
 
 
@@ -339,8 +342,8 @@ class Assignment(NonTerminal):
 class Variable(Terminal):
     token_type = 'VAR'
     subfactors = 'Assignment Identifier'
-    # def __init__(self, name):
-    #     self.value = name
+    def __init__(self, name):
+        self.value = name
 
 
 for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
@@ -360,11 +363,11 @@ e = Interpreter()
 # print(e.parse('foo 2'))
 
 print(e.parse('fn avg x y => (x + y) / 2'))
-# # print(e.parse('avg 4 2'))
-# # print(e.parse('avg 7 2 4')) # wrong
-# # print(e.parse('avg = 5')) # wrong
-print(e.parse('fn echo var => var'))
-print(e.parse('avg echo 2 echo 4'))
+# # # print(e.parse('avg 4 2'))
+print(e.parse('avg 7 2')) # wrong
+# # # print(e.parse('avg = 5')) # wrong
+# print(e.parse('fn echo var => var'))
+# # print(e.parse('avg echo 2 echo 6'))
 # print(e.parse('echo 1'))
 
 # print(e.parse('fn one => 1'))
@@ -373,12 +376,12 @@ print(e.parse('avg echo 2 echo 4'))
 
 # print(e.parse('fn add x x => x + x'))
 
-# # print(e.parse('fn ager fnhtr gaer'))
-# # print(e.parse('1 + 2'))
+# print(e.parse('fn ager fnhtr gaer'))
+# print(e.parse('1 + 2'))
 
-# # print(e.parse('ab_c = 5 '))
-# # print(e.parse('(1+2)'))
-# # print(e.parse('ab_c * ab_c'))
+# print(e.parse('ab_c = 5 '))
+# print(e.parse('(1+2)'))
+# print(e.parse('ab_c * ab_c'))
 
 # # print(e.parse('ab_c - 483'))
 # # print(e.parse('ab_c'))
