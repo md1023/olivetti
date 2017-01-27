@@ -7,6 +7,7 @@ from collections import namedtuple, OrderedDict
 
 Token = namedtuple('Token', ['type', 'value'])
 
+OFFSET=''
 
 def tokenize(expression):
     if expression == "":
@@ -59,11 +60,11 @@ class Visitor:
 
     def visit_Number(self, SF):
         value = float(self.token.value)
-        print('number!', value)
         return value
 
     def visit_Variable(self, SF):
-        self.stack.append(SF(self.token.value))
+        # self.stack.append(SF(self.token.value))
+        self.stack.append(SF)
         value = self()
         return value
 
@@ -83,51 +84,51 @@ class Visitor:
         return value
 
     def visit_FunctionCall(self, SF):
-        func_name = self.token.value
-        func = self.memory[self.token.value]
+        global OFFSET
+        OFFSET += '    '
+        # func_name = self.token.value
+        # func = self.memory[self.token.value]
+        func = self.stack[-1]
+        print(OFFSET + 'FUNCTIONCALL REACHED', func.name, len(func.arguments), 'TOKENS:', self.token, self.next_token)
 
-        # TODO backtracking for the first time
-        if not isinstance(func, Function):
-            return None
-        # self._advance()
+        # if not isinstance(func, Function):
+        #     return None
         # get variable values
         memory = dict()
         for var in func.arguments:
-            print('var', var, self.token, self.next_token)
-            self.stack.append(SF)
+            # self._advance()
+            self.stack.append(Expression)
+            print(OFFSET + 'VAR', var, self.token, self.next_token)
             value = self()
+            print(OFFSET + 'OUTVAR', value, self.token, self.next_token)
             memory[var] = value
+        # raise NotImplementedError('stop')
 
-        self._reject('DGT')
+        # self._reject('DGT')
 
         # substitute variables into function body
-        print('New parser', func_name, func.body, memory)
+        print(OFFSET + 'NEW PARSER', func.name, func.body)
         e = Interpreter()
         e.tokens = iter(func.body)
         e.memory = memory
         value = e.start()
-        print('Parser finished')
-        
+        print(OFFSET + 'PARSER FINISHED', value, func.name, memory, self.token, self.next_token)
+        OFFSET = OFFSET[:-4]
         return value
 
     def visit_Identifier(self, SF):
-        # variable_name = self.stack[-1].value
-        variable_name = self.token.value
-        print('id', variable_name, self.token, self.next_token)
-        if variable_name not in self.memory:
-            raise ValueError('undefined variable \'{0}\' {1}'.format(variable_name, self.memory))
-        value = self.memory[variable_name]
-        print('GOT', value, variable_name, self.memory)
+        name = self.token.value
+        if name not in self.memory:
+            raise ValueError('undefined variable \'{0}\' {1}'.format(name, self.memory))
+        value = self.memory[name]
+
+        # value is number
         if not isinstance(value, Function):
-            print('fook1')
-            value = value
-        elif self._accept('VAR'):
-            print('fook2')
-            value = self.visit(Identifier)
-        else:
-            print('fook3')
-            value = self.visit(FunctionCall)
-        # self._reject('DGT', 'VAR')
+            return value
+
+        # value is not a number
+        self.stack.append(value)
+        value = self.visit(FunctionCall)
         return value
 
     def visit_Term(self, SF):
@@ -147,7 +148,13 @@ class Visitor:
     def visit_Factor(self, SF):
         self.stack.append(SF)
         value = self()
-        self._reject('DGT', 'VAR')
+        # self._reject('DGT', 'VAR')
+        # if self._accept('DGT', 'VAR'):
+        #     return None
+        if self.next_token and self.next_token.type == 'DGT':
+            return None
+        if self.next_token and self.next_token.type == 'VAR':
+            return None
         return value
 
     def visit_Function(self, SF):
@@ -183,7 +190,7 @@ class Visitor:
         # save function instance into memory
         if name in self.memory and not isinstance(self.memory[name], SF):
             raise IndexError('Cannot overwrite non function variable \'{0}\''.format(name))
-        self.memory[name] = SF(arguments, body)
+        self.memory[name] = SF(name, arguments, body)
 
         # self.tokens was exhausted
         # TODO self.token and self.next_token should be attached to iterator object
@@ -213,19 +220,20 @@ class Interpreter(Visitor):
         self.stack = []
 
     def __call__(self):
+        global OFFSET
         nonterminal = self.stack[-1]
         value = None
         for SF in nonterminal.subfactors:
             token_type = getattr(SF, 'token_type')
-            print(SF, token_type, self.token, self.next_token)
+            print('{0}{1}'.format(OFFSET, SF), token_type, self.token, self.next_token)
             if self._accept(token_type) or token_type == 'ANY':
                 value = self.visit(SF)
                 if value is not None:
                     self.value = value
                     break
 
-        if value is None:
-            raise SyntaxError('unexpected end of tokens')
+        # if value is None:
+        #     raise SyntaxError('unexpected end of tokens')
 
         return self.value
 
@@ -244,6 +252,8 @@ class Interpreter(Visitor):
         return self.start()
 
     def _advance(self):
+        print('{0}ATE {1}'.format(OFFSET, self.token))
+        # from pdb import set_trace; set_trace()
         self.token, self.next_token = self.next_token, next(self.tokens, None)
 
     def _accept(self, *token_types):
@@ -283,7 +293,11 @@ class Number:
 
 
 class Identifier(NonTerminal):
-    pass
+    subfactors = 'FunctionCall'
+
+
+class FunctionCall(NonTerminal):
+    token_type = 'VAR'
 
 
 class ParenExpression(NonTerminal):
@@ -299,17 +313,21 @@ class Term(NonTerminal):
 
 
 class Function(NonTerminal):
-    token_type = "FKW"
-    def __init__(self, arguments, body):
+    token_type = 'FKW'
+    subfactors = 'FunctionCall'
+    def __init__(self, name, arguments, body):
+        self.name = name
         self.arguments = arguments
         self.body = body
 
+    def __repr__(self):
+        s = type(self).__name__
+        s += '[{0}({1})]'.format(self.name, self.arguments)
+        return s
+
         
-class FunctionCall(NonTerminal):
-    subfactors = 'Number Identifier'
-
-
 class Factor(NonTerminal):
+    # TODO Function may be moved to variable
     subfactors = 'ParenExpression Function Number Variable'
 
 
@@ -321,8 +339,8 @@ class Assignment(NonTerminal):
 class Variable(Terminal):
     token_type = 'VAR'
     subfactors = 'Assignment Identifier'
-    def __init__(self, name):
-        self.value = name
+    # def __init__(self, name):
+    #     self.value = name
 
 
 for C in NonTerminal.__subclasses__() + Terminal.__subclasses__():
@@ -362,7 +380,5 @@ print(e.parse('avg echo 2 echo 4'))
 # # print(e.parse('(1+2)'))
 # # print(e.parse('ab_c * ab_c'))
 
-# print('memory', e.memory)
 # # print(e.parse('ab_c - 483'))
 # # print(e.parse('ab_c'))
-
