@@ -11,7 +11,6 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
- ;; '(custom-enabled-themes (quote (quasi-monochrome)))
  '(custom-safe-themes
    (quote
     ("2882cf41c12276b5875879a71cc670d1468653e342586075a48ed68cfed15bea" "1fab355c4c92964546ab511838e3f9f5437f4e68d9d1d073ab8e36e51b26ca6a" "db2ecce0600e3a5453532a89fc19b139664b4a3e7cbefce3aaf42b6d9b1d6214" "35fc36f6bcd5acfc0ca68a0120b78c472337dc92746c81c763c9274d9e7d8afb" "ce557950466bf42096853c6dac6875b9ae9c782b8665f62478980cc5e3b6028d" "100d6bde8ef749efd2984f24db31434d90348d9aaf718f94231208e95fae37a2" "9e147cee63e1a2a6b16021e0645bc66c633c42b849e78b8e295df4b7fe55c56a" "bac3f5378bc938e96315059cd0488d6ef7a365bae73dac2ff6698960df90552d" "40f6a7af0dfad67c0d4df2a1dd86175436d79fc69ea61614d668a635c2cd94ab" default)))
@@ -33,7 +32,7 @@
    (quote
     (("http" . "192.168.200.105:8088")
      ("https" . "192.168.200.105:8088")))))
- '(python-shell-interpreter "python3"))
+ '(python-shell-interpreter "python3")
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -47,8 +46,8 @@
 ;; THEME
 (defconst -HOME (getenv "HOME") "User's home directory")
 (add-to-list 'load-path (concat -HOME "/Documents/olivetti/configs/emacs"))
-(require 'zenburn-theme)
 
+(load-theme 'atom-one-dark t)
 ;; GENERAL
 
 (defconst -HOME (getenv "HOME") "User's home director.")
@@ -64,7 +63,7 @@
 (define-key global-map [remap left-word] 'backward-word)
 
 ;; change font here
-(add-to-list 'default-frame-alist '(font . "Consolas-9"))
+(add-to-list 'default-frame-alist '(font . "Anonymous Pro-14"))
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
@@ -136,8 +135,10 @@
       ido-enable-flex-matching 1
       ibuffer-shrink-to-minimum-size 1)
 
-;; colorize emacs, check zenburn overrides
-;; (require 'zenburn-theme)
+(defun simno-dired-mode-setup ()
+  "show less information in dired buffers"
+  (dired-hide-details-mode 1))
+(add-hook 'dired-mode-hook 'simno-dired-mode-setup)
 
 ;; VCS
 
