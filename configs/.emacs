@@ -25,9 +25,8 @@
  '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode python-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme)))
+    (atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme)))
  '(python-shell-completion-native-enable nil)
- '(python-shell-interpreter "python3")
  '(url-proxy-services
    (quote
     (("http" . "192.168.200.105:8088")
@@ -96,6 +95,7 @@
 (require 'linum)
 (global-linum-mode)
 
+;; highlight current line number in the fringe
 (require 'hlinum)
 (hlinum-activate)
 
@@ -105,17 +105,20 @@
 
 (show-paren-mode 1)
 
+(require 'fic-mode)
 (require 'highlight-symbol)
 (setq highlight-symbol-idle-delay 0)
 ;; TODO move add-hooks elsewhere
-(dolist (h '(highlight-symbol-mode highlight-symbol-nav-mode)) (add-hook 'prog-mode-hook h))
+;; face in comments for TODO highlights
+(dolist
+    (h '(fic-mode
+         rainbow-delimiters-mode
+         highlight-symbol-mode
+         highlight-symbol-nav-mode))
+  (add-hook 'prog-mode-hook h))
 
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
-
-;; face in comments for TODO highlights
-(require 'fic-mode)
-(add-hook 'prog-mode-hook 'fic-mode)
 
 ;; python
 (require 'nose)
@@ -145,7 +148,6 @@
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
 
 ;; VCS
-
 (global-git-gutter-mode t)
 (setq git-gutter:modified-sign "M")
 (setq git-gutter:handled-backends '(git hg))
