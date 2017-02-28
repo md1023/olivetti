@@ -32,7 +32,7 @@
    (quote
     (("http" . "192.168.200.105:8088")
      ("https" . "192.168.200.105:8088")))))
- '(python-shell-interpreter "python3")
+ '(python-shell-interpreter "python3"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -46,6 +46,7 @@
 ;; THEME
 (defconst -HOME (getenv "HOME") "User's home directory")
 (add-to-list 'load-path (concat -HOME "/Documents/olivetti/configs/emacs"))
+(load-theme 'atom-one-dark t)
 
 (load-theme 'atom-one-dark t)
 ;; GENERAL
@@ -94,6 +95,9 @@
 
 (require 'linum)
 (global-linum-mode)
+
+(require 'hlinum)
+(hlinum-activate)
 
 ;; move around buffers with cursor keys
 (when (fboundp 'windmove-default-keybindings)
