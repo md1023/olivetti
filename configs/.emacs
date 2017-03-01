@@ -26,12 +26,10 @@
  '(package-selected-packages
    (quote
     (atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme)))
- '(python-shell-completion-native-enable nil)
  '(url-proxy-services
    (quote
     (("http" . "192.168.200.105:8088")
      ("https" . "192.168.200.105:8088")))))
- '(python-shell-interpreter "python3"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -39,6 +37,8 @@
  ;; If there is more than one, they won't work right.
  )
 
+(setq python-shell-interpreter "python3")
+(setq python-shell-completion-native-enable nil)
 
 ;;; .emacs --- simno's Emacs config
 
