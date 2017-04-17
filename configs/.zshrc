@@ -70,6 +70,7 @@ source $ZSH/oh-my-zsh.sh
 
 # m-nikolaev customizations:
 alias ls='ls --classify --color=auto --human-readable --time-style=locale --group-directories-first'
+alias l1='ls -1'
 alias nautilus='nautilus --no-desktop'
 alias em='emacsclient -c -a ""&'
 alias df='df --human-readable'
