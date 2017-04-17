@@ -123,6 +123,9 @@
 ;; python
 (require 'nose)
 
+(require 'flymake-python-pyflakes)
+(setq flymake-python-pyflakes-executable "flake8")
+
 ;; org mode
 (print "MY ORG LOADED")
 (setf org-replace-disputed-keys 1
