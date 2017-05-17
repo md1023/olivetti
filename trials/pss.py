@@ -1,8 +1,25 @@
+import re
 import math
 
-v = 1298230816
+text = 'Man is distinguished, not only by his reason, but by this singular passion from other animals, which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable generation of knowledge, exceeds the short vehemence of any carnal pleasure.'
 
-for i in range(round(math.log(v, 85))):
-    print(
-        v % (85 ** (i + 1)) // (85 ** i)
-    )
+for chunk in re.finditer('.{1,4}', text):
+    # convert chars into ascii codes and pad zero bytes to chunk
+    # lesser than 4 characters
+    ordinals = [
+        ord(c) for c in chunk.group().ljust(4, '\0')
+    ]
+    # turn combination of four ascii codes into 32-bit integer
+    base2 = int(''.join(
+        bin(o)[2:].zfill(8)for o in ordinals
+    ), 2)
+    # collect factors for base 85 out of 32-bit integer
+    base85 = [
+        base2 % (85 ** (i)) // (85 ** (i - 1))
+        # ascii85 has 5 bytes sequence
+        for i in range(5, 0, -1)
+    ]
+    # get characters from ascii codes
+    chars85 = ''.join(chr(o + 33) for o in base85)
+    print(chunk.group().ljust(4), ordinals, base2, base85, chars85)
+
