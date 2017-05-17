@@ -7,6 +7,8 @@ singular passion from other animals, which is a lust of the mind, that
 by a perseverance of delight in the continued and indefatigable
 generation of knowledge, exceeds the short vehemence of any carnal
 pleasure.'''
+text = 'easy'
+text = 'somewhat difficult'
 
 
 def ascii_to_ascii85_gen(text):
@@ -26,8 +28,12 @@ def ascii_to_ascii85_gen(text):
             # ascii85 has 5 bytes sequence
             for i in range(5, 0, -1)
         )
-        # get characters from ascii codes
-        chars85 = (chr(o + 33) for o in base85)
+        # get characters from ascii codes and throw away as much
+        # characters as much zeros were padded to a chunk
+        chars85 = list(chr(o + 33) for o in base85)[
+            :
+            5 - (4 - len(chunk.group()))
+        ]
         yield from chars85
 
 
