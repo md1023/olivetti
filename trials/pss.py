@@ -9,9 +9,13 @@ text = '''Man is distinguished, not only by his reason, but by this singular pas
 
 def ascii_to_ascii85_gen(text):
     for chunk in re.finditer('.{1,4}', text):
+        # compress empty chunk
+        if chunk.group() == '\0\0\0\0':
+            yield 'z'
+            continue
         # convert chars into ascii codes and pad zero bytes to chunk
         # lesser than 4 characters
-        ordinals = (
+        ordinals = list(
             ord(c) for c in chunk.group().ljust(4, '\0')
         )
         # turn combination of four ascii codes into 32-bit integer
@@ -30,14 +34,22 @@ def ascii_to_ascii85_gen(text):
             :
             5 - (4 - len(chunk.group()))
         ]
+        print(
+            ordinals, base2, base85, chars85
+        )
         yield from chars85
 
 
 def ascii85_to_ascii_gen(text):
     for chunk in re.finditer('.{1,5}', text):
+        # decompress empty chunk
+        if chunk.group() == 'z':
+            for _ in range(4):
+                yield '\0'
+            continue
         # convert chars into ascii codes and pad u's to chunk
         # lesser than 5 characters
-        ordinals = (
+        ordinals = list(
             ord(c) - 33 for c in chunk.group().ljust(5, 'u')
         )
         # turn combination of five ascii codes into 32-bit integer
