@@ -23,7 +23,7 @@ def ascii_to_ascii85_gen(text):
             bin(o)[2:].zfill(8)for o in ordinals
         ), 2)
         # collect factors for base 85 out of 32-bit integer
-        base85 = (
+        base85 = list(
             base2 % (85 ** (i)) // (85 ** (i - 1))
             # ascii85 has 5 bytes sequence
             for i in range(5, 0, -1)
@@ -43,7 +43,7 @@ def ascii_to_ascii85_gen(text):
 def ascii85_to_ascii_gen(text):
     for chunk in re.finditer('.{1,5}', text):
         # decompress empty chunk
-        if chunk.group() == 'z':
+        if chunk.group() == 'zzzzz':
             for _ in range(4):
                 yield '\0'
             continue
@@ -60,7 +60,7 @@ def ascii85_to_ascii_gen(text):
         # turn base2 into 32-bit form
         binarybase2 = bin(base2)[2:].zfill(32)
         # break 32-bit form into groups of four bytes
-        codes = (
+        codes = list(
             int(b, 2) for b in re.findall('.{8}', binarybase2)
         )
         # get characters from ascii codes and throw away as much
@@ -70,6 +70,10 @@ def ascii85_to_ascii_gen(text):
             4 - (5 - len(chunk.group()))
         ]
         yield from chars
+        print(
+            chunk.group(), ordinals, base2, binarybase2,
+            codes, chars
+        )
 
 
 def ascii_to_ascii85(text):
@@ -80,8 +84,14 @@ def ascii85_to_ascii(text):
     return ''.join(ascii85_to_ascii_gen(text))
 
 
-print(text)
-print(ascii_to_ascii85(text))
-print(ascii85_to_ascii(ascii_to_ascii85(text)))
+# print(text)
+# print(ascii_to_ascii85(text))
+# print(ascii85_to_ascii(ascii_to_ascii85(text)))
 
-assert text == ascii85_to_ascii(ascii_to_ascii85(text))
+# assert text == ascii85_to_ascii(ascii_to_ascii85(text))
+
+text = 'zH=_,8/T>`AAncL$A,'.replace('z', 'zzzzz')
+text = 'GA(]4ATMg !@q?d)ATMq'.replace(' ', '')
+# text = '\0\0\0\0zero-prefixed'
+print(ascii85_to_ascii(text))
+print(ascii_to_ascii85('whitespace test'))
