@@ -85,7 +85,7 @@ alias ag='ag --hidden'
 
 # virtualenvwrapper is installed locally with:
 # pip install --install-option="--user" virtualenvwrapper
-source $HOME/.local/bin/virtualenvwrapper.sh
+# source $HOME/.local/bin/virtualenvwrapper.sh
 
 # connect to svn:// behind proxy
 # sudo apt-get install libnet-proxy-perl
@@ -122,3 +122,50 @@ class_double_newlines() {
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:shifts_toggle" \
     -layout "us,ru"
+MDWH=/home/mnikolaev/Documents/mdwh
+MDWHAPP=$MDWH/back/app/mdwh
+alias rbm="cd $MDWH/ops/environment/dev && hg pull && \
+	hg update && \
+	source setenv.sh && \
+	docker volume rm dev_dbdata; \
+    sh deploy.sh && \
+	rlm && \
+	cd -"
+alias rlm="cd $MDWH/ops/environment/dev && \
+	source setenv.sh && \
+	docker-compose down; \
+    docker volume rm dev_dbdata; \
+    docker-compose up -d && \
+	sleep 10 && \
+	sh fixtures.sh; \
+    docker-compose exec postgresql bash -c 'pg_dump -h localhost -U mdwh -Fc > /tmp/dump'; \
+    cd -"
+alias rdbm="cd $MDWH/ops/environment/dev && \
+	source setenv.sh && \
+	docker-compose exec postgresql bash -c \
+        \"pg_restore \
+            -d mdwh \
+            --clean --if-exists --single-transaction \
+            -U mdwh \
+            /tmp/dump > /dev/null; \
+        echo $?\"; \
+    cd -"
+
+# rebuild backend docker image, install uncommitted requirements.txt
+DOCKERENV=$MDWH/ops/environment/dev/setenv.sh
+DOCKERYML=$MDWH/ops/environment/dev/docker-compose.yml
+alias rebuild_back="bash -c \"\
+    source $DOCKERENV; \
+    docker-compose \
+        -f $DOCKERYML \
+        build --no-cache\
+        back; \
+    docker exec -it dev_back_1 pip install -r requirements.txt
+    \""
+
+alias start_docker="bash -c \"\
+    source $DOCKERENV;
+    docker-compose \
+         -f $DOCKERYML \
+         up -d;
+    \""
