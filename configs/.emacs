@@ -123,6 +123,23 @@
 (require 'flymake-python-pyflakes)
 (setq flymake-python-pyflakes-executable "flake8")
 
+;; find \
+;;     /usr/lib/python3/dist-packages/django \
+;;     /usr/local/lib/python3.6/dist-packages/rest_framework \
+;;     ~/Documents/mdwh \
+;;     -type f -name '*.py' | xargs etags
+(defun create-tags (dir-name)
+  "Create tags file."
+  (interactive "Directory: ")
+  (shell-command
+   (
+    format "find %s -type f -name '*.py' | xargs etags -o %s/TAGS"
+           (directory-file-name dir-name)
+           (directory-file-name dir-name)
+           )
+   )
+  )
+
 ;; org mode
 (print "MY ORG LOADED")
 (setf org-replace-disputed-keys 1

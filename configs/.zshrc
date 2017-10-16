@@ -122,12 +122,20 @@ class_double_newlines() {
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:shifts_toggle" \
     -layout "us,ru"
+
+
+# IPONWEB
+# CVS_RSH=ssh
+# CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs; export CVSROOT
+export CVS_RSH=ssh; export CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs
+
 MDWH=/home/mnikolaev/Documents/mdwh
 MDWHAPP=$MDWH/back/app/mdwh
 alias rbm="cd $MDWH/ops/environment/dev && hg pull && \
 	hg update && \
 	source setenv.sh && \
 	docker volume rm dev_dbdata; \
+    pwd && \
     sh deploy.sh && \
 	rlm && \
 	cd -"
@@ -163,9 +171,23 @@ alias rebuild_back="bash -c \"\
     docker exec -it dev_back_1 pip install -r requirements.txt
     \""
 
-alias start_docker="bash -c \"\
+alias docker_start="bash -c \"\
     source $DOCKERENV;
     docker-compose \
          -f $DOCKERYML \
          up -d;
+    \""
+
+alias docker_stop="bash -c \"\
+    source $DOCKERENV;
+    docker-compose \
+         -f $DOCKERYML \
+         down;
+    \""
+
+alias docker_log="bash -c \"\
+    source $DOCKERENV;
+    docker-compose \
+         -f $DOCKERYML \
+         logs -f;
     \""
