@@ -170,3 +170,8 @@
 (setq git-gutter:handled-backends '(git hg))
 ;; (set-face-foreground 'git-gutter-fr:modified "#d080d0")
 (set-face-foreground 'git-gutter:modified "#d080d0")
+
+(defadvice bookmark-jump (after bookmark-jump activate)
+  (let ((latest (bookmark-get-bookmark bookmark)))
+    (setq bookmark-alist (delq latest bookmark-alist))
+    (add-to-list 'bookmark-alist latest)))

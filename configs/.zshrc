@@ -123,6 +123,14 @@ class_double_newlines() {
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:shifts_toggle" \
     -layout "us,ru"
 
+# vte support for tilix
+if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+    source /etc/profile.d/vte.sh
+fi
+
+# docker-compose completion
+fpath=(~/.zsh/completion $fpath)
+autoload -Uz compinit && compinit -i
 
 # IPONWEB
 # CVS_RSH=ssh
