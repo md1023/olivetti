@@ -25,8 +25,7 @@
  '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme)))
- )
+    (yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -123,6 +122,23 @@
 (require 'flymake-python-pyflakes)
 (setq flymake-python-pyflakes-executable "flake8")
 
+;; find \
+;;     /usr/lib/python3/dist-packages/django \
+;;     /usr/local/lib/python3.6/dist-packages/rest_framework \
+;;     ~/Documents/mdwh \
+;;     -type f -name '*.py' | xargs etags
+(defun create-tags (dir-name)
+  "Create tags file."
+  (interactive "Directory: ")
+  (shell-command
+   (
+    format "find %s -type f -name '*.py' | xargs etags -o %s/TAGS"
+           (directory-file-name dir-name)
+           (directory-file-name dir-name)
+           )
+   )
+  )
+
 ;; org mode
 (print "MY ORG LOADED")
 (setf org-replace-disputed-keys 1
@@ -153,3 +169,8 @@
 (setq git-gutter:handled-backends '(git hg))
 ;; (set-face-foreground 'git-gutter-fr:modified "#d080d0")
 (set-face-foreground 'git-gutter:modified "#d080d0")
+
+(defadvice bookmark-jump (after bookmark-jump activate)
+  (let ((latest (bookmark-get-bookmark bookmark)))
+    (setq bookmark-alist (delq latest bookmark-alist))
+    (add-to-list 'bookmark-alist latest)))

@@ -85,7 +85,7 @@ alias ag='ag --hidden'
 
 # virtualenvwrapper is installed locally with:
 # pip install --install-option="--user" virtualenvwrapper
-source $HOME/.local/bin/virtualenvwrapper.sh
+# source $HOME/.local/bin/virtualenvwrapper.sh
 
 # connect to svn:// behind proxy
 # sudo apt-get install libnet-proxy-perl
@@ -122,3 +122,33 @@ class_double_newlines() {
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:shifts_toggle" \
     -layout "us,ru"
+
+# vte support for tilix
+if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+    source /etc/profile.d/vte.sh
+fi
+
+# docker-compose completion
+fpath=(~/.zsh/completion $fpath)
+autoload -Uz compinit && compinit -i
+
+# IPONWEB
+# CVS_RSH=ssh
+# CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs; export CVSROOT
+export CVS_RSH=ssh; export CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs
+
+MDWH=/home/mnikolaev/Documents/mdwh
+
+# rebuild backend docker image, install uncommitted requirements.txt
+DOCKERENV=$MDWH/ops/environment/dev/setenv.sh
+DOCKERYML=$MDWH/ops/environment/dev/docker-compose.yml
+alias rebuild_back="bash -c \"\
+    source $DOCKERENV; \
+    docker-compose \
+        -f $DOCKERYML \
+        build --no-cache\
+        back; \
+    docker exec -it dev_back_1 pip install -r requirements.txt
+    \""
+
+alias dockerps="docker ps --format='table {{.ID}}\t{{.Status}}\t{{.Names}}'"

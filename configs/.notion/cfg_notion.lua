@@ -9,8 +9,8 @@ META="Mod4+"
 --ALTMETA=""
 
 -- Terminal emulator
-if os and os.execute("test -x /usr/bin/terminator") then
-    XTERM="/usr/bin/terminator"
+if os and os.execute("test -x /usr/bin/tilix") then
+    XTERM="/usr/bin/tilix"
 else
     XTERM="/usr/bin/xterm"
 end
