@@ -29,7 +29,7 @@
   [[default]]
     background_color = "#004373"
     background_darkness = 0.36
-    background_image = /home/m-nikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
+    background_image = /home/mnikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
     background_type = image
     copy_on_selection = True
     cursor_shape = underline

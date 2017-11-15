@@ -138,34 +138,6 @@ autoload -Uz compinit && compinit -i
 export CVS_RSH=ssh; export CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs
 
 MDWH=/home/mnikolaev/Documents/mdwh
-MDWHAPP=$MDWH/back/app/mdwh
-alias rbm="cd $MDWH/ops/environment/dev && hg pull && \
-	hg update && \
-	source setenv.sh && \
-	docker volume rm dev_dbdata; \
-    pwd && \
-    sh deploy.sh && \
-	rlm && \
-	cd -"
-alias rlm="cd $MDWH/ops/environment/dev && \
-	source setenv.sh && \
-	docker-compose down; \
-    docker volume rm dev_dbdata; \
-    docker-compose up -d && \
-	sleep 10 && \
-	sh fixtures.sh; \
-    docker-compose exec postgresql bash -c 'pg_dump -h localhost -U mdwh -Fc > /tmp/dump'; \
-    cd -"
-alias rdbm="cd $MDWH/ops/environment/dev && \
-	source setenv.sh && \
-	docker-compose exec postgresql bash -c \
-        \"pg_restore \
-            -d mdwh \
-            --clean --if-exists --single-transaction \
-            -U mdwh \
-            /tmp/dump > /dev/null; \
-        echo $?\"; \
-    cd -"
 
 # rebuild backend docker image, install uncommitted requirements.txt
 DOCKERENV=$MDWH/ops/environment/dev/setenv.sh
@@ -179,23 +151,4 @@ alias rebuild_back="bash -c \"\
     docker exec -it dev_back_1 pip install -r requirements.txt
     \""
 
-alias docker_start="bash -c \"\
-    source $DOCKERENV;
-    docker-compose \
-         -f $DOCKERYML \
-         up -d;
-    \""
-
-alias docker_stop="bash -c \"\
-    source $DOCKERENV;
-    docker-compose \
-         -f $DOCKERYML \
-         down;
-    \""
-
-alias docker_log="bash -c \"\
-    source $DOCKERENV;
-    docker-compose \
-         -f $DOCKERYML \
-         logs -f;
-    \""
+alias dockerps="docker ps --format='table {{.ID}}\t{{.Status}}\t{{.Names}}'"
