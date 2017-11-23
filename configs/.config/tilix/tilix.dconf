@@ -11,6 +11,7 @@ bold-color-set=false
 font='Consolas 9'
 use-theme-colors=false
 scrollback-unlimited=true
+terminal-title='${id}: ${title}'
 notify-silence-threshold=0
 cursor-blink-mode='on'
 background-color='#004273'
@@ -27,6 +28,7 @@ theme-variant='dark'
 paste-advanced-default=false
 control-scroll-zoom=true
 enable-wide-handle=false
+app-title='[${sessionNumber}] ${title}'
 focus-follow-mouse=true
 window-style='borderless'
 
