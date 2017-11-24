@@ -25,7 +25,7 @@
  '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
+    (timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -45,8 +45,6 @@
 
 (load-theme 'atom-one-dark t)
 ;; GENERAL
-
-(defconst -HOME (getenv "HOME") "User's home director.")
 
 ;; display watch
 (defvar display-time-format "%Y.%m.%d %H:%M")
@@ -162,6 +160,13 @@
   "show less information in dired buffers"
   (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
+
+(setq
+ backup-by-copying t
+ backup-directory-alist
+ `((".*" . ,(concat -HOME "/.emacs.d/tmp")))
+auto-save-file-name-transforms
+ `((".*" ,(concat -HOME "/.emacs.d/tmp") t)))
 
 ;; VCS
 (global-git-gutter-mode t)
