@@ -25,7 +25,7 @@
  '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
+    (org-gcal all-the-icons-dired all-the-icons dired-icon dired-subtree dockerfile-mode timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -81,6 +81,9 @@
 (setq-default cursor-type '(hbar . 2))
 ;; (setq x-stretch-cursor 1)
 (blink-cursor-mode 1)
+
+;; insert middle-click at cursor, not pointer
+(setq mouse-yank-at-point t)
 
 ;; disable word wrapping
 ;; use toggle-truncate-lines to override
@@ -158,8 +161,12 @@
 
 (defun simno-dired-mode-setup ()
   "show less information in dired buffers"
-  (dired-hide-details-mode 1))
+  (dired-hide-details-mode 1)
+  (local-set-key (kbd "TAB") 'dired-subtree-toggle)
+  )
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
 
 (setq
  backup-by-copying t
