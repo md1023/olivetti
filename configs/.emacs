@@ -179,3 +179,17 @@ auto-save-file-name-transforms
   (let ((latest (bookmark-get-bookmark bookmark)))
     (setq bookmark-alist (delq latest bookmark-alist))
     (add-to-list 'bookmark-alist latest)))
+
+(defun toggle-window-dedicated ()
+  "Toggle whether the current active window is dedicated or not"
+  (interactive)
+  (message
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window
+                                 (not (window-dedicated-p window))))
+       "Window '%s' is dedicated"
+     "Window '%s' is normal")
+   (current-buffer)))
+
+;; flash on error
+(setq visible-bell t)
