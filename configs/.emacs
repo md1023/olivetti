@@ -15,6 +15,7 @@
    (quote
     ("2882cf41c12276b5875879a71cc670d1468653e342586075a48ed68cfed15bea" "1fab355c4c92964546ab511838e3f9f5437f4e68d9d1d073ab8e36e51b26ca6a" "db2ecce0600e3a5453532a89fc19b139664b4a3e7cbefce3aaf42b6d9b1d6214" "35fc36f6bcd5acfc0ca68a0120b78c472337dc92746c81c763c9274d9e7d8afb" "ce557950466bf42096853c6dac6875b9ae9c782b8665f62478980cc5e3b6028d" "100d6bde8ef749efd2984f24db31434d90348d9aaf718f94231208e95fae37a2" "9e147cee63e1a2a6b16021e0645bc66c633c42b849e78b8e295df4b7fe55c56a" "bac3f5378bc938e96315059cd0488d6ef7a365bae73dac2ff6698960df90552d" "40f6a7af0dfad67c0d4df2a1dd86175436d79fc69ea61614d668a635c2cd94ab" default)))
  '(git-gutter:handled-backends (quote (hg git)))
+ '(initial-buffer-choice "~/Documents/journal.org")
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
@@ -25,7 +26,7 @@
  '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
+    (elpy avy diff-hl org-gcal all-the-icons-dired all-the-icons dired-icon dired-subtree dockerfile-mode timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -39,8 +40,7 @@
 ;;; .emacs --- simno's Emacs config
 
 ;; THEME
-(defconst -HOME (getenv "HOME") "User's home directory")
-(add-to-list 'load-path (concat -HOME "/Documents/olivetti/configs/emacs"))
+(add-to-list 'load-path "~/Documents/olivetti/configs/emacs")
 (load-theme 'atom-one-dark t)
 
 (load-theme 'atom-one-dark t)
@@ -65,8 +65,8 @@
 (setq indent-line-function 'insert-tab)
 
 ;; scroll bindings
-(global-set-key (kbd "M-<down>") 'scroll-up-line)
-(global-set-key (kbd "M-<up>") 'scroll-down-line)
+(global-set-key (kbd "M-S-<down>") 'scroll-up-line)
+(global-set-key (kbd "M-S-<up>") 'scroll-down-line)
 
 ;; disable menus
 (scroll-bar-mode 0)
@@ -82,6 +82,9 @@
 ;; (setq x-stretch-cursor 1)
 (blink-cursor-mode 1)
 
+;; insert middle-click at cursor, not pointer
+(setq mouse-yank-at-point t)
+
 ;; disable word wrapping
 ;; use toggle-truncate-lines to override
 (set-default 'truncate-lines 1)
@@ -92,6 +95,9 @@
 ;; highlight current line number in the fringe
 (require 'hlinum)
 (hlinum-activate)
+
+;; highlight fringe in folders under version control
+(add-hook 'dired-mode-hook 'diff-hl-dired-mode)
 
 ;; move around buffers with cursor keys
 (when (fboundp 'windmove-default-keybindings)
@@ -110,6 +116,8 @@
          highlight-symbol-mode
          highlight-symbol-nav-mode))
   (add-hook 'prog-mode-hook h))
+
+(add-hook 'python-mode-hook 'elpy-mode)
 
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
@@ -158,15 +166,19 @@
 
 (defun simno-dired-mode-setup ()
   "show less information in dired buffers"
-  (dired-hide-details-mode 1))
+  (dired-hide-details-mode 1)
+  (local-set-key (kbd "TAB") 'dired-subtree-toggle)
+  )
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
 
 (setq
  backup-by-copying t
  backup-directory-alist
- `((".*" . ,(concat -HOME "/.emacs.d/tmp")))
+ `((".*" . , "~/.emacs.d/tmp"))
 auto-save-file-name-transforms
- `((".*" ,(concat -HOME "/.emacs.d/tmp") t)))
+ `((".*" , "~/.emacs.d/tmp" t)))
 
 ;; VCS
 (global-git-gutter-mode t)
@@ -179,17 +191,3 @@ auto-save-file-name-transforms
   (let ((latest (bookmark-get-bookmark bookmark)))
     (setq bookmark-alist (delq latest bookmark-alist))
     (add-to-list 'bookmark-alist latest)))
-
-(defun toggle-window-dedicated ()
-  "Toggle whether the current active window is dedicated or not"
-  (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window
-                                 (not (window-dedicated-p window))))
-       "Window '%s' is dedicated"
-     "Window '%s' is normal")
-   (current-buffer)))
-
-;; flash on error
-(setq visible-bell t)
