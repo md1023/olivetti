@@ -57,7 +57,7 @@
 (define-key global-map [remap left-word] 'backward-word)
 
 ;; change font here
-(add-to-list 'default-frame-alist '(font . "Anonymous Pro-14"))
+(add-to-list 'default-frame-alist '(font . "Consolas-12"))
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
@@ -180,6 +180,7 @@ auto-save-file-name-transforms
     (setq bookmark-alist (delq latest bookmark-alist))
     (add-to-list 'bookmark-alist latest)))
 
+;; https://stackoverflow.com/a/65992/379159
 (defun toggle-window-dedicated ()
   "Toggle whether the current active window is dedicated or not"
   (interactive)
