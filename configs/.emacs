@@ -25,7 +25,7 @@
  '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme jenkins jenkins-watch flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
+    (elpy avy diff-hl org-gcal all-the-icons-dired all-the-icons dired-icon dired-subtree dockerfile-mode timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -39,8 +39,7 @@
 ;;; .emacs --- simno's Emacs config
 
 ;; THEME
-(defconst -HOME (getenv "HOME") "User's home directory")
-(add-to-list 'load-path (concat -HOME "/Documents/olivetti/configs/emacs"))
+(add-to-list 'load-path "~/Documents/olivetti/configs/emacs")
 (load-theme 'atom-one-dark t)
 
 (load-theme 'atom-one-dark t)
@@ -65,8 +64,8 @@
 (setq indent-line-function 'insert-tab)
 
 ;; scroll bindings
-(global-set-key (kbd "M-<down>") 'scroll-up-line)
-(global-set-key (kbd "M-<up>") 'scroll-down-line)
+(global-set-key (kbd "M-S-<down>") 'scroll-up-line)
+(global-set-key (kbd "M-S-<up>") 'scroll-down-line)
 
 ;; disable menus
 (scroll-bar-mode 0)
@@ -82,6 +81,9 @@
 ;; (setq x-stretch-cursor 1)
 (blink-cursor-mode 1)
 
+;; insert middle-click at cursor, not pointer
+(setq mouse-yank-at-point t)
+
 ;; disable word wrapping
 ;; use toggle-truncate-lines to override
 (set-default 'truncate-lines 1)
@@ -92,6 +94,9 @@
 ;; highlight current line number in the fringe
 (require 'hlinum)
 (hlinum-activate)
+
+;; highlight fringe in folders under version control
+(add-hook 'dired-mode-hook 'diff-hl-dired-mode)
 
 ;; move around buffers with cursor keys
 (when (fboundp 'windmove-default-keybindings)
@@ -110,6 +115,13 @@
          highlight-symbol-mode
          highlight-symbol-nav-mode))
   (add-hook 'prog-mode-hook h))
+
+(add-hook 'python-mode-hook 'elpy-mode)
+
+;; disable elpy's block navigation
+(eval-after-load "elpy"
+  '(cl-dolist (key '("C-<up>", "C-<down>"))
+     (define-key elpy-mode-map (kbd key) nil)))
 
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
@@ -158,15 +170,19 @@
 
 (defun simno-dired-mode-setup ()
   "show less information in dired buffers"
-  (dired-hide-details-mode 1))
+  (dired-hide-details-mode 1)
+  (local-set-key (kbd "TAB") 'dired-subtree-toggle)
+  )
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
 
 (setq
  backup-by-copying t
  backup-directory-alist
- `((".*" . ,(concat -HOME "/.emacs.d/tmp")))
+ `((".*" . , "~/.emacs.d/tmp"))
 auto-save-file-name-transforms
- `((".*" ,(concat -HOME "/.emacs.d/tmp") t)))
+ `((".*" , "~/.emacs.d/tmp" t)))
 
 ;; VCS
 (global-git-gutter-mode t)
