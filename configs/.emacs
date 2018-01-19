@@ -57,7 +57,7 @@
 (define-key global-map [remap left-word] 'backward-word)
 
 ;; change font here
-(add-to-list 'default-frame-alist '(font . "Anonymous Pro-14"))
+(add-to-list 'default-frame-alist '(font . "Consolas-9"))
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
@@ -167,8 +167,9 @@
 (defun simno-dired-mode-setup ()
   "show less information in dired buffers"
   (dired-hide-details-mode 1)
-  (local-set-key (kbd "TAB") 'dired-subtree-toggle)
-  )
+  (local-set-key (kbd "TAB") 'dired-subtree-cycle)
+)
+
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
