@@ -57,7 +57,7 @@
 (define-key global-map [remap left-word] 'backward-word)
 
 ;; change font here
-(add-to-list 'default-frame-alist '(font . "Consolas-9"))
+(add-to-list 'default-frame-alist '(font . "Consolas-12"))
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
@@ -118,6 +118,11 @@
   (add-hook 'prog-mode-hook h))
 
 (add-hook 'python-mode-hook 'elpy-mode)
+
+;; disable elpy's block navigation
+(eval-after-load "elpy"
+  '(cl-dolist (key '("C-<up>" "C-<down>"))
+     (define-key elpy-mode-map (kbd key) nil)))
 
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
@@ -196,3 +201,18 @@ auto-save-file-name-transforms
 ;; jump to any symbol
 (global-set-key (kbd "M-s") 'avy-goto-char-timer)
 ;; (global-set-key (kbd "M-S-s") 'avy-goto-char)
+
+;; https://stackoverflow.com/a/65992/379159
+(defun toggle-window-dedicated ()
+  "Toggle whether the current active window is dedicated or not"
+  (interactive)
+  (message
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window
+                                 (not (window-dedicated-p window))))
+       "Window '%s' is dedicated"
+     "Window '%s' is normal")
+   (current-buffer)))
+
+;; flash on error
+(setq visible-bell t)
