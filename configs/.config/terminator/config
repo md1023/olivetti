@@ -1,20 +1,21 @@
 [global_config]
   custom_url_handler = seamonkey
-  enabled_plugins = LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
+  enabled_plugins = InactivityWatch, ActivityWatch, LaunchpadCodeURLHandler, APTURLHandler, Logger, LaunchpadBugURLHandler
   focus = mouse
   geometry_hinting = False
   suppress_multiple_term_dialog = True
   title_transmit_bg_color = "#0076c9"
   use_custom_url_handler = True
 [keybindings]
-  cycle_next = <Control>Page_Down
-  cycle_prev = <Control>Page_Up
+  cycle_next = <Alt>t
+  cycle_prev = <Alt>t
+  edit_window_title = <Primary><Shift><Alt>t
   go_down = <Shift>Down
   go_left = <Shift>Left
   go_right = <Shift>Right
   go_up = <Shift>Up
-  next_tab = <Shift><Super>Tab
-  prev_tab = <Control>Tab
+  next_tab = <Primary>Page_Up
+  prev_tab = <Primary>Page_Down
   split_horiz = <Shift><Control>s
 [layouts]
   [[default]]
