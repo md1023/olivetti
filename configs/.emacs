@@ -57,7 +57,7 @@
 (define-key global-map [remap left-word] 'backward-word)
 
 ;; change font here
-(add-to-list 'default-frame-alist '(font . "Consolas-9"))
+(add-to-list 'default-frame-alist '(font . "Consolas-12"))
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
@@ -98,6 +98,7 @@
 
 ;; highlight fringe in folders under version control
 (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
 ;; move around buffers with cursor keys
 (when (fboundp 'windmove-default-keybindings)
@@ -118,6 +119,12 @@
   (add-hook 'prog-mode-hook h))
 
 (add-hook 'python-mode-hook 'elpy-mode)
+(setq elpy-rpc-python-command "~/Documents/md/venv/bin/python3")
+
+;; disable elpy's block navigation
+(eval-after-load "elpy"
+  '(cl-dolist (key '("C-<up>" "C-<down>"))
+     (define-key elpy-mode-map (kbd key) nil)))
 
 ;; disable elpy's block navigation
 (eval-after-load "elpy"
