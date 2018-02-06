@@ -26,7 +26,7 @@
  '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (elpy avy diff-hl org-gcal all-the-icons-dired all-the-icons dired-icon dired-subtree dockerfile-mode timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
+    (neotree elpy avy diff-hl org-gcal all-the-icons-dired all-the-icons dired-icon dired-subtree dockerfile-mode timesheet org-clock-csv csv-mode yaml-mode atom-one-dark-theme nose multi-web-mode quasi-monochrome-theme flymake-gjshint flymake-json flymake-php flymake-python-pyflakes flymake-shell php-mode flex-autopair rainbow-delimiters magit golden-ratio ahg bash-completion fic-mode git git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+ hgrc-mode hideshow-org hideshowvis js2-mode ag highlight-symbol hlinum ensime flycheck monky org zenburn-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -98,6 +98,7 @@
 
 ;; highlight fringe in folders under version control
 (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
 ;; move around buffers with cursor keys
 (when (fboundp 'windmove-default-keybindings)
@@ -118,6 +119,7 @@
   (add-hook 'prog-mode-hook h))
 
 (add-hook 'python-mode-hook 'elpy-mode)
+(setq elpy-rpc-python-command "~/Documents/md/venv/bin/python3")
 
 ;; disable elpy's block navigation
 (eval-after-load "elpy"
