@@ -1,7 +1,8 @@
 *.pyc
+*~
+.*~
 configs/.config/*
 configs/.notion/default-session--0/*
 configs/.notion/.welcome_msg_displayed
 configs/.fonts/
 configs/.oh-my-zsh
-configs/.fonts

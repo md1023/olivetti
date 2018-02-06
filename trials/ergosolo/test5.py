@@ -4,7 +4,7 @@
 from urllib import urlopen
 from xml.etree.ElementTree import parse
 
-u = urlopen("http://www.cbr.ru/scripts/XML_daily.xml")
+u = urlopen("http://www.cbr.ru/scripts/XML_daily.asp")
 doc = parse(u)
 valutes = [u"Доллар США", u"Евро"]
 for item in doc.iterfind("Valute"):

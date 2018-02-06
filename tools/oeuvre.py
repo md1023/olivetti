@@ -25,7 +25,10 @@ if len(sys.argv) > 1:
 
 # avconv -i IMG_0111.MOV.mp3 -ss 00:02:24 -t 00:03:42 -b:a 256k -f mp3 IMG_0111_part1.MOV.mp3
 CONSTS=dict(time="[0-9]+:[0-9]",
-            comm="avconv -i %(name)s.mp3 -ss %(start)s -t %(duration)s -b:a 256k -f mp3 %(metadata)s %(outdir)s/%(name)s_part%(piece)s.mp3")
+            comm="""
+avconv -i %(name)s.mp3 -ss %(start)s -t %(duration)s -b:a 256k -f mp3 %(outdir)s/%(name)s_part%(piece)s.mp3
+eyeD3 %(metadata)s %(outdir)s/%(name)s_part%(piece)s.mp3
+""")
 
 def get_mp3s(folder="."):
     mp3s = []
@@ -104,15 +107,14 @@ def generate_command(fname, subsongs, dry_run=not NOT_DRY):
     for piece, s in enumerate(subsongs):
         b, e, n, a = s
         if not b or not e:
-            raise OeuvreException("skipped %s song %s hasn't beginning or end", fname, s)
+            raise OeuvreException("skipped: %s song %s hasn't beginning or end" % (fname, s))
         fname_no_suffix = fname.split(".mp3")[0]
         part_time = "part%s %s-%s" % (piece, b, e)
 
-        metadata = dict(title=n.strip() or part_time,
-                        artist=a.strip(),
-                        comment=fname_no_suffix[2:] + " " + part_time)
-        metadata = " ".join(
-            ["-metadata %s=\'%s\'" % (k, v) for k,v in metadata.items()])
+        metadata = " ".join("--%s \"%s\"" % (k, v) for k,v in dict(
+            title=n.strip(),
+            artist=a.strip(),
+            comment="%s %s" % (fname_no_suffix[2:], part_time)).items())
 
         cmd = CONSTS["comm"] % dict(
             name=fname_no_suffix,
@@ -131,7 +133,7 @@ def split_names(s, sep=SEPARATOR):
 
 def process_song(fname, artist, name, length):
     if not name:
-        raise OeuvreException("bad song name '%s'", name)
+        raise OeuvreException("bad song name '%s'" % name)
     songs = split_names(name)
 
     if not artist:
@@ -139,7 +141,7 @@ def process_song(fname, artist, name, length):
     artists = split_names(artist)
 
     if len(songs) != len(artists):
-        raise OeuvreException("skipped: %s %s error in songs and artists" % (songs, artists))
+        raise OeuvreException("skipped: %s error in songs (%s) and artists (%s)" % (fname, songs, artists))
 
     songs = list(gen_split_song_times(songs))
     periods = combine_song_times(songs, length)
@@ -162,4 +164,4 @@ if __name__ == "__main__":
         try:
             process_song(*s)
         except OeuvreException as e:
-            logger.warning("%s" % e)
+            logger.warning("%s" % e.message)

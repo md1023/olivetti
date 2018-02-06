@@ -9,15 +9,15 @@ META="Mod4+"
 --ALTMETA=""
 
 -- Terminal emulator
-if os and os.execute("test -x /usr/bin/terminator") then
-    XTERM="/usr/bin/terminator"
+if os and os.execute("test -x /usr/bin/tilix") then
+    XTERM="/usr/bin/tilix"
 else
     XTERM="/usr/bin/xterm"
 end
 
 -- File manager
-if os and os.execute("test -x /usr/bin/terminator") then
-    FILEMANAGER="/usr/bin/dolphin"
+if os and os.execute("test -x /usr/bin/pcmanfm") then
+    FILEMANAGER="/usr/bin/pcmanfm"
 end
 
 -- Browser
@@ -31,7 +31,7 @@ if os and os.execute("test -x /usr/bin/emacs") then
 end
 
 -- Program launcher
-if os and os.execute("test -x /usr/bin/gmrun") == 0 then
+if os and os.execute("test -x /usr/bin/gmrun") then
     LAUNCHER="ioncore.exec_on(_, '/usr/bin/gmrun')"
 else
     LAUNCHER="mod_query.query_exec(_)"

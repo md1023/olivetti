@@ -8,6 +8,7 @@ def common_func(context, email, injected_func=None):
     #     print ">", apply(func, context)
     return map(lambda f: apply(f, context), func_list)
 
+
 def apply(func, *args):
     return func(*args)
 
@@ -25,4 +26,4 @@ def middle(*m):
 
 
 # print apply(middle, 1, 2, 3) == "m: [1, 2, 3]"
-print common_func(1, 2)
+print(common_func(1, 2))
