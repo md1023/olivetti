@@ -225,6 +225,7 @@
   "show less information in dired buffers"
   (dired-hide-details-mode 1)
   (local-set-key (kbd "TAB") 'dired-subtree-cycle)
+  (font-lock-mode 0)
 )
 
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
