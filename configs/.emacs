@@ -32,10 +32,12 @@
      all-the-icons-dired
      all-the-icons-faces
      all-the-icons-gnus
+     anaconda-mode
      atom-one-dark-theme
      avy
      bash-completion
      csv-mode
+     company-anaconda
      diff-hl
      dired-sidebar
      dired-subtree
@@ -160,21 +162,11 @@
          highlight-symbol-nav-mode))
   (add-hook 'prog-mode-hook h))
 
-(add-hook 'python-mode-hook 'elpy-mode)
-(setq elpy-rpc-python-command "~/Documents/md/venv/bin/python3")
-
-;; disable elpy's block navigation
-(eval-after-load "elpy"
-  '(cl-dolist (key '("C-<up>" "C-<down>"))
-     (define-key elpy-mode-map (kbd key) nil)))
-
-;; disable elpy's block navigation
-(eval-after-load "elpy"
-  '(cl-dolist (key '("C-<up>" "C-<down>"))
-     (define-key elpy-mode-map (kbd key) nil)))
-
-(setq elpy-rpc-python-command "python3")
-
+;; pythonic-activate /path/to/venv - change anaconda interpreter
+(eval-after-load "company"
+ '(add-to-list 'company-backends 'company-anaconda))
+(add-hook 'python-mode-hook 'anaconda-mode)
+(add-hook 'python-mode-hook 'company-mode)
 
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
