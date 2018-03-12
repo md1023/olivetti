@@ -1,95 +1,71 @@
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
+;; list the repositories containing them
+(setq package-archives '(
+                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ))
+
+
+;; list the packages you want
+(setq package-list '(
+                     ag
+                     all-the-icons
+                     all-the-icons-dired
+                     all-the-icons-gnus
+                     anaconda-mode
+                     atom-one-dark-theme
+                     avy
+                     bash-completion
+                     csv-mode
+                     company-anaconda
+                     diff-hl
+                     dired-sidebar
+                     dired-subtree
+                     dockerfile-mode
+                     fic-mode
+                     flex-autopair
+                     flycheck
+                     flymake-gjshint
+                     flymake-json
+                     flymake-python-pyflakes
+                     flymake-shell
+                     git
+                     git-gutter
+                     git-gutter+
+                     git-gutter-fringe
+                     git-gutter-fringe+
+                     hgrc-mode
+                     highlight-symbol
+                     hlinum
+                     js2-mode
+                     magit
+                     monky
+                     multi-web-mode
+                     nose
+                     rainbow-delimiters
+                     yaml-mode
+))
+
+;; activate all the packages (in particular autoloads)
 (package-initialize)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default default default italic underline success warning error])
- '(custom-safe-themes
-   (quote
-    ("2882cf41c12276b5875879a71cc670d1468653e342586075a48ed68cfed15bea" "1fab355c4c92964546ab511838e3f9f5437f4e68d9d1d073ab8e36e51b26ca6a" "db2ecce0600e3a5453532a89fc19b139664b4a3e7cbefce3aaf42b6d9b1d6214" "35fc36f6bcd5acfc0ca68a0120b78c472337dc92746c81c763c9274d9e7d8afb" "ce557950466bf42096853c6dac6875b9ae9c782b8665f62478980cc5e3b6028d" "100d6bde8ef749efd2984f24db31434d90348d9aaf718f94231208e95fae37a2" "9e147cee63e1a2a6b16021e0645bc66c633c42b849e78b8e295df4b7fe55c56a" "bac3f5378bc938e96315059cd0488d6ef7a365bae73dac2ff6698960df90552d" "40f6a7af0dfad67c0d4df2a1dd86175436d79fc69ea61614d668a635c2cd94ab" default)))
- '(git-gutter:handled-backends (quote (hg git)))
- '(initial-buffer-choice "~/Documents/journal.org")
- '(nrepl-message-colors
-   (quote
-    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
- '(package-archives
-   (quote
-    (("melpa" . "http://melpa.org/packages/")
-     ("gnu" . "http://elpa.gnu.org/packages/"))))
- '(package-enable-at-startup nil)
- '(package-selected-packages
-   (quote
-    (
-     ag
-     all-the-icons
-     all-the-icons-dired
-     all-the-icons-faces
-     all-the-icons-gnus
-     anaconda-mode
-     atom-one-dark-theme
-     avy
-     bash-completion
-     csv-mode
-     company-anaconda
-     diff-hl
-     dired-sidebar
-     dired-subtree
-     dockerfile-mode
-     elpy
-     fic-mode
-     flex-autopair
-     flycheck
-     flymake-gjshint
-     flymake-json
-     flymake-python-pyflakes
-     flymake-shell
-     git
-     git-gutter
-     git-gutter+
-     git-gutter-fringe
-     git-gutter-fringe+
-     hgrc-mode
-     hideshow-org
-     hideshowvis
-     highlight-symbol
-     hlinum
-     js2-mode
-     magit
-     monky
-     multi-web-mode
-     nose
-     org
-     org-clock-csv
-     php-mode
-     rainbow-delimiters
-     yaml-mode
-     zenburn-theme
-     ))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; fetch the list of packages available
+(unless package-archive-contents
+  (package-refresh-contents))
+
+;; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+;; write customize options in separate file
+(setq custom-file "~/.emacs.d/custom.el")
 
 (setq python-shell-interpreter "python3")
 (setq python-shell-completion-native-enable nil)
 
-;;; .emacs --- simno's Emacs config
-
-;; THEME
-(add-to-list 'load-path "~/Documents/olivetti/configs/emacs")
+;; theme
 (load-theme 'atom-one-dark t)
-
-(load-theme 'atom-one-dark t)
-;; GENERAL
 
 ;; display watch
 (defvar display-time-format "%Y.%m.%d %H:%M")
