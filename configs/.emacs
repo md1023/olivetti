@@ -196,6 +196,11 @@
   (font-lock-mode 0)
 )
 
+(require 'dired-x)
+(setq dired-omit-files "^*.pyc$")  ;; use \\|^urls.py$ to append other file
+
+(setq dired-listing-switches "-al --group-directories-first")
+
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
