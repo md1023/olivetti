@@ -64,6 +64,9 @@
 (setq python-shell-interpreter "python3")
 (setq python-shell-completion-native-enable nil)
 
+;; open journal at start
+(setq initial-buffer-choice "~/Documents/journal.org")
+
 ;; theme
 (load-theme 'atom-one-dark t)
 
@@ -153,25 +156,7 @@
 (require 'flymake-python-pyflakes)
 (setq flymake-python-pyflakes-executable "flake8")
 
-;; find \
-;;     /usr/lib/python3/dist-packages/django \
-;;     /usr/local/lib/python3.6/dist-packages/rest_framework \
-;;     ~/Documents/mdwh \
-;;     -type f -name '*.py' | xargs etags
-(defun create-tags (dir-name)
-  "Create tags file."
-  (interactive "Directory: ")
-  (shell-command
-   (
-    format "find %s -type f -name '*.py' | xargs etags -o %s/TAGS"
-           (directory-file-name dir-name)
-           (directory-file-name dir-name)
-           )
-   )
-  )
-
 ;; org mode
-(print "MY ORG LOADED")
 (setf org-replace-disputed-keys 1
       org-todo-keywords '("TODO" "WORKING" "FAIL" "COMPLETE")
       org-todo-keyword-faces '(
@@ -208,7 +193,7 @@
  backup-by-copying t
  backup-directory-alist
  `((".*" . , "~/.emacs.d/tmp"))
-auto-save-file-name-transforms
+ auto-save-file-name-transforms
  `((".*" , "~/.emacs.d/tmp" t)))
 
 ;; VCS
@@ -226,18 +211,6 @@ auto-save-file-name-transforms
 ;; jump to any symbol
 (global-set-key (kbd "M-s") 'avy-goto-char-timer)
 ;; (global-set-key (kbd "M-S-s") 'avy-goto-char)
-
-;; https://stackoverflow.com/a/65992/379159
-(defun toggle-window-dedicated ()
-  "Toggle whether the current active window is dedicated or not"
-  (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window
-                                 (not (window-dedicated-p window))))
-       "Window '%s' is dedicated"
-     "Window '%s' is normal")
-   (current-buffer)))
 
 ;; flash on error
 (setq visible-bell t)
