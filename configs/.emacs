@@ -115,6 +115,8 @@
 
 (require 'linum)
 (global-linum-mode)
+(eval-after-load "linum"
+  '(set-face-attribute 'linum nil :height 90))
 
 ;; highlight current line number in the fringe
 (require 'hlinum)
