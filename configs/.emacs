@@ -115,12 +115,16 @@
 
 (require 'linum)
 (global-linum-mode)
-(eval-after-load "linum"
-  '(set-face-attribute 'linum nil :height 90))
 
 ;; highlight current line number in the fringe
 (require 'hlinum)
 (hlinum-activate)
+
+;; fix linum face width
+(eval-after-load "hlinum"
+  '(set-face-attribute 'linum-highlight-face nil :height 90))
+(eval-after-load "linum"
+  '(set-face-attribute 'linum nil :height 90))
 
 ;; highlight fringe in folders under version control
 (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
