@@ -89,8 +89,8 @@
 (setq indent-line-function 'insert-tab)
 
 ;; scroll bindings
-(global-set-key (kbd "M-S-<down>") 'scroll-up-line)
-(global-set-key (kbd "M-S-<up>") 'scroll-down-line)
+(global-set-key (kbd "M-<down>") 'scroll-up-line)
+(global-set-key (kbd "M-<up>") 'scroll-down-line)
 
 ;; disable menus
 (scroll-bar-mode 0)
@@ -169,6 +169,10 @@
                                ("WORKING" . '(:foreground "#FFD000" :weight bold))
                                ("FAIL" . '(:foreground "#EE1010" :weight bold))
                                ))
+
+(setq org-agenda-files (list "~/Documents/journal.org"
+                             )
+      )
 
 ;; buffer and frames focus behaviour
 (ido-mode 1)
