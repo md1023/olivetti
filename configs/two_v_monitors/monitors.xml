@@ -1,0 +1,35 @@
+<monitors version="1">
+  <configuration>
+      <clone>no</clone>
+      <output name="VGA-1">
+      </output>
+      <output name="HDMI-1">
+          <vendor>DEL</vendor>
+          <product>0xa0a4</product>
+          <serial>0x33524553</serial>
+          <width>1920</width>
+          <height>1080</height>
+          <rate>60</rate>
+          <x>1080</x>
+          <y>0</y>
+          <rotation>right</rotation>
+          <reflect_x>no</reflect_x>
+          <reflect_y>no</reflect_y>
+          <primary>no</primary>
+      </output>
+      <output name="HDMI-2">
+          <vendor>DEL</vendor>
+          <product>0xa0b2</product>
+          <serial>0x3034574c</serial>
+          <width>1920</width>
+          <height>1080</height>
+          <rate>60</rate>
+          <x>0</x>
+          <y>0</y>
+          <rotation>left</rotation>
+          <reflect_x>no</reflect_x>
+          <reflect_y>no</reflect_y>
+          <primary>yes</primary>
+      </output>
+  </configuration>
+</monitors>
