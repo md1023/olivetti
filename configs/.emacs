@@ -67,6 +67,12 @@
 ;; open journal at start
 (setq initial-buffer-choice "~/Documents/journal.org")
 
+;; mercurial path on MacOS
+(add-to-list 'exec-path "/usr/local/bin")
+
+;; silver searcher location
+(setq ag-executable "/usr/local/bin/ag")
+
 ;; theme
 (load-theme 'atom-one-dark t)
 
@@ -144,7 +150,8 @@
     (h '(fic-mode
          rainbow-delimiters-mode
          highlight-symbol-mode
-         highlight-symbol-nav-mode))
+         highlight-symbol-nav-mode
+         diff-hl-mode))
   (add-hook 'prog-mode-hook h))
 
 ;; pythonic-activate /path/to/venv - change anaconda interpreter
@@ -195,6 +202,11 @@
 (setq dired-omit-files "^*.pyc$")  ;; use \\|^urls.py$ to append other file
 
 (setq dired-listing-switches "-al --group-directories-first")
+
+(setq dired-listing-switches "-lap")
+
+(require 'dired-x)
+(setq dired-omit-files "^*.pyc$\\|__pycache__/$\\|.pytest_cache$\\|.orig$")  ;; use \\|^urls.py$ to append other file
 
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
