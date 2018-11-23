@@ -137,18 +137,16 @@ autoload -Uz compinit && compinit -i
 # CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs; export CVSROOT
 export CVS_RSH=ssh; export CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs
 
-MDWH=/home/mnikolaev/Documents/mdwh
-
-# rebuild backend docker image, install uncommitted requirements.txt
-DOCKERENV=$MDWH/ops/environment/dev/setenv.sh
-DOCKERYML=$MDWH/ops/environment/dev/docker-compose.yml
-alias rebuild_back="bash -c \"\
-    source $DOCKERENV; \
-    docker-compose \
-        -f $DOCKERYML \
-        build --no-cache\
-        back; \
-    docker exec -it dev_back_1 pip install -r requirements.txt
-    \""
-
 alias dockerps="docker ps --format='table {{.ID}}\t{{.Status}}\t{{.Names}}'"
+
+dockerlogs() {
+    name="$1"
+    docker logs "${@:2}" $(docker ps --format='{{.Names}}' | grep "$name")
+}
+
+dockerexec() {
+    name="$1"
+    echo $ENV_MODE
+    docker exec -it $(docker ps --format='{{.Names}}' | grep "$name") "${@:2}"
+}
+
