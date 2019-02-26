@@ -2,7 +2,7 @@
 (setq package-archives '(
                          ("gnu" . "http://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ;; ("marmalade" . "http://marmalade-repo.org/packages/") ;; too old packages
                          ))
 
 
@@ -31,9 +31,7 @@
                      flymake-shell
                      git
                      git-gutter
-                     git-gutter+
                      git-gutter-fringe
-                     git-gutter-fringe+
                      hgrc-mode
                      highlight-symbol
                      hlinum
@@ -159,15 +157,34 @@
  '(add-to-list 'company-backends 'company-anaconda))
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'company-mode)
+(add-hook 'python-mode-hook '(lambda () (
+                                         local-set-key
+                                         (kbd "C-c C-t")
+                                         'test-function-at-point
+                                        )
+))
+(eval-after-load "company"
+ '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
 
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
+
+;; set command key instead of ctrl
+(setq mac-command-modifier 'meta)
+(setq mac-right-command-modifier 'super)
+
+(setq mac-option-modifier 'meta)
+(setq mac-right-option-modifier 'meta)
+
+;; override capitalize first letter with copy and scroll with paste
+(global-set-key (kbd "M-c") 'ns-copy-including-secondary)
+(global-set-key (kbd "M-v") 'yank)
 
 ;; python
 (require 'nose)
 
 (require 'flymake-python-pyflakes)
-(setq flymake-python-pyflakes-executable "flake8")
+(setq flymake-python-pyflakes-executable "/usr/bin/flake8")
 
 ;; org mode
 (setf org-replace-disputed-keys 1
@@ -196,17 +213,66 @@
   (dired-hide-details-mode 1)
   (local-set-key (kbd "TAB") 'dired-subtree-cycle)
   (font-lock-mode 0)
+  (dired-omit-mode 1)
 )
 
+(setq dired-sidebar-no-delete-other-windows t)
+
+;; https://stackoverflow.com/questions/1292936/line-wrapping-within-emacs-compilation-buffer
+(defun my-compilation-mode-hook ()
+  (setq truncate-lines nil) ;; automatically becomes buffer local
+  (set (make-local-variable 'truncate-partial-width-windows) nil)
+  (setq compilation-scroll-output 'first-error)
+)
+(add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
+
+(defun test-function-at-point ()
+  "Test function at point"
+  (interactive)
+  (compile (let ((container "um-api")) (concat
+          ;; "/usr/local/bin/docker exec -it uauth_server_1 pytest --disable-warnings -svvv "
+          ;; "dockerexec um-api pytest --disable-warnings -svvv "
+          (format "dockerexec %s pytest --disable-warnings -svvv " container)
+          (car
+           (reverse
+            (split-string (buffer-file-name) (format "uauth/%s/" container))
+           )
+          )
+          (if (which-function)
+              (replace-regexp-in-string
+               " (def)"
+               ""
+               (concat "::"
+                       (combine-and-quote-strings
+                        (split-string (which-function) "\\.")
+                        "::"
+                       )
+               )
+              )
+          )
+  )))
+)
+
+(push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
+
+(require 'ansi-color)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+(defvar ansi-color-names-vector
+  ["#222222" "#dca3a3" "#7f9f7f" "#f0dfaf" "#8cd0d3" "#c0bed1" "#93b3a3" "#cccccc"])
+
+(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+(setq dired-listing-switches "-lap --group-directories-first")
+
 (require 'dired-x)
-(setq dired-omit-files "^*.pyc$")  ;; use \\|^urls.py$ to append other file
-
-(setq dired-listing-switches "-al --group-directories-first")
-
-(setq dired-listing-switches "-lap")
-
-(require 'dired-x)
-(setq dired-omit-files "^*.pyc$\\|__pycache__/$\\|.pytest_cache$\\|.orig$")  ;; use \\|^urls.py$ to append other file
+(setq dired-omit-files "^*.pyc$\\|\\.+/$\\|__pycache__/$\\|.pytest_cache$\\|.orig\\|\\./$")  ;; use \\|^urls.py$ to append other file
 
 (add-hook 'dired-mode-hook 'simno-dired-mode-setup)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)

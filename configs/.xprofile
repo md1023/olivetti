@@ -1,0 +1,4 @@
+xrandr \
+    --output HDMI-1 --off \
+    --output DP-1 --mode 1920x1080 --pos 0x360 \
+    --output eDP-1 --primary --mode 2304x1440 --pos 1920x0
