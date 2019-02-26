@@ -59,7 +59,7 @@ alias cal='ncal -Mb'
 alias ag='ag --hidden'
 
 # psql horizontal scroll
-export PAGER=cat
+export PAGER=less
 export LESS="-iMSx4 -XFR"
 
 # keyboard settings

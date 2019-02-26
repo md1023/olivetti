@@ -9,18 +9,15 @@
 ;; list the packages you want
 (setq package-list '(
                      ag
-                     all-the-icons
                      all-the-icons-dired
                      all-the-icons-gnus
-                     anaconda-mode
                      atom-one-dark-theme
                      avy
                      bash-completion
-                     csv-mode
                      company-anaconda
+                     csv-mode
                      diff-hl
                      dired-sidebar
-                     dired-subtree
                      dockerfile-mode
                      fic-mode
                      flex-autopair
@@ -30,16 +27,15 @@
                      flymake-python-pyflakes
                      flymake-shell
                      git
-                     git-gutter
                      git-gutter-fringe
                      hgrc-mode
                      highlight-symbol
                      hlinum
                      js2-mode
+                     lua-mode
                      magit
                      monky
                      multi-web-mode
-                     nose
                      rainbow-delimiters
                      yaml-mode
 ))
