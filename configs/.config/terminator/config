@@ -1,11 +1,12 @@
 [global_config]
-  custom_url_handler = seamonkey
+  custom_url_handler = firefox
   enabled_plugins = InactivityWatch, ActivityWatch, LaunchpadCodeURLHandler, APTURLHandler, Logger, LaunchpadBugURLHandler
   focus = mouse
-  geometry_hinting = False
+  inactive_color_offset = 0.91
   suppress_multiple_term_dialog = True
   title_transmit_bg_color = "#0076c9"
   use_custom_url_handler = True
+  window_state = maximise
 [keybindings]
   cycle_next = <Alt>t
   cycle_prev = <Alt>t
@@ -16,6 +17,7 @@
   go_up = <Shift>Up
   next_tab = <Primary>Page_Up
   prev_tab = <Primary>Page_Down
+  reset_clear = <Primary><Shift>l
   split_horiz = <Shift><Control>s
 [layouts]
   [[default]]
@@ -28,28 +30,39 @@
 [plugins]
 [profiles]
   [[default]]
-    background_color = "#004373"
-    background_darkness = 0.36
-    background_image = /home/mnikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
-    background_type = image
+    audible_bell = True
+    background_color = "#3f3f3f"
+    background_darkness = 0.63
     copy_on_selection = True
+    cursor_color = "#bcb285"
     cursor_shape = underline
     font = Consolas 9
     foreground_color = "#bcb285"
-    scroll_on_output = False
+    palette = "#3f3f3f:#dca3a3:#60b48a:#dfaf8f:#94bff3:#dc8cc3:#8cd0d3:#dcdccc:#709080:#d05050:#c3bf9f:#f0dfaf:#607080:#ec93d3:#93e0e3:#eeeeec"
+    scrollback_infinite = True
     scrollback_lines = 10000
-    scrollbar_position = hidden
     use_system_font = False
+    visible_bell = True
   [[srvs]]
     background_color = "#744300"
     background_darkness = 0.42
-    background_image = /home/m-nikolaev/Pictures/9be886c3c0cebb9471d17918c4b65e17.jpg
-    background_type = image
     copy_on_selection = True
+    cursor_color = "#bcb285"
     cursor_shape = underline
     font = Consolas 9
     foreground_color = "#bcb285"
-    scroll_on_output = False
     scrollback_lines = 5000
     scrollbar_position = hidden
+    use_system_font = False
+  [[zenburn]]
+    background_color = "#555555"
+    background_darkness = 0.63
+    copy_on_selection = True
+    cursor_color = "#bcb285"
+    cursor_shape = underline
+    font = Consolas 10
+    foreground_color = "#bcb285"
+    palette = "#3f3f3f:#705050:#60b48a:#dfaf8f:#506070:#dc8cc3:#8cd0d3:#dcdccc:#709080:#dca3a3:#c3bf9f:#f0dfaf:#94bff3:#ec93d3:#93e0e3:#eeeeec"
+    scrollback_infinite = True
+    scrollback_lines = 10000
     use_system_font = False

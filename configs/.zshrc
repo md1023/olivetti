@@ -44,35 +44,14 @@ ZSH_THEME="kardan"
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 HIST_STAMPS="yyyy.mm.dd"
 
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
 plugins=(git cp web-search colored-man)
 
-# User configuration
-
-# export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
-# export MANPATH="/usr/local/man:$MANPATH"
+export PATH="/usr/local/bin:$PATH"
 
 source $ZSH/oh-my-zsh.sh
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-
-# m-nikolaev customizations:
 alias ls='ls --classify --color=auto --human-readable --time-style=locale --group-directories-first'
-alias l1='ls -1'
 alias nautilus='nautilus --no-desktop'
-alias em='emacsclient -c -a ""&'
 alias df='df --human-readable'
 alias du='du --human-readable'
 alias grep='grep --color'
@@ -80,63 +59,20 @@ alias cal='ncal -Mb'
 alias ag='ag --hidden'
 
 # psql horizontal scroll
-# export PAGER=cat
-# export LESS="-iMSx4 -XFR"
-
-# virtualenvwrapper is installed locally with:
-# pip install --install-option="--user" virtualenvwrapper
-# source $HOME/.local/bin/virtualenvwrapper.sh
-
-# connect to svn:// behind proxy
-# sudo apt-get install libnet-proxy-perl
-# connect-tunnel -v -L -P 192.168.200.105:8088 -T 10234:79.104.197.230:9036
-# svn checkout svn://localhost:10234 .
-# svn update --username nikolaev --password nikolaev
-
-# git clone https://github.com/thejoshwolfe/svn-color ~/Documents/svn-color
-alias svn="python -u $HOME/Documents/svn-color/svn-color.py"
-
-# beep from speakers
-_alarm() {
-    ( speaker-test --frequency $1 --test sine )&
-    pid=$!
-    sleep 0.${2}s
-    kill -9 $pid
-}
-alias alarm='(_alarm 440 2 > /dev/null)'
-# "( speaker-test -t sine -f 440 > /dev/null )& pid=$! ; sleep 0.2s ; kill -9 $pid"
-
-# kill trailing whitespace
-alias kill_trailing_whitespace='sed -i -r "s/\s+$//g" `hg st -man | xargs`'
-# put two newlines before class definition
-class_double_newlines() {
-    for f in $@; do
-        cat $f | \
-            tr "\n" "\r" | \
-            sed "s/\r\+class/\r\r\rclass/g" | \
-            tr "\r" "\n" > $f".copy"
-        mv $f".copy" $f
-    done
-}
+export PAGER=cat
+export LESS="-iMSx4 -XFR"
 
 # keyboard settings
 setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:shifts_toggle" \
     -layout "us,ru"
-
-# vte support for tilix
-if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
-    source /etc/profile.d/vte.sh
-fi
-
-# docker-compose completion
-fpath=(~/.zsh/completion $fpath)
-autoload -Uz compinit && compinit -i
 
 # IPONWEB
 # CVS_RSH=ssh
 # CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs; export CVSROOT
 export CVS_RSH=ssh; export CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs
 
+
+# Docker aliases
 alias dockerps="docker ps --format='table {{.ID}}\t{{.Status}}\t{{.Names}}'"
 
 dockerlogs() {
@@ -149,4 +85,3 @@ dockerexec() {
     echo $ENV_MODE
     docker exec -it $(docker ps --format='{{.Names}}' | grep "$name") "${@:2}"
 }
-

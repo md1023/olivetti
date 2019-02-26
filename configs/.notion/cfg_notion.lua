@@ -9,20 +9,20 @@ META="Mod4+"
 --ALTMETA=""
 
 -- Terminal emulator
-if os and os.execute("test -x /usr/bin/tilix") then
-    XTERM="/usr/bin/tilix"
+if os and os.execute("test -x /usr/bin/terminator") then
+    XTERM="/usr/bin/terminator"
 else
     XTERM="/usr/bin/xterm"
 end
 
 -- File manager
-if os and os.execute("test -x /usr/bin/pcmanfm") then
-    FILEMANAGER="/usr/bin/pcmanfm"
+if os and os.execute("test -x /usr/bin/nautilus") then
+    FILEMANAGER="/usr/bin/nautilus"
 end
 
 -- Browser
-if os and os.execute("test -x /usr/bin/seamonkey") then
-    BROWSER="/usr/bin/seamonkey"
+if os and os.execute("test -x /usr/bin/firefox") then
+    BROWSER="/usr/bin/seamonkey -P default"
 end
 
 -- Emacs
