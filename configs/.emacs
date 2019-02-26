@@ -177,7 +177,6 @@
 (global-set-key (kbd "M-v") 'yank)
 
 ;; python
-(require 'nose)
 
 (require 'flymake-python-pyflakes)
 (setq flymake-python-pyflakes-executable "/usr/bin/flake8")
@@ -282,10 +281,8 @@
 
 ;; VCS
 (global-git-gutter-mode t)
-(setq git-gutter:modified-sign "M")
+(setq git-gutter:modified-sign "±")
 (setq git-gutter:handled-backends '(git hg))
-;; (set-face-foreground 'git-gutter-fr:modified "#d080d0")
-(set-face-foreground 'git-gutter:modified "#d080d0")
 
 (defadvice bookmark-jump (after bookmark-jump activate)
   (let ((latest (bookmark-get-bookmark bookmark)))
