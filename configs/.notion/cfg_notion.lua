@@ -22,7 +22,7 @@ end
 
 -- Browser
 if os and os.execute("test -x /usr/bin/firefox") then
-    BROWSER="/usr/bin/seamonkey -P default"
+    BROWSER="/usr/bin/firefox"
 end
 
 -- Emacs
