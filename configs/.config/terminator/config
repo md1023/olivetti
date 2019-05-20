@@ -38,7 +38,7 @@
     copy_on_selection = True
     cursor_color = "#bcb285"
     cursor_shape = underline
-    font = Consolas 9
+    font = Fantasque Sans Mono 10
     foreground_color = "#bcb285"
     palette = "#3f3f3f:#dca3a3:#60b48a:#dfaf8f:#94bff3:#dc8cc3:#8cd0d3:#dcdccc:#709080:#d05050:#c3bf9f:#f0dfaf:#607080:#ec93d3:#93e0e3:#eeeeec"
     scrollback_infinite = True
@@ -47,7 +47,8 @@
     visible_bell = True
   [[srvs]]
     background_color = "#744300"
-    background_darkness = 0.42
+    background_darkness = 0.4
+    background_type = transparent
     copy_on_selection = True
     cursor_color = "#bcb285"
     cursor_shape = underline

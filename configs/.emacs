@@ -65,7 +65,7 @@
 (add-to-list 'exec-path "/usr/local/bin")
 
 ;; silver searcher location
-(setq ag-executable "/usr/local/bin/ag")
+(setq ag-executable "/usr/bin/ag")
 
 ;; theme
 (load-theme 'atom-one-dark t)
@@ -81,7 +81,7 @@
 (define-key global-map [remap left-word] 'backward-word)
 
 ;; change font here
-(add-to-list 'default-frame-alist '(font . "Consolas-9"))
+(add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
