@@ -18,9 +18,10 @@
                      csv-mode
                      diff-hl
                      dired-sidebar
+                     docker-tramp
                      dockerfile-mode
+                     doom-modeline
                      fic-mode
-                     flex-autopair
                      flycheck
                      flymake-gjshint
                      flymake-json
@@ -28,7 +29,6 @@
                      flymake-shell
                      git
                      git-gutter-fringe
-                     hgrc-mode
                      highlight-symbol
                      hlinum
                      js2-mode
@@ -101,6 +101,12 @@
 (setq line-number-mode 1)
 (setq column-number-mode 1)
 
+(require 'doom-modeline)
+(doom-modeline-mode 1)
+(setq doom-modeline-height 1)
+(setq doom-modeline-minor-modes 1)
+(setq doom-modeline-vcs-max-length 30)
+
 ;; cursor type
 (setq-default cursor-type '(hbar . 2))
 ;; (setq x-stretch-cursor 1)
@@ -144,8 +150,7 @@
     (h '(fic-mode
          rainbow-delimiters-mode
          highlight-symbol-mode
-         highlight-symbol-nav-mode
-         diff-hl-mode))
+         highlight-symbol-nav-mode))
   (add-hook 'prog-mode-hook h))
 
 ;; pythonic-activate /path/to/venv - change anaconda interpreter
@@ -252,6 +257,9 @@
 
 (require 'ansi-color)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+(setq shell-file-name "zsh")
+(setq shell-command-switch "-ic")
 
 (defvar ansi-color-names-vector
   ["#222222" "#dca3a3" "#7f9f7f" "#f0dfaf" "#8cd0d3" "#c0bed1" "#93b3a3" "#cccccc"])
