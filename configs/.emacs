@@ -23,10 +23,6 @@
                      doom-modeline
                      fic-mode
                      flycheck
-                     flymake-gjshint
-                     flymake-json
-                     flymake-python-pyflakes
-                     flymake-shell
                      git
                      git-gutter-fringe
                      highlight-symbol
@@ -58,8 +54,11 @@
 (setq python-shell-interpreter "python3")
 (setq python-shell-completion-native-enable nil)
 
-;; open journal at start
-(setq initial-buffer-choice "~/Documents/journal.org")
+;; Don't open journal at start
+;; (setq initial-buffer-choice "~/Documents/journal.org")
+
+;; Don't show welcome screen.
+(setq inhibit-startup-screen t)
 
 ;; mercurial path on MacOS
 (add-to-list 'exec-path "/usr/local/bin")
@@ -70,10 +69,10 @@
 ;; theme
 (load-theme 'atom-one-dark t)
 
-;; display watch
-(defvar display-time-format "%Y.%m.%d %H:%M")
-(defvar display-time-default-load-average nil)
-(display-time)
+;; Don't display watch
+;; (defvar display-time-format "%Y.%m.%d %H:%M")
+;; (defvar display-time-default-load-average nil)
+;; (display-time)
 
 ;; jump to word beginning/end
 (require 'misc)
@@ -120,7 +119,8 @@
 (set-default 'truncate-lines 1)
 
 (require 'linum)
-(global-linum-mode)
+;; Linum mode from recent 26 versions
+(global-display-line-numbers-mode)
 
 ;; highlight current line number in the fringe
 (require 'hlinum)
@@ -164,6 +164,9 @@
                                          'test-function-at-point
                                         )
 ))
+;; (define-key python-mode-map (kbd "<C-tab>") 'hs-toggle-hiding)
+;; (define-key python-mode-map (kbd "C-c TAB") 'hs-show-all)
+;; (define-key python-mode-map (kbd "C-c <backtab>") 'hs-hide-all)
 (eval-after-load "company"
  '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
 
@@ -181,11 +184,6 @@
 (global-set-key (kbd "M-c") 'ns-copy-including-secondary)
 (global-set-key (kbd "M-v") 'yank)
 
-;; python
-
-(require 'flymake-python-pyflakes)
-(setq flymake-python-pyflakes-executable "/usr/bin/flake8")
-
 ;; org mode
 (setf org-replace-disputed-keys 1
       org-todo-keywords '("TODO" "WORKING" "FAIL" "COMPLETE")
@@ -193,10 +191,6 @@
                                ("WORKING" . '(:foreground "#FFD000" :weight bold))
                                ("FAIL" . '(:foreground "#EE1010" :weight bold))
                                ))
-
-(setq org-agenda-files (list "~/Documents/journal.org"
-                             )
-      )
 
 ;; buffer and frames focus behaviour
 (ido-mode 1)
@@ -229,13 +223,13 @@
 (defun test-function-at-point ()
   "Test function at point"
   (interactive)
-  (compile (let ((container "um-api")) (concat
+  (compile (let ((container "credentials-api")) (concat
           ;; "/usr/local/bin/docker exec -it uauth_server_1 pytest --disable-warnings -svvv "
           ;; "dockerexec um-api pytest --disable-warnings -svvv "
           (format "dockerexec %s pytest --disable-warnings -svvv " container)
           (car
            (reverse
-            (split-string (buffer-file-name) (format "uauth/%s/" container))
+            (split-string (buffer-file-name) (format "u-auth/%s/" container))
            )
           )
           (if (which-function)
@@ -290,7 +284,7 @@
 ;; VCS
 (global-git-gutter-mode t)
 (setq git-gutter:modified-sign "±")
-(setq git-gutter:handled-backends '(git hg))
+(setq git-gutter:handled-backends '(git))
 
 (defadvice bookmark-jump (after bookmark-jump activate)
   (let ((latest (bookmark-get-bookmark bookmark)))
@@ -303,3 +297,12 @@
 
 ;; flash on error
 (setq visible-bell t)
+
+;; system monitor, show cpu load
+(require 'symon)
+(setq symon-monitors '(symon-linux-cpu-monitor
+                       symon-linux-memory-monitor
+                       symon-linux-battery-monitor))
+(setq symon-sparkline-height 12)
+(setq symon-sparkline-type 'gridded)
+(symon-mode)
