@@ -202,6 +202,10 @@
       ido-enable-flex-matching 1
       ibuffer-shrink-to-minimum-size 1)
 
+;; discord chat
+(require 'elcord)
+(elcord-mode)
+
 (defun simno-dired-mode-setup ()
   "show less information in dired buffers"
   (dired-hide-details-mode 1)
