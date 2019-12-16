@@ -56,6 +56,7 @@
 
 ;; Don't open journal at start
 ;; (setq initial-buffer-choice "~/Documents/journal.org")
+(setq initial-buffer-choice nil)
 
 ;; Don't show welcome screen.
 (setq inhibit-startup-screen t)
@@ -81,6 +82,8 @@
 
 ;; change font here
 (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
+
+(setq frame-title-format "%b-%p")
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
