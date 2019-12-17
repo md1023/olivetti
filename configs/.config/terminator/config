@@ -1,6 +1,7 @@
 [global_config]
+  always_split_with_profile = True
   custom_url_handler = firefox
-  enabled_plugins = InactivityWatch, ActivityWatch, LaunchpadCodeURLHandler, APTURLHandler, Logger, LaunchpadBugURLHandler
+  enabled_plugins = InactivityWatch, ActivityWatch, Logger
   focus = mouse
   inactive_color_offset = 0.91
   suppress_multiple_term_dialog = True
@@ -43,6 +44,18 @@
     palette = "#3f3f3f:#dca3a3:#60b48a:#dfaf8f:#94bff3:#dc8cc3:#8cd0d3:#dcdccc:#709080:#d05050:#c3bf9f:#f0dfaf:#607080:#ec93d3:#93e0e3:#eeeeec"
     scrollback_infinite = True
     scrollback_lines = 10000
+    use_system_font = False
+    visible_bell = True
+  [[manjaro]]
+    audible_bell = True
+    background_color = "#2e3436"
+    copy_on_selection = True
+    cursor_color = "#aaaaaa"
+    cursor_shape = underline
+    font = Fantasque Sans Mono 12
+    foreground_color = "#dcdcdc"
+    palette = "#3f3f3f:#705050:#60b48a:#dfaf8f:#9ab8d7:#dc8cc3:#8cd0d3:#dcdcdc:#709080:#dca3a3:#72d5a3:#f0dfaf:#94bff3:#ec93d3:#93e0e3:#ffffff"
+    scrollback_infinite = True
     use_system_font = False
     visible_bell = True
   [[srvs]]

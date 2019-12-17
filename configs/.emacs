@@ -21,12 +21,9 @@
                      docker-tramp
                      dockerfile-mode
                      doom-modeline
+                     elcord
                      fic-mode
                      flycheck
-                     flymake-gjshint
-                     flymake-json
-                     flymake-python-pyflakes
-                     flymake-shell
                      git
                      git-gutter-fringe
                      highlight-symbol
@@ -58,8 +55,12 @@
 (setq python-shell-interpreter "python3")
 (setq python-shell-completion-native-enable nil)
 
-;; open journal at start
-(setq initial-buffer-choice "~/Documents/journal.org")
+;; Don't open journal at start
+;; (setq initial-buffer-choice "~/Documents/journal.org")
+(setq initial-buffer-choice nil)
+
+;; Don't show welcome screen.
+(setq inhibit-startup-screen t)
 
 ;; mercurial path on MacOS
 (add-to-list 'exec-path "/usr/local/bin")
@@ -70,10 +71,10 @@
 ;; theme
 (load-theme 'atom-one-dark t)
 
-;; display watch
-(defvar display-time-format "%Y.%m.%d %H:%M")
-(defvar display-time-default-load-average nil)
-(display-time)
+;; Don't display watch
+;; (defvar display-time-format "%Y.%m.%d %H:%M")
+;; (defvar display-time-default-load-average nil)
+;; (display-time)
 
 ;; jump to word beginning/end
 (require 'misc)
@@ -82,6 +83,8 @@
 
 ;; change font here
 (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
+
+(setq frame-title-format "%b-%p")
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
@@ -120,7 +123,8 @@
 (set-default 'truncate-lines 1)
 
 (require 'linum)
-(global-linum-mode)
+;; Linum mode from recent 26 versions
+(global-display-line-numbers-mode)
 
 ;; highlight current line number in the fringe
 (require 'hlinum)
@@ -181,11 +185,6 @@
 (global-set-key (kbd "M-c") 'ns-copy-including-secondary)
 (global-set-key (kbd "M-v") 'yank)
 
-;; python
-
-(require 'flymake-python-pyflakes)
-(setq flymake-python-pyflakes-executable "/usr/bin/flake8")
-
 ;; org mode
 (setf org-replace-disputed-keys 1
       org-todo-keywords '("TODO" "WORKING" "FAIL" "COMPLETE")
@@ -193,10 +192,6 @@
                                ("WORKING" . '(:foreground "#FFD000" :weight bold))
                                ("FAIL" . '(:foreground "#EE1010" :weight bold))
                                ))
-
-(setq org-agenda-files (list "~/Documents/journal.org"
-                             )
-      )
 
 ;; buffer and frames focus behaviour
 (ido-mode 1)
@@ -207,6 +202,10 @@
       ido-enable-record-commands 1
       ido-enable-flex-matching 1
       ibuffer-shrink-to-minimum-size 1)
+
+;; discord chat
+;; (require 'elcord)
+;; (elcord-mode)
 
 (defun simno-dired-mode-setup ()
   "show less information in dired buffers"
@@ -235,7 +234,7 @@
           (format "dockerexec %s pytest --disable-warnings -svvv " container)
           (car
            (reverse
-            (split-string (buffer-file-name) (format "uauth/%s/" container))
+            (split-string (buffer-file-name) (format "u-auth/%s/" container))
            )
           )
           (if (which-function)
