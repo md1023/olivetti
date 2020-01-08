@@ -11,7 +11,8 @@
                      ag
                      all-the-icons-dired
                      all-the-icons-gnus
-                     atom-one-dark-theme
+                     ;; atom-one-dark-theme
+                     birds-of-paradise-plus
                      avy
                      bash-completion
                      company-anaconda
@@ -69,7 +70,10 @@
 (setq ag-executable "/usr/bin/ag")
 
 ;; theme
-(load-theme 'atom-one-dark t)
+;; (load-theme 'atom-one-dark t)
+;; (load-theme 'base16-paraiso t)
+;; (load-theme 'base16-gruvbox-dark-soft t)
+(load-theme 'birds-of-paradise-plus t)
 
 ;; Don't display watch
 ;; (defvar display-time-format "%Y.%m.%d %H:%M")
@@ -82,7 +86,8 @@
 (define-key global-map [remap left-word] 'backward-word)
 
 ;; change font here
-(add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
+;; (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
+(add-to-list 'default-frame-alist '(font . "Consolas-14"))
 
 (setq frame-title-format "%b-%p")
 
