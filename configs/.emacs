@@ -12,6 +12,7 @@
                      all-the-icons-dired
                      all-the-icons-gnus
                      atom-one-dark-theme
+                     birds-of-paradise-plus-theme
                      avy
                      bash-completion
                      company-anaconda
@@ -33,6 +34,7 @@
                      monky
                      multi-web-mode
                      rainbow-delimiters
+                     org-journal
                      yaml-mode
 ))
 
@@ -57,6 +59,18 @@
 ;; Don't open journal at start
 ;; (setq initial-buffer-choice "~/Documents/journal.org")
 (setq initial-buffer-choice nil)
+(require 'org-journal)
+;; (setq org-journal-dir "~/Documents/org/")  ;; doesn't work on Emacs 26.3
+(setq org-journal-file-format "%m.%B.journal.org")
+(setq org-journal-date-format "%B %d, %A, week %V")
+(setq org-journal-file-type 'monthly)
+
+;; highlight jira task
+(font-lock-add-keywords 'org-mode '(
+   ("\\(IT\_DEV\-[0-9]+\\)" (0 font-lock-type-face))
+   ("\\(IT\-[0-9]+\\)" (0 font-lock-type-face))
+))
+
 
 ;; Don't show welcome screen.
 (setq inhibit-startup-screen t)
@@ -66,6 +80,7 @@
 
 ;; silver searcher location
 (setq ag-executable "/usr/bin/ag")
+(setq ag-reuse-window t)
 
 ;; theme
 (load-theme 'atom-one-dark t)
@@ -141,6 +156,12 @@
 ;; move around buffers with cursor keys
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
+
+;; override org-mode functions whereas S-<cursor> has no effect
+(add-hook 'org-shiftup-final-hook 'windmove-up)
+(add-hook 'org-shiftleft-final-hook 'windmove-left)
+(add-hook 'org-shiftdown-final-hook 'windmove-down)
+(add-hook 'org-shiftright-final-hook 'windmove-right)
 
 (show-paren-mode 1)
 
@@ -228,31 +249,39 @@
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
 (defun test-function-at-point ()
-  "Test function at point"
+  "Test function at point.
+    |-----------|----------------|---------------------------------|
+    |  path     |      car       |             cdr                 |
+    |-----------|----------------|---------------------------------|
+    | ../u-auth | credentials-api| tests/test_login.py             |
+    | ../u-auth | tests          | ui/requests/test_login_logout.py|
+    |-----------|----------------|---------------------------------|"
   (interactive)
-  (compile (let ((container "credentials-api")) (concat
-          ;; "/usr/local/bin/docker exec -it uauth_server_1 pytest --disable-warnings -svvv "
-          ;; "dockerexec um-api pytest --disable-warnings -svvv "
-          (format "dockerexec %s pytest --disable-warnings -svvv " container)
-          (car
-           (reverse
-            (split-string (buffer-file-name) (format "u-auth/%s/" container))
+  (compile (let
+               ((path
+                 (split-string
+                  (car
+                   (reverse
+                    (split-string
+                     (buffer-file-name)
+                     "u-auth/"
+                     )))
+                  "/")))
+             (concat
+              (format
+               "dockerexec %s pytest --disable-warnings -svvv %s"
+               (car path)
+               (string-join (cdr path) "/"))
+              (if (which-function)
+                  (replace-regexp-in-string
+                   " (def)"
+                   ""
+                   (concat "::"
+                           (combine-and-quote-strings
+                            (split-string (which-function) "\\.")
+                            "::"))))))
            )
-          )
-          (if (which-function)
-              (replace-regexp-in-string
-               " (def)"
-               ""
-               (concat "::"
-                       (combine-and-quote-strings
-                        (split-string (which-function) "\\.")
-                        "::"
-                       )
-               )
-              )
-          )
-  )))
-)
+  )
 
 (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
 
