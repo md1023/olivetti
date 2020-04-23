@@ -79,11 +79,13 @@
 (add-to-list 'exec-path "/usr/local/bin")
 
 ;; silver searcher location
-(setq ag-executable "/usr/bin/ag")
+;; misses .gitignore settings when run from here, runs slower
+;; (setq ag-executable "/usr/bin/ag")
 (setq ag-reuse-window t)
 
 ;; theme
-(load-theme 'atom-one-dark t)
+;; (load-theme 'atom-one-dark t)
+(load-theme 'birds-of-paradise-plus t)
 
 ;; Don't display watch
 ;; (defvar display-time-format "%Y.%m.%d %H:%M")
@@ -291,8 +293,12 @@
 (setq shell-file-name "zsh")
 (setq shell-command-switch "-ic")
 
-(defvar ansi-color-names-vector
-  ["#222222" "#dca3a3" "#7f9f7f" "#f0dfaf" "#8cd0d3" "#c0bed1" "#93b3a3" "#cccccc"])
+;; override ansi colors
+(custom-theme-set-variables
+   'birds-of-paradise-plus
+   `(ansi-color-names-vector
+     ["#222222" "#DCA3A3" "#7F9F7F" "#F0DFAF"
+      "#8CD0D3" "#C0BED1" "#93B3A3" "#CCCCCC"]))
 
 (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
 
