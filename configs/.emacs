@@ -34,6 +34,7 @@
                      monky
                      multi-web-mode
                      rainbow-delimiters
+                     symon
                      org-journal
                      yaml-mode
 ))
@@ -81,7 +82,7 @@
 ;; silver searcher location
 ;; misses .gitignore settings when run from here, runs slower
 ;; (setq ag-executable "/usr/bin/ag")
-(setq ag-reuse-window t)
+;; (setq ag-reuse-window t)
 
 ;; theme
 ;; (load-theme 'atom-one-dark t)
@@ -98,7 +99,8 @@
 (define-key global-map [remap left-word] 'backward-word)
 
 ;; change font here
-(add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
+;; (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
+(add-to-list 'default-frame-alist '(font . "Consolas-10"))
 
 (setq frame-title-format "%b-%p")
 
@@ -229,8 +231,8 @@
       ibuffer-shrink-to-minimum-size 1)
 
 ;; discord chat
-(require 'elcord)
-(elcord-mode)
+;; (require 'elcord)
+;; (elcord-mode)
 
 (defun simno-dired-mode-setup ()
   "show less information in dired buffers"
