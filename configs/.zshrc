@@ -44,7 +44,7 @@ ZSH_THEME="kardan"
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 HIST_STAMPS="yyyy.mm.dd"
 
-plugins=(git cp web-search colored-man)
+plugins=(git cp web-search)
 
 export PATH="/usr/local/bin:$PATH"
 

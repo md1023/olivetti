@@ -26,6 +26,7 @@
   [[default]]
     [[[child1]]]
       parent = window0
+      profile = manjaro
       type = Terminal
     [[[window0]]]
       parent = ""
@@ -58,6 +59,18 @@
     scrollback_infinite = True
     use_system_font = False
     visible_bell = True
+  [[new]]
+    background_color = "#555555"
+    background_darkness = 0.63
+    copy_on_selection = True
+    cursor_color = "#bcb285"
+    cursor_shape = underline
+    font = Consolas 10
+    foreground_color = "#bcb285"
+    palette = "#3f3f3f:#705050:#60b48a:#dfaf8f:#506070:#dc8cc3:#8cd0d3:#dcdccc:#709080:#dca3a3:#c3bf9f:#f0dfaf:#94bff3:#ec93d3:#93e0e3:#eeeeec"
+    scrollback_infinite = True
+    scrollback_lines = 10000
+    use_system_font = False
   [[srvs]]
     background_color = "#744300"
     background_darkness = 0.4

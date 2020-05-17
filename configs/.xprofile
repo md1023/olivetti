@@ -1,4 +1,4 @@
 xrandr \
-    --output HDMI-1 --off \
-    --output DP-1 --mode 1920x1080 --pos 0x0 \
-    --output eDP-1 --scale 0.729166x0.729166 --primary --mode 2304x1440 --pos 1920x30
+    --output HDMI1 --off \
+    --output DP1 --mode 1920x1080 --pos 0x0 \
+    --output eDP1 --scale 0.729166x0.729166 --primary --mode 2304x1440 --pos 1920x30
