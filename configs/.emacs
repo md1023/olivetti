@@ -12,6 +12,7 @@
                      all-the-icons-dired
                      all-the-icons-gnus
                      atom-one-dark-theme
+                     birds-of-paradise-plus-theme
                      avy
                      bash-completion
                      company-anaconda
@@ -23,10 +24,6 @@
                      doom-modeline
                      fic-mode
                      flycheck
-                     flymake-gjshint
-                     flymake-json
-                     flymake-python-pyflakes
-                     flymake-shell
                      git
                      git-gutter-fringe
                      highlight-symbol
@@ -37,6 +34,7 @@
                      monky
                      multi-web-mode
                      rainbow-delimiters
+                     org-journal
                      yaml-mode
 ))
 
@@ -58,22 +56,41 @@
 (setq python-shell-interpreter "python3")
 (setq python-shell-completion-native-enable nil)
 
-;; open journal at start
-(setq initial-buffer-choice "~/Documents/journal.org")
+;; Don't open journal at start
+;; (setq initial-buffer-choice "~/Documents/journal.org")
+(setq initial-buffer-choice nil)
+(require 'org-journal)
+;; (setq org-journal-dir "~/Documents/org/")  ;; doesn't work on Emacs 26.3
+(setq org-journal-file-format "%m.%B.journal.org")
+(setq org-journal-date-format "%B %d, %A, week %V")
+(setq org-journal-file-type 'monthly)
+
+;; highlight jira task
+(font-lock-add-keywords 'org-mode '(
+   ("\\(IT\_DEV\-[0-9]+\\)" (0 font-lock-type-face))
+   ("\\(IT\-[0-9]+\\)" (0 font-lock-type-face))
+))
+
+
+;; Don't show welcome screen.
+(setq inhibit-startup-screen t)
 
 ;; mercurial path on MacOS
 (add-to-list 'exec-path "/usr/local/bin")
 
 ;; silver searcher location
-(setq ag-executable "/usr/bin/ag")
+;; misses .gitignore settings when run from here, runs slower
+;; (setq ag-executable "/usr/bin/ag")
+(setq ag-reuse-window t)
 
 ;; theme
-(load-theme 'atom-one-dark t)
+;; (load-theme 'atom-one-dark t)
+(load-theme 'birds-of-paradise-plus t)
 
-;; display watch
-(defvar display-time-format "%Y.%m.%d %H:%M")
-(defvar display-time-default-load-average nil)
-(display-time)
+;; Don't display watch
+;; (defvar display-time-format "%Y.%m.%d %H:%M")
+;; (defvar display-time-default-load-average nil)
+;; (display-time)
 
 ;; jump to word beginning/end
 (require 'misc)
@@ -82,6 +99,8 @@
 
 ;; change font here
 (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
+
+(setq frame-title-format "%b-%p")
 
 ;; no tab indentation
 (setq-default indent-tabs-mode nil)
@@ -120,7 +139,8 @@
 (set-default 'truncate-lines 1)
 
 (require 'linum)
-(global-linum-mode)
+;; Linum mode from recent 26 versions
+(global-display-line-numbers-mode)
 
 ;; highlight current line number in the fringe
 (require 'hlinum)
@@ -138,6 +158,12 @@
 ;; move around buffers with cursor keys
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
+
+;; override org-mode functions whereas S-<cursor> has no effect
+(add-hook 'org-shiftup-final-hook 'windmove-up)
+(add-hook 'org-shiftleft-final-hook 'windmove-left)
+(add-hook 'org-shiftdown-final-hook 'windmove-down)
+(add-hook 'org-shiftright-final-hook 'windmove-right)
 
 (show-paren-mode 1)
 
@@ -164,6 +190,9 @@
                                          'test-function-at-point
                                         )
 ))
+;; (define-key python-mode-map (kbd "<C-tab>") 'hs-toggle-hiding)
+;; (define-key python-mode-map (kbd "C-c TAB") 'hs-show-all)
+;; (define-key python-mode-map (kbd "C-c <backtab>") 'hs-hide-all)
 (eval-after-load "company"
  '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
 
@@ -181,11 +210,6 @@
 (global-set-key (kbd "M-c") 'ns-copy-including-secondary)
 (global-set-key (kbd "M-v") 'yank)
 
-;; python
-
-(require 'flymake-python-pyflakes)
-(setq flymake-python-pyflakes-executable "/usr/bin/flake8")
-
 ;; org mode
 (setf org-replace-disputed-keys 1
       org-todo-keywords '("TODO" "WORKING" "FAIL" "COMPLETE")
@@ -193,10 +217,6 @@
                                ("WORKING" . '(:foreground "#FFD000" :weight bold))
                                ("FAIL" . '(:foreground "#EE1010" :weight bold))
                                ))
-
-(setq org-agenda-files (list "~/Documents/journal.org"
-                             )
-      )
 
 ;; buffer and frames focus behaviour
 (ido-mode 1)
@@ -207,6 +227,10 @@
       ido-enable-record-commands 1
       ido-enable-flex-matching 1
       ibuffer-shrink-to-minimum-size 1)
+
+;; discord chat
+(require 'elcord)
+(elcord-mode)
 
 (defun simno-dired-mode-setup ()
   "show less information in dired buffers"
@@ -227,31 +251,39 @@
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
 (defun test-function-at-point ()
-  "Test function at point"
+  "Test function at point.
+    |-----------|----------------|---------------------------------|
+    |  path     |      car       |             cdr                 |
+    |-----------|----------------|---------------------------------|
+    | ../u-auth | credentials-api| tests/test_login.py             |
+    | ../u-auth | tests          | ui/requests/test_login_logout.py|
+    |-----------|----------------|---------------------------------|"
   (interactive)
-  (compile (let ((container "um-api")) (concat
-          ;; "/usr/local/bin/docker exec -it uauth_server_1 pytest --disable-warnings -svvv "
-          ;; "dockerexec um-api pytest --disable-warnings -svvv "
-          (format "dockerexec %s pytest --disable-warnings -svvv " container)
-          (car
-           (reverse
-            (split-string (buffer-file-name) (format "uauth/%s/" container))
+  (compile (let
+               ((path
+                 (split-string
+                  (car
+                   (reverse
+                    (split-string
+                     (buffer-file-name)
+                     "u-auth/"
+                     )))
+                  "/")))
+             (concat
+              (format
+               "dockerexec %s pytest --disable-warnings -svvv %s"
+               (car path)
+               (string-join (cdr path) "/"))
+              (if (which-function)
+                  (replace-regexp-in-string
+                   " (def)"
+                   ""
+                   (concat "::"
+                           (combine-and-quote-strings
+                            (split-string (which-function) "\\.")
+                            "::"))))))
            )
-          )
-          (if (which-function)
-              (replace-regexp-in-string
-               " (def)"
-               ""
-               (concat "::"
-                       (combine-and-quote-strings
-                        (split-string (which-function) "\\.")
-                        "::"
-                       )
-               )
-              )
-          )
-  )))
-)
+  )
 
 (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
 
@@ -261,8 +293,12 @@
 (setq shell-file-name "zsh")
 (setq shell-command-switch "-ic")
 
-(defvar ansi-color-names-vector
-  ["#222222" "#dca3a3" "#7f9f7f" "#f0dfaf" "#8cd0d3" "#c0bed1" "#93b3a3" "#cccccc"])
+;; override ansi colors
+(custom-theme-set-variables
+   'birds-of-paradise-plus
+   `(ansi-color-names-vector
+     ["#222222" "#DCA3A3" "#7F9F7F" "#F0DFAF"
+      "#8CD0D3" "#C0BED1" "#93B3A3" "#CCCCCC"]))
 
 (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
 
@@ -290,7 +326,7 @@
 ;; VCS
 (global-git-gutter-mode t)
 (setq git-gutter:modified-sign "±")
-(setq git-gutter:handled-backends '(git hg))
+(setq git-gutter:handled-backends '(git))
 
 (defadvice bookmark-jump (after bookmark-jump activate)
   (let ((latest (bookmark-get-bookmark bookmark)))
@@ -303,3 +339,12 @@
 
 ;; flash on error
 (setq visible-bell t)
+
+;; system monitor, show cpu load
+(require 'symon)
+(setq symon-monitors '(symon-linux-cpu-monitor
+                       symon-linux-memory-monitor
+                       symon-linux-battery-monitor))
+(setq symon-sparkline-height 12)
+(setq symon-sparkline-type 'gridded)
+(symon-mode)
