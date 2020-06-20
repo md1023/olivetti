@@ -82,7 +82,7 @@
 ;; silver searcher location
 ;; misses .gitignore settings when run from here, runs slower
 ;; (setq ag-executable "/usr/bin/ag")
-;; (setq ag-reuse-window t)
+(setq ag-reuse-window nil)
 
 ;; theme
 ;; (load-theme 'atom-one-dark t)
@@ -100,7 +100,7 @@
 
 ;; change font here
 ;; (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
-(add-to-list 'default-frame-alist '(font . "Consolas-10"))
+(add-to-list 'default-frame-alist '(font . "Consolas-9"))
 
 (setq frame-title-format "%b-%p")
 
@@ -108,6 +108,12 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
+
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+)
+(add-hook 'web-mode-hook  'my-web-mode-hook)
 
 ;; scroll bindings
 (global-set-key (kbd "M-<down>") 'scroll-up-line)
@@ -197,6 +203,16 @@
 ;; (define-key python-mode-map (kbd "C-c <backtab>") 'hs-hide-all)
 (eval-after-load "company"
  '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
+
+(require 'dap-python)
+;; (dap-register-debug-template "My App"
+;;   (list :type "python"
+;;         :args "-i"
+;;         :cwd nil
+;;         :env '(("DEBUG" . "1"))
+;;         :target-module (expand-file-name "~/src/myapp/.env/bin/myapp")
+;;         :request "launch"
+;;         :name "Cheapstake2"))
 
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
@@ -292,7 +308,7 @@
 (require 'ansi-color)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
-(setq shell-file-name "zsh")
+(setq shell-file-name "bash")
 (setq shell-command-switch "-ic")
 
 ;; override ansi colors
