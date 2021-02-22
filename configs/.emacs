@@ -100,7 +100,7 @@
 
 ;; change font here
 ;; (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
-(add-to-list 'default-frame-alist '(font . "Consolas-9"))
+(add-to-list 'default-frame-alist '(font . "Consolas-12"))
 
 (setq frame-title-format "%b-%p")
 
@@ -250,15 +250,6 @@
 ;; (require 'elcord)
 ;; (elcord-mode)
 
-(defun simno-dired-mode-setup ()
-  "show less information in dired buffers"
-  (dired-hide-details-mode 1)
-  (local-set-key (kbd "TAB") 'dired-subtree-cycle)
-  (font-lock-mode 0)
-  (dired-omit-mode 1)
-)
-
-(setq dired-sidebar-no-delete-other-windows t)
 
 ;; https://stackoverflow.com/questions/1292936/line-wrapping-within-emacs-compilation-buffer
 (defun my-compilation-mode-hook ()
@@ -268,6 +259,51 @@
 )
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
+(defun test-function-at-point-kc ()
+  "
+  cd /home/mnikolaev/Documents/it/dev/keycloak/tests/; \
+    source ./venv/bin/activate; \
+    (export $(xargs < .env.local); \
+       pytest --disable-warnings -svvv \
+         api/test_oidc_token.py::test__oidc_token__direct_grant_public_client__login \
+    )
+  "
+  (interactive)
+  (compile (let
+               ((test-path-bits
+                 (split-string
+                  (car
+                   (reverse
+                    (split-string (buffer-file-name) "keycloak/")))
+                  "/"))
+                (project-path
+                  (car
+                    (split-string (buffer-file-name) "/keycloak"))
+                  ))
+             (concat
+               (format
+                "cd %s/keycloak/%s/; "
+                project-path
+                (car test-path-bits)
+                )
+               "source ./venv/bin/activate; "
+               (format
+                "(export $(xargs < .env.local); pytest --disable-warnings -svvv %s"
+                (string-join (cdr test-path-bits) "/")
+                )
+               (if (which-function)
+                  (replace-regexp-in-string
+                   " (def)"
+                   ""
+                   (concat "::"
+                           (combine-and-quote-strings
+                            (split-string (which-function) "\\.")
+                            "::"))))
+               ")"
+              )
+             )
+           )
+)
 
 (defun test-function-at-point ()
   "
@@ -371,8 +407,9 @@
 (require 'dired-x)
 (setq dired-omit-files "^*.pyc$\\|\\.+/$\\|__pycache__/$\\|.pytest_cache$\\|.orig\\|\\./$")  ;; use \\|^urls.py$ to append other file
 
-(add-hook 'dired-mode-hook 'simno-dired-mode-setup)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
+(setq dired-sidebar-no-delete-other-windows t)
 
 (setq
  backup-by-copying t
