@@ -34,9 +34,9 @@
                      monky
                      multi-web-mode
                      rainbow-delimiters
-                     symon
                      org-journal
                      yaml-mode
+                     xterm-color
 ))
 
 ;; activate all the packages (in particular autoloads)
@@ -51,7 +51,7 @@
   (unless (package-installed-p package)
     (package-install package)))
 
-;; write customize options in separate file
+;; write customize options in separate file, otherwise will append to this file
 (setq custom-file "~/.emacs.d/custom.el")
 
 (setq python-shell-interpreter "python3")
@@ -82,7 +82,7 @@
 ;; silver searcher location
 ;; misses .gitignore settings when run from here, runs slower
 ;; (setq ag-executable "/usr/bin/ag")
-;; (setq ag-reuse-window t)
+(setq ag-reuse-window nil)
 
 ;; theme
 ;; (load-theme 'atom-one-dark t)
@@ -100,7 +100,7 @@
 
 ;; change font here
 ;; (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
-(add-to-list 'default-frame-alist '(font . "Consolas-10"))
+(add-to-list 'default-frame-alist '(font . "Consolas-9"))
 
 (setq frame-title-format "%b-%p")
 
@@ -108,6 +108,12 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
+
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+)
+(add-hook 'web-mode-hook  'my-web-mode-hook)
 
 ;; scroll bindings
 (global-set-key (kbd "M-<down>") 'scroll-up-line)
@@ -198,6 +204,16 @@
 (eval-after-load "company"
  '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
 
+;; (require 'dap-python)
+;; (dap-register-debug-template "My App"
+;;   (list :type "python"
+;;         :args "-i"
+;;         :cwd nil
+;;         :env '(("DEBUG" . "1"))
+;;         :target-module (expand-file-name "~/src/myapp/.env/bin/myapp")
+;;         :request "launch"
+;;         :name "Cheapstake2"))
+
 ;; disable suspend
 (global-set-key (kbd "C-z") nil)
 
@@ -252,7 +268,54 @@
 )
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
+
 (defun test-function-at-point ()
+  "
+  cd /home/mnikolaev/Documents/it/dev/keycloak/tests/; \
+    source ./venv/bin/activate; \
+    (export $(xargs < .env.local); \
+       pytest --disable-warnings -svvv \
+         api/test_oidc_token.py::test__oidc_token__direct_grant_public_client__login \
+    )
+  "
+  (interactive)
+  (compile (let
+               ((test-path-bits
+                 (split-string
+                  (car
+                   (reverse
+                    (split-string (buffer-file-name) "keycloak/")))
+                  "/"))
+                (project-path
+                  (car
+                    (split-string (buffer-file-name) "/keycloak"))
+                  ))
+             (concat
+               (format
+                "cd %s/keycloak/%s/; "
+                project-path
+                (car test-path-bits)
+                )
+               "source ./venv/bin/activate; "
+               (format
+                "(export $(xargs < .env.local); pytest --disable-warnings -svvv %s"
+                (string-join (cdr test-path-bits) "/")
+                )
+               (if (which-function)
+                  (replace-regexp-in-string
+                   " (def)"
+                   ""
+                   (concat "::"
+                           (combine-and-quote-strings
+                            (split-string (which-function) "\\.")
+                            "::"))))
+               ")"
+             )
+           )
+  )
+)
+
+(defun test-function-at-point-u-auth ()
   "Test function at point.
     |-----------|----------------|---------------------------------|
     |  path     |      car       |             cdr                 |
@@ -283,32 +346,25 @@
                    (concat "::"
                            (combine-and-quote-strings
                             (split-string (which-function) "\\.")
-                            "::"))))))
+                            "::")))))
            )
   )
+)
 
 (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
 
-(require 'ansi-color)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+;; https://stackoverflow.com/a/63711498/379159
+(require 'xterm-color)
+(setq compilation-environment '("TERM=xterm-256color"))
+(defun my/advice-compilation-filter (f proc string)
+  (if (eq major-mode 'ag-mode)
+      (funcall f proc string)
+    (funcall f proc (xterm-color-filter string))))
+(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
 
+;; prepare .zshrc aliases
 (setq shell-file-name "zsh")
 (setq shell-command-switch "-ic")
-
-;; override ansi colors
-(custom-theme-set-variables
-   'birds-of-paradise-plus
-   `(ansi-color-names-vector
-     ["#222222" "#DCA3A3" "#7F9F7F" "#F0DFAF"
-      "#8CD0D3" "#C0BED1" "#93B3A3" "#CCCCCC"]))
-
-(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
-
-(defun colorize-compilation-buffer ()
-  (toggle-read-only)
-  (ansi-color-apply-on-region compilation-filter-start (point))
-  (toggle-read-only))
-(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (setq dired-listing-switches "-lap --group-directories-first")
 
@@ -341,12 +397,3 @@
 
 ;; flash on error
 (setq visible-bell t)
-
-;; system monitor, show cpu load
-(require 'symon)
-(setq symon-monitors '(symon-linux-cpu-monitor
-                       symon-linux-memory-monitor
-                       symon-linux-battery-monitor))
-(setq symon-sparkline-height 12)
-(setq symon-sparkline-type 'gridded)
-(symon-mode)
