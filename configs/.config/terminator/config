@@ -34,9 +34,19 @@
 [plugins]
 [profiles]
   [[default]]
-    cursor_color = "#aaaaaa"
-    font = Fantasque Sans Mono Bold 10
+    audible_bell = True
+    background_color = "#3f3f3f"
+    background_darkness = 0.63
+    copy_on_selection = True
+    cursor_color = "#bcb285"
+    cursor_shape = underline
+    font = Fantasque Sans Mono 10
+    foreground_color = "#bcb285"
+    palette = "#3f3f3f:#dca3a3:#60b48a:#dfaf8f:#94bff3:#dc8cc3:#8cd0d3:#dcdccc:#709080:#d05050:#c3bf9f:#f0dfaf:#607080:#ec93d3:#93e0e3:#eeeeec"
+    scrollback_infinite = True
+    scrollback_lines = 10000
     use_system_font = False
+    visible_bell = True
   [[manjaro]]
     audible_bell = True
     background_color = "#2e3436"
@@ -72,4 +82,16 @@
     foreground_color = "#bcb285"
     scrollback_lines = 5000
     scrollbar_position = hidden
+    use_system_font = False
+  [[zenburn]]
+    background_color = "#555555"
+    background_darkness = 0.63
+    copy_on_selection = True
+    cursor_color = "#bcb285"
+    cursor_shape = underline
+    font = Consolas 10
+    foreground_color = "#bcb285"
+    palette = "#3f3f3f:#705050:#60b48a:#dfaf8f:#506070:#dc8cc3:#8cd0d3:#dcdccc:#709080:#dca3a3:#c3bf9f:#f0dfaf:#94bff3:#ec93d3:#93e0e3:#eeeeec"
+    scrollback_infinite = True
+    scrollback_lines = 10000
     use_system_font = False
