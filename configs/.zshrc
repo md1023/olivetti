@@ -46,7 +46,7 @@ HIST_STAMPS="yyyy.mm.dd"
 
 plugins=(git cp web-search)
 
-export PATH="/usr/local/bin:$PATH"
+export PATH="/usr/local/bin:/opt/atlassian/plugin-sdk/bin:$PATH"
 
 source $ZSH/oh-my-zsh.sh
 
