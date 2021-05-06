@@ -1,0 +1,13 @@
+# Docker aliases
+alias dockerps="docker ps --format='table {{.ID}}\t{{.Status}}\t{{.Names}}'"
+
+dockerlogs() {
+    name="$1"
+    docker logs "${@:2}" $(docker ps --format='{{.Names}}' | grep "$name")
+}
+
+dockerexec() {
+    name="$1"
+    echo $ENV_MODE
+    docker exec -it $(docker ps --format='{{.Names}}' | grep "$name") "${@:2}"
+}

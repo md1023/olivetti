@@ -71,17 +71,4 @@ setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:shifts_toggle"
 # CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs; export CVSROOT
 export CVS_RSH=ssh; export CVSROOT=:ext:mnikolaev@timesheets.iponweb.net:/var/cvs
 
-
-# Docker aliases
-alias dockerps="docker ps --format='table {{.ID}}\t{{.Status}}\t{{.Names}}'"
-
-dockerlogs() {
-    name="$1"
-    docker logs "${@:2}" $(docker ps --format='{{.Names}}' | grep "$name")
-}
-
-dockerexec() {
-    name="$1"
-    echo $ENV_MODE
-    docker exec -it $(docker ps --format='{{.Names}}' | grep "$name") "${@:2}"
-}
+source ~/.shell_aliases
