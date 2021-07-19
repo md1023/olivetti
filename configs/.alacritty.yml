@@ -1,0 +1,17 @@
+font:
+  normal:
+    family: Consolas
+  size: 10
+colors:
+  primary:
+    background: '#2e3436'
+    foreground: '#dcdcdc'
+  normal:
+    black: '#709080'
+    red: '#dca3a3'
+    green: '#72d5a3'
+    yellow: '#f0dfaf'
+    blue: '#94bff3'
+    magenta: '#ec93d3'
+    cyan: '#93e0e3'
+    white: '#ffffff'

@@ -259,8 +259,10 @@
 )
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
-(defun test-function-at-point-kc ()
+(defun test-function-at-point ()
   "
+  ~/Documents/it/iam/idm/um-api/src/test/scripts/
+
   cd /home/mnikolaev/Documents/it/dev/keycloak/tests/; \
     source ./venv/bin/activate; \
     (export $(xargs < .env.local); \
@@ -270,26 +272,26 @@
   "
   (interactive)
   (compile (let
-               ((test-path-bits
+               ((project-path
+                  (car
+                    (split-string (buffer-file-name) "/um-api"))
+                  )
+                (test-path-bits
                  (split-string
                   (car
                    (reverse
-                    (split-string (buffer-file-name) "keycloak/")))
+                    (split-string (buffer-file-name) "scripts/")))
                   "/"))
-                (project-path
-                  (car
-                    (split-string (buffer-file-name) "/keycloak"))
-                  ))
+                )
              (concat
                (format
-                "cd %s/keycloak/%s/; "
-                project-path
-                (car test-path-bits)
+                "cd %s; "
+                default-directory
                 )
-               "source ./venv/bin/activate; "
+               "source ./venv3/bin/activate; "
                (format
-                "(export $(xargs < .env.local); pytest --disable-warnings -svvv %s"
-                (string-join (cdr test-path-bits) "/")
+                "pytest --disable-warnings -svvv %s"
+                buffer-file-name
                 )
                (if (which-function)
                   (replace-regexp-in-string
@@ -299,7 +301,6 @@
                            (combine-and-quote-strings
                             (split-string (which-function) "\\.")
                             "::"))))
-               ")"
               )
              )
            )
@@ -407,6 +408,7 @@
 (require 'dired-x)
 (setq dired-omit-files "^*.pyc$\\|\\.+/$\\|__pycache__/$\\|.pytest_cache$\\|.orig\\|\\./$")  ;; use \\|^urls.py$ to append other file
 
+(add-hook 'dired-mode-hook 'dired-omit-mode)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
 (setq dired-sidebar-no-delete-other-windows t)
