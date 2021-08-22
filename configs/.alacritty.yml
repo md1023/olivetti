@@ -15,3 +15,9 @@ colors:
     magenta: '#ec93d3'
     cyan: '#93e0e3'
     white: '#ffffff'
+selection:
+  save_to_clipboard: true
+cursor:
+  style: Underline
+  blinking: On
+  blink_interval: 750
