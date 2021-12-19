@@ -100,7 +100,7 @@
 
 ;; change font here
 ;; (add-to-list 'default-frame-alist '(font . "Fantasque Sans Mono-12"))
-(add-to-list 'default-frame-alist '(font . "Consolas-9"))
+(add-to-list 'default-frame-alist '(font . "Consolas-10"))
 
 (setq frame-title-format "%b-%p")
 
