@@ -61,10 +61,11 @@ alias ag='ag --hidden'
 # psql horizontal scroll
 export PAGER=less
 export LESS="-iMSx4 -XFR"
+export EDITOR=nano
+export VISUAL=emacs
 
 # keyboard settings
-setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle,grp:shifts_toggle" \
-    -layout "us,ru"
+setxkbmap -option "grp_led:scroll,ctrl:nocaps,grp:caps_toggle"
 
 # IPONWEB
 # CVS_RSH=ssh
