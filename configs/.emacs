@@ -87,6 +87,7 @@
 ;; theme
 ;; (load-theme 'atom-one-dark t)
 (load-theme 'birds-of-paradise-plus t)
+;; (load-theme 'modus-operandi-tinted t)
 
 ;; Don't display watch
 ;; (defvar display-time-format "%Y.%m.%d %H:%M")
