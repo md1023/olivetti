@@ -19,7 +19,6 @@
                      csv-mode
                      diff-hl
                      dired-sidebar
-                     docker-tramp
                      dockerfile-mode
                      doom-modeline
                      fic-mode
@@ -27,7 +26,6 @@
                      git
                      git-gutter-fringe
                      highlight-symbol
-                     hlinum
                      js2-mode
                      lua-mode
                      magit
@@ -65,13 +63,6 @@
 (setq org-journal-file-format "%m.%B.journal.org")
 (setq org-journal-date-format "%B %d, %A, week %V")
 (setq org-journal-file-type 'monthly)
-
-;; highlight jira task
-(font-lock-add-keywords 'org-mode '(
-   ("\\(IT\_DEV\-[0-9]+\\)" (0 font-lock-type-face))
-   ("\\(IT\-[0-9]+\\)" (0 font-lock-type-face))
-))
-
 
 ;; Don't show welcome screen.
 (setq inhibit-startup-screen t)
@@ -147,19 +138,8 @@
 ;; use toggle-truncate-lines to override
 (set-default 'truncate-lines 1)
 
-(require 'linum)
 ;; Linum mode from recent 26 versions
-(global-display-line-numbers-mode)
-
-;; highlight current line number in the fringe
-(require 'hlinum)
-(hlinum-activate)
-
-;; fix linum face width
-(eval-after-load "hlinum"
-  '(set-face-attribute 'linum-highlight-face nil :height 90))
-(eval-after-load "linum"
-  '(set-face-attribute 'linum nil :height 90))
+(global-display-line-numbers-mode 1)
 
 ;; highlight fringe in folders under version control
 (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
