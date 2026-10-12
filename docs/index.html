@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сценарий «Угнать за 60 секунд»</title>
+<style>
+  :root{
+    --bg:#12140f;
+    --panel:#1c1f18;
+    --panel-2:#23271e;
+    --line:#3b4030;
+    --accent:#c8a24a;
+    --accent-2:#8fbf4a;
+    --red:#c0392b;
+    --blue:#3d7fd6;
+    --purple:#9b59b6;
+    --text:#e8e6dd;
+    --muted:#a8a693;
+  }
+
+  *{box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #20241a 0%, transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height:1.65;
+    font-size:17px;
+  }
+
+  /* ---------- Шапка ---------- */
+  header.hero{
+    padding:48px 24px 36px;
+    text-align:center;
+    border-bottom:2px solid var(--line);
+    background:linear-gradient(180deg, #1b1f16 0%, #14170f 100%);
+  }
+  header.hero h1{
+    margin:0 0 10px;
+    font-size:clamp(26px, 5vw, 46px);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--accent);
+    text-shadow:0 2px 0 #000;
+  }
+  header.hero .sub{
+    color:var(--muted);
+    font-size:15px;
+    letter-spacing:1px;
+  }
+
+  /* ---------- Раскладка ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns:300px minmax(0,1fr);
+    gap:28px;
+    max-width:1240px;
+    margin:0 auto;
+    padding:28px 20px 80px;
+    align-items:start;
+  }
+
+  /* ---------- Оглавление ---------- */
+  nav.toc{
+    position:sticky;
+    top:20px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+  nav.toc h2{
+    margin:0 0 12px;
+    font-size:14px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--accent);
+    border-bottom:1px solid var(--line);
+    padding-bottom:10px;
+  }
+  nav.toc ol{
+    list-style:none;
+    margin:0;
+    padding:0;
+    counter-reset:toc;
+  }
+  nav.toc li{counter-increment:toc;}
+  nav.toc a{
+    display:flex;
+    gap:10px;
+    align-items:baseline;
+    padding:8px 10px;
+    margin:2px 0;
+    color:var(--text);
+    text-decoration:none;
+    border-radius:6px;
+    border-left:3px solid transparent;
+    transition:background .15s, border-color .15s, color .15s;
+    font-size:15px;
+  }
+  nav.toc a::before{
+    content:counter(toc) ".";
+    color:var(--accent);
+    font-weight:700;
+    min-width:18px;
+    font-variant-numeric:tabular-nums;
+  }
+  nav.toc a:hover,
+  nav.toc a:focus{
+    background:var(--panel-2);
+    border-left-color:var(--accent-2);
+    color:#fff;
+  }
+  nav.toc a.top-link{
+    margin-top:12px;
+    border-top:1px solid var(--line);
+    padding-top:12px;
+    color:var(--muted);
+    font-size:13px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+  nav.toc a.top-link::before{content:"▲";color:var(--muted);}
+
+  /* ---------- Контент ---------- */
+  main{min-width:0;}
+
+  section{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:24px 26px;
+    margin-bottom:22px;
+    scroll-margin-top:20px;
+    box-shadow:0 6px 20px rgba(0,0,0,.3);
+  }
+  section h2{
+    margin:0 0 16px;
+    font-size:22px;
+    color:var(--accent);
+    letter-spacing:1px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+  }
+  section h2 .num{
+    font-size:14px;
+    color:var(--muted);
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:2px 9px;
+    font-weight:600;
+  }
+  section h3{
+    margin:22px 0 10px;
+    font-size:17px;
+    color:var(--accent-2);
+    letter-spacing:.5px;
+  }
+
+  p{margin:0 0 12px;}
+
+  ul,ol.plain{margin:0 0 12px; padding-left:22px;}
+  li{margin:5px 0;}
+
+  /* Таблица параметров */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:0 0 8px;
+    font-size:16px;
+  }
+  table th, table td{
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  table th{
+    width:38%;
+    color:var(--muted);
+    font-weight:600;
+    white-space:nowrap;
+  }
+  table tr:last-child th,
+  table tr:last-child td{border-bottom:none;}
+
+  /* Карточки способов */
+  .methods{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+    gap:16px;
+    margin-top:16px;
+  }
+  .method{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .method h4{
+    margin:0 0 10px;
+    font-size:15px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+  .method p:last-child{margin-bottom:0;}
+
+  .tag{
+    display:inline-block;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:1px 8px;
+    font-size:14px;
+    color:var(--accent-2);
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .callout{
+    background:rgba(200,162,74,.08);
+    border:1px solid rgba(200,162,74,.35);
+    border-radius:8px;
+    padding:14px 18px;
+    margin:16px 0;
+  }
+  .callout strong{color:var(--accent);}
+
+  /* Схема */
+  .scheme-wrap{
+    background:#15170f;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px;
+    display:flex;
+    justify-content:center;
+  }
+  svg.scheme{width:100%; max-width:640px; height:auto;}
+
+  .legend{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+    gap:10px;
+    margin-top:18px;
+  }
+  .legend div{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:9px 13px;
+    font-size:15px;
+  }
+  .swatch{
+    width:16px;height:16px;border-radius:3px;flex:0 0 auto;
+    border:1px solid rgba(0,0,0,.4);
+  }
+  .sw-red{background:var(--red);}
+  .sw-blue{background:var(--blue);border-radius:50%;}
+  .sw-purple{background:var(--purple);}
+  .sw-gate{background:transparent;border:2px dashed var(--accent);}
+
+  /* Мобильный вид */
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr; gap:18px; padding:18px 14px 60px;}
+    nav.toc{position:static;}
+    nav.toc ol{columns:1;}
+    section{padding:20px 18px;}
+  }
+
+  @media print{
+    body{background:#fff;color:#000;}
+    nav.toc{display:none;}
+    .layout{display:block;padding:0;}
+    section{border:none;box-shadow:none;page-break-inside:avoid;}
+    section h2{color:#000;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>«Угнать за 60 секунд»</h1>
+  <div class="sub">Сценарий для настольного варгейма · 8 ходов</div>
+</header>
+
+<div class="layout">
+
+  <!-- ================= ОГЛАВЛЕНИЕ ================= -->
+  <nav class="toc" aria-label="Оглавление">
+    <h2>Оглавление</h2>
+    <ol>
+      <li><a href="#overview">Общие сведения</a></li>
+      <li><a href="#victory">Миссия и подсчёт очков победы</a></li>
+      <li><a href="#deployment">Расстановка сторон</a></li>
+      <li><a href="#map">Подготовка карты</a></li>
+      <li><a href="#hijack">Угон АКИ</a></li>
+      <li><a href="#scheme">Схема расстановки</a></li>
+      <li><a href="#legend">Легенда схемы</a></li>
+    </ol>
+    <a class="top-link" href="#top" id="toTop">Наверх</a>
+  </nav>
+
+  <!-- ================= КОНТЕНТ ================= -->
+  <main id="top">
+
+    <!-- 1 -->
+    <section id="overview">
+      <h2><span class="num">01</span>Общие сведения</h2>
+      <table>
+        <tr>
+          <th>Длительность</th>
+          <td>8 ходов (минимум 8)</td>
+        </tr>
+        <tr>
+          <th>Досрочное завершение</th>
+          <td>Одна из сторон выполнила все цели сценария.</td>
+        </tr>
+        <tr>
+          <th>Силы сторон</th>
+          <td>
+            <strong>Защитники</strong> — 4–6 юнитов на 7 200 BV.<br>
+            <strong>Атакующие</strong> — 3–4 юнита на 6 800 BV.
+          </td>
+        </tr>
+        <tr>
+          <th>Вынужденное отступление</th>
+          <td>Нет. Юнит, вышедший или вытолкнутый за край карты, считается уничтоженным.</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- 2 -->
+    <section id="victory">
+      <h2><span class="num">02</span>Миссия и подсчёт очков победы</h2>
+
+      <h3>Защитники</h3>
+      <p>
+        Не дать угнать АКИ с временной авиабазы. За каждый не угнанный и оставшийся
+        неповреждённым АКИ защитники получают <span class="tag">1 ПО</span>.
+      </p>
+      <p>
+        АКИ считается неповреждённым, если ангар не был обрушен.
+      </p>
+
+      <h3>Атакующие</h3>
+      <p>
+        Угнать как можно больше АКИ с временной авиабазы. За каждый угнанный АКИ
+        атакующие получают <span class="tag">1 ПО</span>.
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section id="deployment">
+      <h2><span class="num">03</span>Расстановка сторон</h2>
+      <ul>
+        <li>
+          <strong>Защитники</strong> до начала первого хода расставляют свои юниты
+          в пределах периметра базы.
+        </li>
+        <li>
+          <strong>Атакующие</strong> выходят из-за выбранного короткого края карты,
+          начиная с 1-го хода, в порядке инициативы.
+        </li>
+      </ul>
+    </section>
+
+    <!-- 4 -->
+    <section id="map">
+      <h2><span class="num">04</span>Подготовка карты</h2>
+
+      <ul>
+        <li>
+          Карта состоит из двух мапшитов типа <em>flatland</em> или <em>airbase</em>,
+          соединённых по длинной стороне.
+        </li>
+        <li>
+          Защитник по центру карты ставит здание — <strong>Контрольную вышку</strong>
+          (1 гекс, высота 3, среднее).
+        </li>
+        <li>
+          Вокруг Контрольной вышки разместите <strong>6 ангаров</strong>
+          (радиус 1, высота центрального гекса 2, остальных гексов 1, среднее) таким
+          образом, чтобы центральные гексы ангаров располагались в 4-х гексах от
+          Контрольной вышки.
+        </li>
+        <li>
+          Вокруг комплекса из Контрольной вышки и ангаров возводится
+          <strong>стена</strong> (высота 2, среднее), образующая замкнутый периметр
+          на расстоянии 2 гексов от центральных гексов ангаров.
+        </li>
+        <li>
+          В стене оборудуются <strong>ворота</strong> — по одному на стороне периметра,
+          обращённой к каждому короткому краю карты (всего 2 ворот). Ворота — это
+          разрыв в стене шириной в 1 гекс. Ворота открыты и не препятствуют движению
+          и линии видимости.
+        </li>
+        <li>
+          Все здания на мапшитах, кроме определённых сценарием, считайте руинами
+          (<em>ramble</em>). Вход внутрь зданий любым способом запрещён.
+        </li>
+      </ul>
+
+      <div class="callout">
+        <strong>Важно:</strong> подробности смотрите на схеме расстановки — она является
+        обязательным приложением к сценарию и однозначно фиксирует высоты, радиусы
+        и взаимное расположение объектов.
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section id="hijack">
+      <h2><span class="num">05</span>Угон АКИ</h2>
+
+      <p>
+        Начиная с <strong>3-го хода</strong> диверсанты-угонщики готовы к взлёту.
+        Для взлёта необходимо открыть мембрану ангара (центральный гекс).
+        Сделать это можно двумя способами.
+      </p>
+
+      <div class="methods">
+        <div class="method">
+          <h4>Способ 1 — Орудийный огонь</h4>
+          <p>
+            Разрушить мембрану орудийным огнём. Стрельба по центральному гексу ангара
+            ведётся со штрафом <span class="tag">+4 на попасть</span>.
+          </p>
+          <p>
+            В фазу стрельбы нанесите одним из юнитов центральному гексу ангара урона
+            <span class="tag">≥ threshold (10)</span> и киньте
+            <span class="tag">DC = 9 + мод урона</span>.
+          </p>
+          <p>
+            Если в результате DC ангар обрушился, то АКИ считается получившим тяжёлые
+            повреждения и не может взлететь; в ином случае АКИ взлетает и считается
+            угнанным.
+          </p>
+        </div>
+
+        <div class="method">
+          <h4>Способ 2 — Взлом Контрольной вышки</h4>
+          <p>
+            В завершающую фазу хода боеспособный юнит, находящийся в смежном
+            с Контрольной вышкой гексе или на ней, может совершить одну попытку взлома
+            систем управления и открыть мембрану одного из ангаров при успехе.
+          </p>
+          <p>
+            Для успешного взлома необходимо выкинуть <span class="tag">8+ на 2d6</span>.
+          </p>
+          <p>
+            Юнит, оснащённый <em>Активным зондом</em> (и производными), способен
+            осуществлять попытку взлома на дальности действия Активного зонда,
+            если не заглушен системами РЭБ.
+          </p>
+          <p>
+            За один ход можно совершить несколько попыток взлома (по 1 на каждый юнит),
+            но при успехе открывается только <strong>один</strong> ангар.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="scheme">
+      <h2><span class="num">06</span>Схема расстановки</h2>
+
+      <p>
+        Условная схема комплекса: Контрольная вышка в центре, 6 ангаров на удалении
+        4 гексов, замкнутый периметр стены на удалении 2 гексов от центральных гексов
+        ангаров и двое ворот, обращённых к коротким краям карты.
+      </p>
+
+      <div class="scheme-wrap">
+        <svg class="scheme" viewBox="0 0 600 600" role="img"
+             aria-label="Схема расстановки: контрольная вышка в центре, шесть ангаров вокруг, стена с двумя воротами">
+
+          <defs>
+            <!-- Гекс (pointy-top), описанная окружность = 20 -->
+            <polygon id="hex"
+                     points="0,-20 17.32,-10 17.32,10 0,20 -17.32,10 -17.32,-10" />
+
+            <!-- Узор подложки -->
+            <pattern id="grid" width="34.64" height="60" patternUnits="userSpaceOnUse">
+              <path d="M17.32,0 L34.64,10 L34.64,30 L17.32,40 L0,30 L0,10 Z"
+                    fill="none" stroke="#262a1d" stroke-width="1"/>
+            </pattern>
+          </defs>
+
+          <!-- Фон -->
+          <rect x="0" y="0" width="600" height="600" fill="#15170f"/>
+          <rect x="0" y="0" width="600" height="600" fill="url(#grid)" opacity="0.7"/>
+
+          <!-- Периметр стены (с разрывами под ворота) -->
+          <g fill="none" stroke="#9b59b6" stroke-width="5"
+             stroke-linejoin="round" stroke-linecap="round">
+            <!-- верх-право -->
+            <polyline points="507.8,300 403.9,120 317,120" />
+            <!-- верх-лево -->
+            <polyline points="283,120 196.1,120 92.2,300" />
+            <!-- низ-лево -->
+            <polyline points="92.2,300 196.1,480 283,480" />
+            <!-- низ-право -->
+            <polyline points="317,480 403.9,480 507.8,300" />
+          </g>
+
+          <!-- Ворота -->
+          <g stroke="#c8a24a" stroke-width="4" stroke-dasharray="6 5">
+            <line x1="283" y1="120" x2="317" y2="120"/>
+            <line x1="283" y1="480" x2="317" y2="480"/>
+          </g>
+
+          <!-- Ангары -->
+          <g>
+            <use href="#hex" x="438.6" y="300" fill="none" stroke="#c0392b" stroke-width="3"/>
+            <use href="#hex" x="369.3" y="180" fill="none" stroke="#c0392b" stroke-width="3"/>
+            <use href="#hex" x="230.7" y="180" fill="none" stroke="#c0392b" stroke-width="3"/>
+            <use href="#hex" x="161.4" y="300" fill="none" stroke="#c0392b" stroke-width="3"/>
+            <use href="#hex" x="230.7" y="420" fill="none" stroke="#c0392b" stroke-width="3"/>
+            <use href="#hex" x="369.3" y="420" fill="none" stroke="#c0392b" stroke-width="3"/>
+          </g>
+
+          <!-- Мембраны ангаров -->
+          <g fill="none" stroke="#3d7fd6" stroke-width="3">
+            <circle cx="438.6" cy="300" r="10"/>
+            <circle cx="369.3" cy="180" r="10"/>
+            <circle cx="230.7" cy="180" r="10"/>
+            <circle cx="161.4" cy="300" r="10"/>
+            <circle cx="230.7" cy="420" r="10"/>
+            <circle cx="369.3" cy="420" r="10"/>
+          </g>
+
+          <!-- Контрольная вышка -->
+          <use href="#hex" x="300" y="300" fill="#c0392b" stroke="#7d2318" stroke-width="3"/>
+          <circle cx="300" cy="300" r="5" fill="#ffd9d2"/>
+
+          <!-- Подписи -->
+          <g fill="#e8e6dd" font-family="Segoe UI, Arial, sans-serif"
+             font-size="13" text-anchor="middle">
+            <text x="300" y="348" fill="#c8a24a" font-weight="700">Контрольная вышка</text>
+            <text x="300" y="104" fill="#c8a24a">Ворота → к короткому краю</text>
+            <text x="300" y="506" fill="#c8a24a">Ворота → к короткому краю</text>
+            <text x="300" y="576" fill="#a8a693" font-size="12">6 ангаров · стена · 2 ворот</text>
+          </g>
+
+          <!-- Номера ангаров -->
+          <g fill="#3d7fd6" font-family="Segoe UI, Arial, sans-serif"
+             font-size="11" text-anchor="middle" font-weight="700">
+            <text x="438.6" y="304">1</text>
+            <text x="369.3" y="184">2</text>
+            <text x="230.7" y="184">3</text>
+            <text x="161.4" y="304">4</text>
+            <text x="230.7" y="424">5</text>
+            <text x="369.3" y="424">6</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="callout">
+        <strong>Примечание:</strong> данная схема — наглядная реконструкция расстановки.
+        Обязательным приложением к сценарию является оригинальная схема из документа,
+        однозначно фиксирующая высоты, радиусы и взаимное расположение объектов.
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section id="legend">
+      <h2><span class="num">07</span>Легенда схемы</h2>
+
+      <div class="legend">
+        <div><span class="swatch sw-red"></span> Контрольная вышка — 1 гекс, высота 3, среднее</div>
+        <div><span class="swatch sw-red"></span> Ангары — радиус 1, центр высота 2, остальные 1, среднее</div>
+        <div><span class="swatch sw-blue"></span> Мембрана ангара (центральный гекс)</div>
+        <div><span class="swatch sw-purple"></span> Стена периметра — высота 2, среднее</div>
+        <div><span class="swatch sw-gate"></span> Ворота — разрыв 1 гекс, открыты</div>
+      </div>
+
+      <h3>Обозначения из оригинальной схемы</h3>
+      <ul>
+        <li><em>medium</em>: M1.2</li>
+        <li><em>medium</em>: M1.3</li>
+        <li>Контрольная вышка</li>
+        <li>остальные — M1.1</li>
+        <li>непр. рекс — M1.2</li>
+        <li>АНП-АР (медицин)</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>
