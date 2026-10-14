@@ -1,0 +1,84 @@
+
+name: Sync Google Drive HTML
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [drive-file-updated]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-drive-html
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Google API client
+        run: pip install google-api-python-client google-auth
+
+      - name: Download index.html from Drive
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FILE_ID: ${{ vars.GDRIVE_FILE_ID }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaIoBaseDownload
+          import io
+
+          credentials = service_account.Credentials.from_service_account_info(
+              json.loads(os.environ["GDRIVE_SERVICE_ACCOUNT_JSON"]),
+              scopes=["https://www.googleapis.com/auth/drive.readonly"],
+          )
+
+          drive = build("drive", "v3", credentials=credentials)
+          file_id = os.environ["GDRIVE_FILE_ID"]
+
+          metadata = drive.files().get(
+              fileId=file_id, fields="id,name,mimeType"
+          ).execute()
+
+          if metadata["name"] != "index.html":
+              raise RuntimeError("The configured Drive file is not index.html")
+
+          request = drive.files().get_media(fileId=file_id)
+          buffer = io.BytesIO()
+          downloader = MediaIoBaseDownload(buffer, request)
+
+          done = False
+          while not done:
+              _, done = downloader.next_chunk()
+
+          Path("docs").mkdir(exist_ok=True)
+          Path("docs/index.html").write_bytes(buffer.getvalue())
+          PY
+
+      - name: Commit changed file
+        run: |
+          git add docs/index.html
+          if git diff --cached --quiet; then
+            echo "No changes to publish"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sync index.html from Google Drive"
+          git push
